@@ -705,24 +705,24 @@ Keyboard( unsigned char c, int x, int y )
 		//case 'R':
 		//	sim.reset();
 
-		case '2':
+		case 'd':
 			sim.changeSpeed(0.5f);
 			break;
-		case '8':
+		case 'e':
 			sim.changeSpeed(2.0f);
 			break;
 
-		case '4':
+		case 's':
 			sim.changeSelected(-1);
 			break;
-		case '6':
+		case 'f':
 			sim.changeSelected(1);
 			break;
 
-		case 'S':
+		case 'g':
 			sim.changeSize(0.05f);
 			break;
-		case 's':
+		case 'a':
 			sim.changeSize(-0.05f);
 			break;
 
