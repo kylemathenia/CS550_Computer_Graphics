@@ -51,7 +51,7 @@ float BOXSIZE = { 2.f };
 const float ORIG_BOXSIZE = BOXSIZE;
 
 //frames per second
-const int FPS = 60;
+const int FPS = 120;
 
 // multiplication factors for input interaction:
 //  (these are known from previous experience)
@@ -654,6 +654,17 @@ Keyboard( unsigned char c, int x, int y )
 		case 'p':
 		case 'P':
 			WhichProjection = PERSP;
+			break;
+		
+		//case 'r':
+		//case 'R':
+		//	sim.reset();
+
+		case 's':
+			sim.slowDown();
+			break;
+		case 'S':
+			sim.speedUp();
 			break;
 
 		case 'q':

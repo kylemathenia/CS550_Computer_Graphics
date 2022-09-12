@@ -36,9 +36,10 @@ public:
 
 	void hardReset()
 	{
-		r = m_i;
+		r = r_i;
 		m = m_i;
 		tailLen = tailLen_i;
+		// I don't think this works because we didn't do a deep copy. 
 		S = S_i;
 		initTail();
 	}

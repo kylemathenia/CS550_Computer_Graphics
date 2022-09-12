@@ -18,6 +18,7 @@ public:
 		b3 = body3;
 		prevTime = 0;
 		dt = 0;
+		speed = 1.0f;
 		reset();
 	};
 
@@ -50,10 +51,21 @@ public:
 		b3.initList();
 	}
 
+	void speedUp()
+	{
+		speed = speed * 2;
+	}
+
+	void slowDown()
+	{
+		speed = speed / 2;
+	}
+
 	double prevTime, dt;
 	Eigen::Vector3f c;
 	Body b1, b2, b3;
 	Eigen::Vector3f center;
+	float speed;
 
 private:
 	void findAccels()
@@ -65,13 +77,13 @@ private:
 
 	void updateBodies()
 	{
-		b1.S.vel = b1.S.vel + (b1.S.acc * dt);
-		b2.S.vel = b2.S.vel + (b2.S.acc * dt);
-		b3.S.vel = b3.S.vel + (b3.S.acc * dt);
+		b1.S.vel = b1.S.vel + (b1.S.acc * dt * speed);
+		b2.S.vel = b2.S.vel + (b2.S.acc * dt * speed);
+		b3.S.vel = b3.S.vel + (b3.S.acc * dt * speed);
 
-		b1.S.pos = b1.S.pos + (b1.S.vel * dt);
-		b2.S.pos = b2.S.pos + (b2.S.vel * dt);
-		b3.S.pos = b3.S.pos + (b3.S.vel * dt);
+		b1.S.pos = b1.S.pos + (b1.S.vel * dt * speed);
+		b2.S.pos = b2.S.pos + (b2.S.vel * dt * speed);
+		b3.S.pos = b3.S.pos + (b3.S.vel * dt * speed);
 
 		b1.updateTail();
 		b2.updateTail();
