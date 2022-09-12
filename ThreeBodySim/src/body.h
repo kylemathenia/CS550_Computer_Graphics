@@ -37,6 +37,7 @@ public:
 		S_i = init_state;
 		bcolor = bc;
 		tcolor = tc;
+		selected = false;
 		hardReset();
 	};
 
@@ -82,13 +83,15 @@ public:
 		glPopMatrix();
 
 		// If selected, draw a transparent sphere that is slightly larger. 
-		glPushMatrix();
-		glEnable(GL_BLEND);
-		glColor4f(Colors[Colors::WHITE][0], Colors[Colors::WHITE][1], Colors[Colors::WHITE][2],0.3f);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-		glTranslatef(dx, dy, dz);
-		glCallList(selectedSphereList);
-		glPopMatrix();
+		if (selected == true) {
+			glPushMatrix();
+			glEnable(GL_BLEND);
+			glColor4f(Colors[Colors::WHITE][0], Colors[Colors::WHITE][1], Colors[Colors::WHITE][2], 0.3f);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+			glTranslatef(dx, dy, dz);
+			glCallList(selectedSphereList);
+			glPopMatrix();
+		}
 
 		// Tail
 		glPushMatrix();
@@ -189,4 +192,5 @@ public:
 	GLuint tailList;
 	enum Colors bcolor;
 	enum Colors tcolor;
+	bool selected;
 };

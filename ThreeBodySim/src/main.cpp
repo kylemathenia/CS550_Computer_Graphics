@@ -347,12 +347,13 @@ Display( )
 	//gluLookAt((float)sim.center(0), (float)sim.center(1), (float)sim.center(2) + 8, (float)sim.center(0), (float)sim.center(1), (float)sim.center(2), 0., 1., 0.);
 	//glTranslatef((float)sim.center(0), (float)sim.center(1), (float)sim.center(2));
 
+	//axis.draw(Yrot,Xrot);
+
 	// rotate the scene:
 	glRotatef( (GLfloat)Yrot, 0., 1., 0. );
 	glRotatef( (GLfloat)Xrot, 1., 0., 0. );
 
-	// To follow the bodies into space. 
-	//gluLookAt((float)sim.center(0), (float)sim.center(1), (float)sim.center(2) + 8, (float)sim.center(0), (float)sim.center(1), (float)sim.center(2), 0., 1., 0.);
+	//axis.draw();
 
 	// uniformly scale the scene:
 	if( Scale < MINSCALE )
@@ -709,6 +710,13 @@ Keyboard( unsigned char c, int x, int y )
 			break;
 		case 'S':
 			sim.speedUp();
+			break;
+
+		case '4':
+			sim.changeSelected(-1);
+			break;
+		case '6':
+			sim.changeSelected(1);
 			break;
 
 		case 'q':

@@ -8,6 +8,7 @@
 #include "body.h"
 #include "Eigen/Dense"
 
+
 class ThreeBodySim
 {
 public:
@@ -19,6 +20,8 @@ public:
 		prevTime = 0;
 		dt = 0;
 		speed = 1.0f;
+		bufferChangeCount = 0;
+		b1.selected = true;
 		reset();
 	};
 
@@ -61,11 +64,39 @@ public:
 		speed = speed / 2;
 	}
 
+	void changeSelected(int change)
+	{
+		bufferChangeCount+= change;
+		int num = bufferChangeCount % 4;
+		if (num < 0) { num = num * -1; }
+		if (num == 1) {
+			b1.selected = false;
+			b2.selected = true;
+			b3.selected = false;
+		}
+		else if (num == 2) {
+			b1.selected = false;
+			b2.selected = false;
+			b3.selected = true;
+		}
+		else if (num == 3) {
+			b1.selected = false;
+			b2.selected = false;
+			b3.selected = false;
+		}
+		else if (num == 0) {
+			b1.selected = true;
+			b2.selected = false;
+			b3.selected = false;
+		}
+	}
+
 	double prevTime, dt;
 	Eigen::Vector3f c;
-	Body b1, b2, b3;
+	Body b1, b2, b3, nullB;
 	Eigen::Vector3f center;
 	float speed;
+	int bufferChangeCount;
 
 private:
 	void findAccels()
