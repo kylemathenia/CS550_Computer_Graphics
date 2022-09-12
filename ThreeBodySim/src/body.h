@@ -45,8 +45,7 @@ public:
 		r = r_i;
 		m = m_i;
 		tailLen = tailLen_i;
-		// I don't think this works because we didn't do a deep copy. 
-		S = S_i;
+		S = state{ S_i.pos,S_i.vel,S_i.acc };
 		V = findVolume();
 		initTail();
 	}

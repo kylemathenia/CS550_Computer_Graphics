@@ -19,15 +19,18 @@ public:
 		b3 = body3;
 		prevTime = 0;
 		dt = 0;
-		speed = 1.0f;
-		bufferChangeCount = 0;
-		b1.selected = true;
 		reset();
 	};
 
 	void reset()
 	{
+		b1.hardReset();
+		b2.hardReset();
+		b3.hardReset();
 		updateCenter();
+		speed = 1.0f;
+		bufferChangeCount = 0;
+		changeSelected(0);
 	}
 
 	void step()

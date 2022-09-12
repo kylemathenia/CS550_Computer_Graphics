@@ -701,9 +701,10 @@ Keyboard( unsigned char c, int x, int y )
 			WhichProjection = PERSP;
 			break;
 		
-		//case 'r':
-		//case 'R':
-		//	sim.reset();
+		case 'r':
+		case 'R':
+			sim.reset();
+			break;
 
 		case 'd':
 			sim.changeSpeed(0.5f);
