@@ -292,6 +292,10 @@ Animate( )
 	boxScale = (float)cos(ElapsedSeconds()) + 1 + (1 / 10);
 	sim.step();
 
+	if (OrbitOn == 1) { 
+		Yrot += -.6;
+	}
+
 	// force a call to Display( ) next time it is convenient:
 	glutSetWindow( MainWindow );
 	glutPostRedisplay( );
@@ -712,18 +716,15 @@ Keyboard( unsigned char c, int x, int y )
 	switch( c )
 	{
 		case 'p':
-		case 'P':
 			if (WhichProjection == PERSP) { WhichProjection = ORTHO; }
 			else { WhichProjection = PERSP; }
 			break;
 		
 		case 'r':
-		case 'R':
 			sim.reset();
 			break;
 
 		case 'o':
-		case 'O':
 			if (OrbitOn == 0) { OrbitOn = 1; }
 			else { OrbitOn = 0; }
 			break;
@@ -750,7 +751,6 @@ Keyboard( unsigned char c, int x, int y )
 			break;
 
 		case 'q':
-		case 'Q':
 		case ESCAPE:
 			DoMainMenu( QUIT );	// will not return here
 			break;				// happy compiler
