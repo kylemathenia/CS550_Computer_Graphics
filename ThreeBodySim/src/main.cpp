@@ -87,11 +87,16 @@ enum ButtonVals
 	QUIT
 };
 
+// which view:
+enum Views
+{
+	CENTERED,
+
+	asdf
+};
+
 // window background color (rgba):
 const GLfloat BACKCOLOR[ ] = { 0., 0., 0., 1. };
-
-// line width for the axes:
-//const GLfloat AXES_WIDTH   = { 3. };
 
 // fog parameters:
 const GLfloat FOGCOLOR[4] = { .0, .0, .0, 1. };
@@ -114,6 +119,7 @@ int		AxesOn;					// != 0 means to draw the axes
 GLuint	boxList;				// object display list
 GLuint	sphereList;
 int		DebugOn;				// != 0 means to print debugging info
+int		OrbitOn;				// != 0 means the view will orbit at a const rate
 int		DepthCueOn;				// != 0 means to use intensity depth cueing
 int		DepthBufferOn;			// != 0 means to use the z-buffer
 int		DepthFightingOn;		// != 0 means to force the creation of z-fighting
@@ -189,6 +195,7 @@ void	DoDepthBufferMenu( int );
 void	DoDepthFightingMenu( int );
 void	DoDepthMenu( int );
 void	DoDebugMenu( int );
+void	DoOrbitMenu( int );
 void	DoMainMenu( int );
 void	DoProjectMenu( int );
 void	DoShadowMenu();
@@ -446,6 +453,14 @@ DoDebugMenu( int id )
 }
 
 void
+DoOrbitMenu(int id)
+{
+	OrbitOn = id;
+	glutSetWindow(MainWindow);
+	glutPostRedisplay();
+}
+
+void
 DoDepthBufferMenu( int id )
 {
 	DepthBufferOn = id;
@@ -577,6 +592,10 @@ InitMenus( )
 	glutAddMenuEntry( "Off",  0 );
 	glutAddMenuEntry( "On",   1 );
 
+	int orbitmenu = glutCreateMenu(DoOrbitMenu);
+	glutAddMenuEntry("Off", 0);
+	glutAddMenuEntry("On", 1);
+
 	int projmenu = glutCreateMenu( DoProjectMenu );
 	glutAddMenuEntry( "Orthographic",  ORTHO );
 	glutAddMenuEntry( "Perspective",   PERSP );
@@ -597,6 +616,7 @@ InitMenus( )
 	glutAddSubMenu(   "Projection",    projmenu );
 	glutAddMenuEntry( "Reset",         RESET );
 	glutAddSubMenu(   "Debug",         debugmenu);
+	glutAddSubMenu(	 "Orbit",          orbitmenu);
 	glutAddMenuEntry( "Quit",          QUIT );
 
 // attach the pop-up menu to the right mouse button:
@@ -691,19 +711,21 @@ Keyboard( unsigned char c, int x, int y )
 
 	switch( c )
 	{
-		case 'o':
-		case 'O':
-			WhichProjection = ORTHO;
-			break;
-
 		case 'p':
 		case 'P':
-			WhichProjection = PERSP;
+			if (WhichProjection == PERSP) { WhichProjection = ORTHO; }
+			else { WhichProjection = PERSP; }
 			break;
 		
 		case 'r':
 		case 'R':
 			sim.reset();
+			break;
+
+		case 'o':
+		case 'O':
+			if (OrbitOn == 0) { OrbitOn = 1; }
+			else { OrbitOn = 0; }
 			break;
 
 		case 'd':
