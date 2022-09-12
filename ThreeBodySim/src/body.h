@@ -32,7 +32,7 @@ public:
 		r_i = rad;
 		m_i = mass;
 		tailLen_i = tailLen;
-		tail = new Eigen::Vector3f[tailLen];
+		tail = new tailPt[tailLen];
 		S_i = init_state;
 		bcolor = bc;
 		tcolor = tc;
@@ -55,7 +55,8 @@ public:
 	{
 		// Tail is the last tailLen states of the body. 
 		for (int i = 0; i < tailLen; i++) {
-			tail[i] = S.pos;
+			tail[i].pos = S.pos;
+			tail[i].list = getTailSegment(S.pos, S.pos);
 		}
 	}
 
@@ -104,43 +105,53 @@ public:
 			glPopMatrix();
 		}
 
-		// Tail
-		glPushMatrix();
-		glTranslatef(-center(0), -center(1), -center(2));
-		glColor3fv(&Colors[tcolor][0]);
-		glCallList(tailList);
-		glPopMatrix();
+		for (int i = 0; i < tailLen_i; i++) {
+			glPushMatrix();
+			glTranslatef(-center(0), -center(1), -center(2));
+			glColor3fv(&Colors[tcolor][0]);
+			glCallList(tail[i].list);
+			glPopMatrix();
+		}
+
 	}
 
 	void updateTail()
 	{
 		// Shift the array and add one. You could probably do it an efficient way
 		// by moving the pointer at the head of the array...but optimize later...
-		Eigen::Vector3f temp;
-		Eigen::Vector3f prev_pos = tail[0];
-		for (int i = 1; i < tailLen_i; i++) {
-			temp = tail[i];
-			tail[i] = prev_pos;
-			prev_pos = temp;
+		Eigen::Vector3f temp_pos;
+		GLuint temp_list;
+		Eigen::Vector3f prev_pos = tail[0].pos;
+		GLuint prev_list = tail[0].list;
+		for (int i = 1; i < tailLen_i-1; i++) {
+			temp_pos = tail[i].pos;
+			temp_list = tail[i].list;
+			tail[i].pos = prev_pos;
+			tail[i].list = prev_list;
+			prev_pos = temp_pos;
+			prev_list = temp_list;
 		}
-		tail[0] = S.pos;
-		getTailList();
+		// Don't create memory leaks when replacing the end of the list. 
+		tail[tailLen_i - 1].pos = prev_pos;
+		temp_list = tail[tailLen_i - 1].list;
+		tail[tailLen_i - 1].list = prev_list;
+		glDeleteLists(temp_list, 1);
+
+		tail[0].pos = S.pos;
+		tail[0].list = getTailSegment(tail[0].pos, tail[1].pos);
 	}
 
-	void getTailList()
+	GLuint getTailSegment(Eigen::Vector3f pos1, Eigen::Vector3f pos2)
 	{
-		glDeleteLists(tailList, 1);
 		GLuint obj_list = glGenLists(1);
 		glNewList(obj_list, GL_COMPILE);
 		glLineWidth((GLfloat)1.0f);
 		glBegin(GL_LINES);
-		for (int i = 0; i < tailLen_i - 1; i++) {
-			glVertex3f((GLfloat)tail[i](0), (GLfloat)tail[i](1), (GLfloat)tail[i](2));
-			glVertex3f((GLfloat)tail[i + 1](0), (GLfloat)tail[i + 1](1), (GLfloat)tail[i + 1](2));
-		}
+		glVertex3f((GLfloat)pos1(0), (GLfloat)pos1(1), (GLfloat)pos1(2));
+		glVertex3f((GLfloat)pos2(0), (GLfloat)pos2(1), (GLfloat)pos2(2));
 		glEnd();
 		glEndList();
-		tailList = obj_list;
+		return obj_list;
 	}
 
 	float findVolume()
@@ -152,8 +163,7 @@ public:
 	float r_i, m_i, r, m, V;
 	long tailLen_i, tailLen;
 	state S_i,S;
-	Eigen::Vector3f* tail;
-	//tailPt* tail;
+	tailPt* tail;
 	GLuint sphereList;
 	GLuint selectedSphereList;
 	GLuint tailList;
