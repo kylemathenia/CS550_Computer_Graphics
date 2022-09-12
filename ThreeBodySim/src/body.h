@@ -55,6 +55,7 @@ public:
 	void initList()
 	{
 		sphereList = getSphereList(r_i, 40, 40);
+		selectedSphereList = getSphereList(r_i*1.5f, 40, 40);
 	}
 
 	void draw(Eigen::Vector3f center)
@@ -67,6 +68,16 @@ public:
 		glColor3fv(&Colors[bcolor][0]);
 		glCallList(sphereList);
 		glPopMatrix();
+
+		// If selected, draw a transparent sphere that is slightly larger. 
+		glPushMatrix();
+		glEnable(GL_BLEND);
+		glColor4f(Colors[Colors::WHITE][0], Colors[Colors::WHITE][1], Colors[Colors::WHITE][2],0.3f);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+		glTranslatef(dx, dy, dz);
+		glCallList(selectedSphereList);
+		glPopMatrix();
+
 
 		glPushMatrix();
 		glTranslatef(-center(0), -center(1), -center(2));
@@ -112,6 +123,7 @@ public:
 	state S_i,S;
 	Eigen::Vector3f* tail;
 	GLuint sphereList;
+	GLuint selectedSphereList;
 	GLuint tailList;
 	enum Colors bcolor;
 	enum Colors tcolor;
