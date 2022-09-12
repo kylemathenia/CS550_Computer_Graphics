@@ -51,10 +51,10 @@ float BOXSIZE = { 2.f };
 const float ORIG_BOXSIZE = BOXSIZE;
 
 //frames per second
-const int FPS = 120;
+const int FPS = 45;
 
 // multiplication factors for input interaction:
-//  (these are known from previous experience)
+//  (these are known from previous experience)S
 const float ANGFACT = { 1. };
 const float SCLFACT = { 0.005f };
 
@@ -662,9 +662,9 @@ InitGraphics( )
 	glutTabletMotionFunc( NULL );
 	glutTabletButtonFunc( NULL );
 	glutMenuStateFunc( NULL );
+	// Using the timer to make sure the tail lengths don't change a bunch depending on the refresh rate. 
 	glutTimerFunc( 1, Animate2, 0 );
 	//glutTimerFunc(-1, NULL, 0);
-	//glutIdleFunc would crash the program after ~20 seconds. Something was going wrong with glutIdleFunc, but glutTimerFunc works.
 	//glutIdleFunc(Animate);
 	glutIdleFunc(NULL);
 
