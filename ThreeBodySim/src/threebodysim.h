@@ -49,21 +49,27 @@ public:
 
 	void initLists()
 	{
-		b1.initList();
-		b2.initList();
-		b3.initList();
+		b1.initLists();
+		b2.initLists();
+		b3.initLists();
 	}
 
-	void speedUp()
+	void changeSpeed(float multiplier)
 	{
-		speed = speed * 2;
+		speed = speed * multiplier;
 	}
 
-	void slowDown()
+	void changeSize(float rad_change)
 	{
-		speed = speed / 2;
+		for (int i = 0; i < 3; i++) {
+			if (bodyList[i]->selected == true)
+			{
+				bodyList[i]->changeSize(rad_change);
+			}
+		}
 	}
 
+	// Psuedo circular buffer.
 	void changeSelected(int change)
 	{
 		bufferChangeCount+= change;
@@ -93,7 +99,8 @@ public:
 
 	double prevTime, dt;
 	Eigen::Vector3f c;
-	Body b1, b2, b3, nullB;
+	Body b1, b2, b3;
+	Body* bodyList[3] = { &b1,&b2,&b3 };
 	Eigen::Vector3f center;
 	float speed;
 	int bufferChangeCount;

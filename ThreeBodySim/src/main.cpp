@@ -705,11 +705,11 @@ Keyboard( unsigned char c, int x, int y )
 		//case 'R':
 		//	sim.reset();
 
-		case 's':
-			sim.slowDown();
+		case '2':
+			sim.changeSpeed(0.5f);
 			break;
-		case 'S':
-			sim.speedUp();
+		case '8':
+			sim.changeSpeed(2.0f);
 			break;
 
 		case '4':
@@ -717,6 +717,13 @@ Keyboard( unsigned char c, int x, int y )
 			break;
 		case '6':
 			sim.changeSelected(1);
+			break;
+
+		case 'S':
+			sim.changeSize(0.05f);
+			break;
+		case 's':
+			sim.changeSize(-0.05f);
 			break;
 
 		case 'q':
