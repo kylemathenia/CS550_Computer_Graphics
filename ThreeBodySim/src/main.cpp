@@ -278,7 +278,7 @@ Animate( )
 
 	sim.step();
 
-	if (OrbitOn == 0) { 
+	if (OrbitOn == 1) { 
 		// The frame time is not always constant. Need to adjust with dt/frame_time ratio, otherwise jerky orbiting. 
 		Yrot += -ORBIT_SPEED * (sim.dt/FRAME_TIME);
 	}
