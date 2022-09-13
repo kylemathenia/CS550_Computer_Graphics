@@ -46,7 +46,7 @@ const int ESCAPE = { 0x1b };
 
 
 // how fast to orbit. Units of degrees/frame time. Frame time is 1/FPS;
-const float ORBIT_SPEED = 0.4f;
+const float ORBIT_SPEED = 0.2f;
 
 // size of the 3d box:
 float BOXSIZE = { 2.f };

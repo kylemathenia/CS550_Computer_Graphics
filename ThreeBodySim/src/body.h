@@ -113,29 +113,29 @@ public:
 			glPopMatrix();
 		}
 
-		////// Tail using tranformations with const thickness lines, fading with length. 
-		//for (int i = 1; i < tailLen_i; i++) {
-		//	static float maxAlpha = 1.0f;
-		//	float alpha = ((float)(tailLen - i) / (float)tailLen) * maxAlpha;
-		//	Eigen::Vector3f curPt = tail[i];
-		//	Eigen::Vector3f nextPt = tail[i-1];
-		//	float dist = findDist(tail[i], tail[i - 1]);
-		//	Eigen::Vector3f dif = nextPt - curPt;
-		//	Eigen::Vector3f rotAxis = findCrossProduct(lineVec, dif);
-		//	float ang = findAngDotProduct(dif,lineVec);
-		//	dx = (GLfloat)tail[i](0) - translation(0);
-		//	dy = (GLfloat)tail[i](1) - translation(1);
-		//	dz = (GLfloat)tail[i](2) - translation(2);
-		//	glPushMatrix();
-		//	glEnable(GL_BLEND);
-		//	glColor4f(Colors[bcolor][0], Colors[bcolor][1], Colors[bcolor][2], alpha);
-		//	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-		//	glTranslatef(dx, dy, dz);
-		//	glRotatef(-ang,rotAxis(0), rotAxis(1), rotAxis(2));
-		//	glScalef(100, dist, 100);
-		//	glCallList(lineList);
-		//	glPopMatrix();
-		//}
+		//// Tail using tranformations with const thickness lines, fading with length. 
+		for (int i = 1; i < tailLen_i; i++) {
+			static float maxAlpha = 1.0f;
+			float alpha = ((float)(tailLen - i) / (float)tailLen) * maxAlpha;
+			Eigen::Vector3f curPt = tail[i];
+			Eigen::Vector3f nextPt = tail[i-1];
+			float dist = findDist(tail[i], tail[i - 1]);
+			Eigen::Vector3f dif = nextPt - curPt;
+			Eigen::Vector3f rotAxis = findCrossProduct(lineVec, dif);
+			float ang = findAngDotProduct(dif,lineVec);
+			dx = (GLfloat)tail[i](0) - translation(0);
+			dy = (GLfloat)tail[i](1) - translation(1);
+			dz = (GLfloat)tail[i](2) - translation(2);
+			glPushMatrix();
+			glEnable(GL_BLEND);
+			glColor4f(Colors[bcolor][0], Colors[bcolor][1], Colors[bcolor][2], alpha);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+			glTranslatef(dx, dy, dz);
+			glRotatef(-ang,rotAxis(0), rotAxis(1), rotAxis(2));
+			glScalef(100, dist, 100);
+			glCallList(lineList);
+			glPopMatrix();
+		}
 
 		////// Tail using tranformations with lines. Changing the thickness of the line, fading with length.
 		//for (int i = 1; i < tailLen_i; i++) {
@@ -194,8 +194,9 @@ public:
 		//}
 
 		// Sphere tails.
-		for (int i = 0; i < tailLen_i; i+=sphereTailSpacing) {
+		for (int i = 0; i < tailLen_i- sphereTailSpacing; i+=sphereTailSpacing) {
 			int j = i + offset;
+			if (i > shiftcount) { break; }
 			dx = (GLfloat)tail[j](0) - translation(0);
 			dy = (GLfloat)tail[j](1) - translation(1);
 			dz = (GLfloat)tail[j](2) - translation(2);
@@ -231,6 +232,7 @@ public:
 		getTailList();
 		offset++;
 		if (offset % sphereTailSpacing == 0) { offset = 0; }
+		shiftcount++;
 	}
 
 	void getTailList()
@@ -321,6 +323,7 @@ public:
 	bool selected;
 	Eigen::Vector3f lineVec;
 	GLuint* lineListVec;
-	long long offset = 0;
-	int sphereTailSpacing = 10;
+	int offset = 0;
+	int sphereTailSpacing = 6;
+	long long shiftcount = -sphereTailSpacing;
 };
