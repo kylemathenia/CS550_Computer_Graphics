@@ -112,6 +112,8 @@ int		WhichProjection;		// ORTHO or PERSP
 int		Xmouse, Ymouse;			// mouse values
 float	Xrot, Yrot;				// rotation angles in degrees
 float	aspectRatio;			// aspect ratio of the current window
+int		screenHor;				// pixels in horizontal direction of monitor screen
+int		screenVert;				// pixels in horizontal direction of monitor screen
 
 //// class instances:
 // 
@@ -204,6 +206,7 @@ void	MouseMotion( int, int );
 void	Reset( );
 void	Resize( int, int );
 void	Visibility( int );
+void	GetDesktopResolution(int, int);
 
 void			Axes( float );
 unsigned char *	BmpToTexture( char *, int *, int * );
@@ -318,14 +321,6 @@ Display( )
 	// specify shading to be flat:
 	glShadeModel( GL_FLAT );
 
-	//// set the viewport to a square centered in the window:
-	//GLsizei vx = glutGet( GLUT_WINDOW_WIDTH );
-	//GLsizei vy = glutGet( GLUT_WINDOW_HEIGHT );
-	//GLsizei v = vx < vy ? vx : vy;			// minimum dimension
-	//GLint xl = ( vx - v ) / 2;
-	//GLint yb = ( vy - v ) / 2;
-	//glViewport( xl, yb,  v, v );
-
 	// set the viewport to a square centered in the window:
 	GLsizei vx = glutGet(GLUT_WINDOW_WIDTH);
 	GLsizei vy = glutGet(GLUT_WINDOW_HEIGHT);
@@ -360,16 +355,16 @@ Display( )
 
 	//axis.draw(Yrot,Xrot);
 
-	// rotate the scene:
-	glRotatef( (GLfloat)Yrot, 0., 1., 0. );
-	glRotatef( (GLfloat)Xrot, 1., 0., 0. );
-
 	//axis.draw();
 
 	// uniformly scale the scene:
 	if( Scale < MINSCALE )
 		Scale = MINSCALE;
-	glScalef( (GLfloat)Scale, (GLfloat)Scale*aspectRatio, (GLfloat)Scale );
+	glScalef( (GLfloat)Scale, (GLfloat)Scale*aspectRatio, (GLfloat)Scale);
+
+	// rotate the scene:
+	glRotatef((GLfloat)Yrot, 0., 1., 0.);
+	glRotatef((GLfloat)Xrot, 1., 0., 0.);
 
 	// set the fog parameters:
 	// (this is really here to do intensity depth cueing)
@@ -568,6 +563,21 @@ changeView()
 	view = count % int(Views::MAX_NUM_VIEWS + 1);
 }
 
+void 
+GetDesktopResolution()
+{
+	RECT desktop;
+	// Get a handle to the desktop window
+	const HWND hDesktop = GetDesktopWindow();
+	// Get the size of screen to the variable desktop
+	GetWindowRect(hDesktop, &desktop);
+	// The top left corner will have coordinates (0,0)
+	// and the bottom right corner will have coordinates
+	// (horizontal, vertical)
+	screenHor = desktop.right;
+	screenVert = desktop.bottom;
+}
+
 // return the number of seconds since the start of the program:
 float
 ElapsedSeconds( )
@@ -650,18 +660,23 @@ InitMenus( )
 	glutAttachMenu( GLUT_RIGHT_BUTTON );
 }
 
+
 // initialize the glut and OpenGL libraries:
 //	also setup display lists and callback functions
 void
 InitGraphics( )
 {
+	screenHor = 0;
+	screenVert = 0;
+	GetDesktopResolution();
 	// request the display modes:
 	// ask for red-green-blue-alpha color, double-buffering, and z-buffering:
 	glutInitDisplayMode( GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH );
 
 	// set the initial window configuration:
 	glutInitWindowPosition( 0, 0 );
-	glutInitWindowSize( INIT_WINDOW_SIZE+300, INIT_WINDOW_SIZE);
+	//glutInitWindowSize( INIT_WINDOW_SIZE+300, INIT_WINDOW_SIZE);
+	glutInitWindowSize(screenHor, screenVert);
 
 	// open the window and set its title:
 	MainWindow = glutCreateWindow( WINDOWTITLE );
