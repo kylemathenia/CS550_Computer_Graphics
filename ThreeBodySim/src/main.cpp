@@ -287,7 +287,7 @@ Animate( )
 	boxScale = (float)cos(ElapsedSeconds()) + 1 + (1 / 10);
 	sim.step();
 
-	if (OrbitOn == 1) { 
+	if (OrbitOn == 0) { 
 		Yrot += -ORBIT_SPEED;
 	}
 
@@ -297,10 +297,10 @@ Animate( )
 }
 
 void
-Animate2(int)
+AnimateAtFPS(int)
 {
 	Animate();
-	glutTimerFunc(1000 / FPS, Animate2, 0);
+	glutTimerFunc(1000 / FPS, AnimateAtFPS, 0);
 }
 
 // draw the complete scene:
@@ -348,7 +348,7 @@ Display( )
 	glLoadIdentity( );
 
 	// set the eye position, look-at position, and up-vector:
-	gluLookAt( 0., 0., 8.,     0., 0., 0.,     0., 1., 0. );
+	gluLookAt( 0., 0., 21.,     0., 0., 0.,     0., 1., 0. );
 	//glTranslatef((float)sim.center(0), (float)sim.center(1), (float)sim.center(2));
 	//gluLookAt( 0., 0., 8.,     0., 8., 0.,     0., 1., 0. );
 	//gluLookAt((float)sim.center(0), (float)sim.center(1), (float)sim.center(2) + 8, (float)sim.center(0), (float)sim.center(1), (float)sim.center(2), 0., 1., 0.);
@@ -723,7 +723,7 @@ InitGraphics( )
 	glutTabletButtonFunc( NULL );
 	glutMenuStateFunc( NULL );
 	// Using the timer to make sure the tail lengths don't change a bunch depending on the refresh rate. 
-	glutTimerFunc( 1, Animate2, 0 );
+	glutTimerFunc( 1, AnimateAtFPS, 0 );
 	//glutTimerFunc(-1, NULL, 0);
 	//glutIdleFunc(Animate);
 	glutIdleFunc(NULL);

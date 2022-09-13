@@ -82,27 +82,27 @@ public:
 	void changeSelected(int change)
 	{
 		bufferChangeCount+= change;
-		int num = bufferChangeCount % 4;
+		int num = bufferChangeCount % (Views::MAX_NUM_VIEWS+1);
 		if (num < 0) { num = num * -1; }
-		if (num == 1) {
+		if (num == 0) {
 			b1.selected = false;
-			b2.selected = true;
+			b2.selected = false;
+			b3.selected = false;
+		}
+		else if (num == 1) {
+			b1.selected = true;
+			b2.selected = false;
 			b3.selected = false;
 		}
 		else if (num == 2) {
 			b1.selected = false;
-			b2.selected = false;
-			b3.selected = true;
+			b2.selected = true;
+			b3.selected = false;
 		}
 		else if (num == 3) {
 			b1.selected = false;
 			b2.selected = false;
-			b3.selected = false;
-		}
-		else if (num == 0) {
-			b1.selected = true;
-			b2.selected = false;
-			b3.selected = false;
+			b3.selected = true;
 		}
 	}
 
