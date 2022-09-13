@@ -196,6 +196,7 @@ void	InitLists( );
 void	ChangeLists(int);
 void	ChangeLists2();
 void	InitMenus( );
+void	changeView();
 void	Keyboard( unsigned char, int, int );
 void	MouseButton( int, int, int, int );
 void	MouseMotion( int, int );
@@ -549,6 +550,14 @@ DoStrokeString( float x, float y, float z, float ht, char *s )
 	glPopMatrix( );
 }
 
+void
+changeView()
+{
+	static int count = 0;
+	count++;
+	view = count % int(Views::MAX_NUM_VIEWS + 1);
+}
+
 // return the number of seconds since the start of the program:
 float
 ElapsedSeconds( )
@@ -722,6 +731,10 @@ Keyboard( unsigned char c, int x, int y )
 		case 'p':
 			if (WhichProjection == PERSP) { WhichProjection = ORTHO; }
 			else { WhichProjection = PERSP; }
+			break;
+
+		case ' ':
+			changeView();
 			break;
 		
 		case 'r':

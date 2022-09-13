@@ -20,5 +20,6 @@ enum Views
 	CENTER,
 	BODY1,
 	BODY2,
-	BODY3
+	BODY3,
+	MAX_NUM_VIEWS = BODY3
 };
