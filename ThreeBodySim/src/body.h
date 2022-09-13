@@ -108,29 +108,32 @@ public:
 			glPopMatrix();
 		}
 
+		// Tail using tranformations. Slower, but maybe can do cool things this way. Fading line towards end. 
+		// Could instead use cylinders...
 		for (int i = 1; i < tailLen_i; i++) {
+			static float maxAlpha = 1.0f;
+			float alpha = ((float)(tailLen - i) / (float)tailLen) * maxAlpha;
 			Eigen::Vector3f curPt = tail[i];
 			Eigen::Vector3f nextPt = tail[i-1];
 			float dist = findDist(tail[i], tail[i - 1]);
 			Eigen::Vector3f dif = nextPt - curPt;
 			Eigen::Vector3f rotAxis = findCrossProduct(lineVec, dif);
-			//float ang = findAngCrossProduct(rotAxis, lineVec, dif);
 			float ang = findAngDotProduct(dif,lineVec);
 			dx = (GLfloat)tail[i](0) - translation(0);
 			dy = (GLfloat)tail[i](1) - translation(1);
 			dz = (GLfloat)tail[i](2) - translation(2);
 			glPushMatrix();
 			glEnable(GL_BLEND);
-			glColor4f(Colors[bcolor][0], Colors[bcolor][1], Colors[bcolor][2], 0.3f);
+			glColor4f(Colors[bcolor][0], Colors[bcolor][1], Colors[bcolor][2], alpha);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 			glTranslatef(dx, dy, dz);
 			glRotatef(-ang,rotAxis(0), rotAxis(1), rotAxis(2));
 			glScalef(1, dist, 1);
-			glColor3fv(&Colors[bcolor][0]);
 			glCallList(lineList);
 			glPopMatrix();
 		}
 
+		//// Sphere tails
 		//for (int i = 0; i < tailLen_i; i++) {
 		//	dx = (GLfloat)tail[i](0) - translation(0);
 		//	dy = (GLfloat)tail[i](1) - translation(1);
@@ -155,8 +158,7 @@ public:
 
 	void updateTail()
 	{
-		// Shift the array and add one. You could probably do it an efficient way
-		// by moving the pointer at the head of the array...but optimize later...
+		// Shift the array and add one. 
 		Eigen::Vector3f temp;
 		Eigen::Vector3f prev_pos = tail[0];
 		for (int i = 1; i < tailLen_i; i++) {
@@ -173,7 +175,7 @@ public:
 		glDeleteLists(tailList, 1);
 		GLuint obj_list = glGenLists(1);
 		glNewList(obj_list, GL_COMPILE);
-		glLineWidth((GLfloat)1.0f);
+		glLineWidth((GLfloat)1.5f);
 		glColor3fv(&Colors[tcolor][0]);
 		glBegin(GL_LINES);
 		for (int i = 0; i < tailLen_i - 1; i++) {
@@ -189,7 +191,7 @@ public:
 	{
 		GLuint obj_list = glGenLists(1);
 		glNewList(obj_list, GL_COMPILE);
-		glLineWidth((GLfloat)1.0f);
+		glLineWidth((GLfloat)1.5f);
 		glBegin(GL_LINES);
 		glVertex3f(0,0,0);
 		glVertex3f(lineVec(0), lineVec(1), lineVec(2));
