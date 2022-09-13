@@ -34,7 +34,7 @@
 ///////////////////////////////////////   SETUP:  //////////////////////////
 
 // title of these windows:
-const char *WINDOWTITLE = { "OpenGL / GLUT Sample -- Joe Graphics" };
+const char *WINDOWTITLE = { "Three Body Beauty -- Kyle Mathenia" };
 const char *GLUITITLE   = { "User Interface Window" };
 
 // what the glui package defines as true and false:
@@ -111,6 +111,7 @@ int		WhichColor;				// index into Colors[ ]
 int		WhichProjection;		// ORTHO or PERSP
 int		Xmouse, Ymouse;			// mouse values
 float	Xrot, Yrot;				// rotation angles in degrees
+float	aspectRatio;			// aspect ratio of the current window
 
 //// class instances:
 // 
@@ -317,13 +318,22 @@ Display( )
 	// specify shading to be flat:
 	glShadeModel( GL_FLAT );
 
+	//// set the viewport to a square centered in the window:
+	//GLsizei vx = glutGet( GLUT_WINDOW_WIDTH );
+	//GLsizei vy = glutGet( GLUT_WINDOW_HEIGHT );
+	//GLsizei v = vx < vy ? vx : vy;			// minimum dimension
+	//GLint xl = ( vx - v ) / 2;
+	//GLint yb = ( vy - v ) / 2;
+	//glViewport( xl, yb,  v, v );
+
 	// set the viewport to a square centered in the window:
-	GLsizei vx = glutGet( GLUT_WINDOW_WIDTH );
-	GLsizei vy = glutGet( GLUT_WINDOW_HEIGHT );
+	GLsizei vx = glutGet(GLUT_WINDOW_WIDTH);
+	GLsizei vy = glutGet(GLUT_WINDOW_HEIGHT);
 	GLsizei v = vx < vy ? vx : vy;			// minimum dimension
-	GLint xl = ( vx - v ) / 2;
-	GLint yb = ( vy - v ) / 2;
-	glViewport( xl, yb,  v, v );
+	GLint xl = (vx - v) / 2;
+	GLint yb = (vy - v) / 2;
+	glViewport(0, 0, vx, vy);
+	aspectRatio = (float)vx / (float)vy;
 
 	// set the viewing volume:
 	// remember that the Z clipping  values are actually
@@ -359,7 +369,7 @@ Display( )
 	// uniformly scale the scene:
 	if( Scale < MINSCALE )
 		Scale = MINSCALE;
-	glScalef( (GLfloat)Scale, (GLfloat)Scale, (GLfloat)Scale );
+	glScalef( (GLfloat)Scale, (GLfloat)Scale*aspectRatio, (GLfloat)Scale );
 
 	// set the fog parameters:
 	// (this is really here to do intensity depth cueing)
@@ -651,11 +661,12 @@ InitGraphics( )
 
 	// set the initial window configuration:
 	glutInitWindowPosition( 0, 0 );
-	glutInitWindowSize( INIT_WINDOW_SIZE, INIT_WINDOW_SIZE );
+	glutInitWindowSize( INIT_WINDOW_SIZE+300, INIT_WINDOW_SIZE);
 
 	// open the window and set its title:
 	MainWindow = glutCreateWindow( WINDOWTITLE );
 	glutSetWindowTitle( WINDOWTITLE );
+	//glutFullScreen();
 
 	// set the framebuffer clear values:
 	glClearColor( BACKCOLOR[0], BACKCOLOR[1], BACKCOLOR[2], BACKCOLOR[3] );

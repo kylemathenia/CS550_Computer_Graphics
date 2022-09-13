@@ -47,6 +47,7 @@ public:
 		tailLen = tailLen_i;
 		S = state{ S_i.pos,S_i.vel,S_i.acc };
 		V = findVolume();
+		initLists();
 		initTail();
 	}
 
