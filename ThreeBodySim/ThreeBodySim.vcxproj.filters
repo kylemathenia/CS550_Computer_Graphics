@@ -53,5 +53,8 @@
     <ClInclude Include="src\threebodysim.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\options.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

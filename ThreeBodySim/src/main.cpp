@@ -22,6 +22,7 @@
 // I split out utility functions to other files.  
 #include "utils.h"
 #include "color.h"
+#include "options.h"
 // I moved shapes, like osusphere, to a shapes dir and made a common header.
 #include "Shapes/shapes.h"
 // I created some classes.
@@ -73,28 +74,6 @@ const int LEFT   = { 4 };
 const int MIDDLE = { 2 };
 const int RIGHT  = { 1 };
 
-// which projection:
-enum Projections
-{
-	ORTHO,
-	PERSP
-};
-
-// which button:
-enum ButtonVals
-{
-	RESET,
-	QUIT
-};
-
-// which view:
-enum Views
-{
-	CENTERED,
-
-	asdf
-};
-
 // window background color (rgba):
 const GLfloat BACKCOLOR[ ] = { 0., 0., 0., 1. };
 
@@ -113,6 +92,7 @@ const GLfloat FOGEND      = { 4. };
 //#define DEMO_DEPTH_BUFFER
 
 // non-constant global variables:
+int		view;					// current view
 int		ActiveButton;			// current button that is down
 GLuint	axesList;				// list to hold the axes
 int		AxesOn;					// != 0 means to draw the axes
@@ -174,6 +154,14 @@ Body b2(1, 0.5f, 30.0f, 1000, b2InitState, Colors::CYAN, Colors::GREEN);
 state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(3.0f, -2.0f, -2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
 Body b3(2, 0.5f, 30.0f, 1000, b3InitState, Colors::RED, Colors::MAGENTA);
 
+////// Going directly right. Good size to show collisions.
+//state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(1.0f, 0.0f, 2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+//Body b1(0, 2.5f, 30.0f, 1000, b1InitState, Colors::BLUE, Colors::WHITE);
+//state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(2.0f, 2.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+//Body b2(1, 2.5f, 30.0f, 1000, b2InitState, Colors::CYAN, Colors::GREEN);
+//state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(3.0f, -2.0f, -2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+//Body b3(2, 2.5f, 30.0f, 1000, b3InitState, Colors::RED, Colors::MAGENTA);
+
 ////// Different interesting perfectly balanced conditions. 
 //state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(-3.0f, 2.0f, 2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
 //Body b1(0, 0.5f, 30.0f, 1000, b1InitState, Colors::BLUE, Colors::WHITE);
@@ -196,6 +184,7 @@ void	DoDepthFightingMenu( int );
 void	DoDepthMenu( int );
 void	DoDebugMenu( int );
 void	DoOrbitMenu( int );
+void	DoViewMenu( int );
 void	DoMainMenu( int );
 void	DoProjectMenu( int );
 void	DoShadowMenu();
@@ -388,7 +377,7 @@ Display( )
 	}
 
 	//axis.draw();
-	sim.drawBodies();
+	sim.drawBodies((Views)view);
 
 #ifdef DEMO_Z_FIGHTING
 	if( DepthFightingOn != 0 )
@@ -460,6 +449,14 @@ void
 DoOrbitMenu(int id)
 {
 	OrbitOn = id;
+	glutSetWindow(MainWindow);
+	glutPostRedisplay();
+}
+
+void
+DoViewMenu(int id)
+{
+	view = id;
 	glutSetWindow(MainWindow);
 	glutPostRedisplay();
 }
@@ -600,6 +597,12 @@ InitMenus( )
 	glutAddMenuEntry("Off", 0);
 	glutAddMenuEntry("On", 1);
 
+	int viewmenu = glutCreateMenu(DoViewMenu);
+	glutAddMenuEntry("Center", (int)Views::CENTER);
+	glutAddMenuEntry("Body 1", (int)Views::BODY1);
+	glutAddMenuEntry("Body 2", (int)Views::BODY2);
+	glutAddMenuEntry("Body 3", (int)Views::BODY3);
+
 	int projmenu = glutCreateMenu( DoProjectMenu );
 	glutAddMenuEntry( "Orthographic",  ORTHO );
 	glutAddMenuEntry( "Perspective",   PERSP );
@@ -620,7 +623,8 @@ InitMenus( )
 	glutAddSubMenu(   "Projection",    projmenu );
 	glutAddMenuEntry( "Reset",         RESET );
 	glutAddSubMenu(   "Debug",         debugmenu);
-	glutAddSubMenu(	 "Orbit",          orbitmenu);
+	glutAddSubMenu(	  "Orbit",         orbitmenu);
+	glutAddSubMenu(   "View",          viewmenu);
 	glutAddMenuEntry( "Quit",          QUIT );
 
 // attach the pop-up menu to the right mouse button:

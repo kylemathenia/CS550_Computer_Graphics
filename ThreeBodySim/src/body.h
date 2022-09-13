@@ -60,6 +60,7 @@ public:
 
 	void changeSize(float rad_change)
 	{
+		if (r + rad_change < 0) { return; }
 		float prev_V = V;
 		r = r + rad_change;
 		V = findVolume();
@@ -81,11 +82,11 @@ public:
 		initLists();
 	}
 
-	void draw(Eigen::Vector3f center)
+	void draw(Eigen::Vector3f translation)
 	{
-		GLfloat dx = (GLfloat)S.pos(0) - center(0);
-		GLfloat dy = (GLfloat)S.pos(1) - center(1);
-		GLfloat dz = (GLfloat)S.pos(2) - center(2);
+		GLfloat dx = (GLfloat)S.pos(0) - translation(0);
+		GLfloat dy = (GLfloat)S.pos(1) - translation(1);
+		GLfloat dz = (GLfloat)S.pos(2) - translation(2);
 		glPushMatrix();
 		glTranslatef(dx,dy,dz);
 		glColor3fv(&Colors[bcolor][0]);
@@ -105,7 +106,7 @@ public:
 
 		// Tail
 		glPushMatrix();
-		glTranslatef(-center(0), -center(1), -center(2));
+		glTranslatef(-translation(0), -translation(1), -translation(2));
 		glCallList(tailList);
 		glPopMatrix();
 	}
