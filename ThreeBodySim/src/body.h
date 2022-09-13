@@ -105,6 +105,21 @@ public:
 			glPopMatrix();
 		}
 
+		for (int i = 0; i < tailLen_i; i++) {
+			dx = (GLfloat)tail[i](0) - translation(0);
+			dy = (GLfloat)tail[i](1) - translation(1);
+			dz = (GLfloat)tail[i](2) - translation(2);
+			glPushMatrix();
+			glEnable(GL_BLEND);
+			glColor4f(Colors[bcolor][0], Colors[bcolor][1], Colors[bcolor][2], 0.3f);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+			glTranslatef(dx, dy, dz);
+			glScalef(0.5f, 0.5f, 0.5f);
+			glColor3fv(&Colors[bcolor][0]);
+			glCallList(sphereList);
+			glPopMatrix();
+		}
+
 		// Tail
 		glPushMatrix();
 		glTranslatef(-translation(0), -translation(1), -translation(2));

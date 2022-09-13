@@ -44,8 +44,9 @@ const int GLUIFALSE = { false };
 // the escape key:
 const int ESCAPE = { 0x1b };
 
-// initial window size:
-const int INIT_WINDOW_SIZE = { 600 };
+
+// how fast to orbit:
+const float ORBIT_SPEED = 0.6f;
 
 // size of the 3d box:
 float BOXSIZE = { 2.f };
@@ -112,8 +113,8 @@ int		WhichProjection;		// ORTHO or PERSP
 int		Xmouse, Ymouse;			// mouse values
 float	Xrot, Yrot;				// rotation angles in degrees
 float	aspectRatio;			// aspect ratio of the current window
-int		screenHor;				// pixels in horizontal direction of monitor screen
-int		screenVert;				// pixels in horizontal direction of monitor screen
+int		initWindowX;				// pixels in horizontal direction of monitor screen
+int		initWindowY;				// pixels in horizontal direction of monitor screen
 
 //// class instances:
 // 
@@ -287,7 +288,7 @@ Animate( )
 	sim.step();
 
 	if (OrbitOn == 1) { 
-		Yrot += -.6;
+		Yrot += -ORBIT_SPEED;
 	}
 
 	// force a call to Display( ) next time it is convenient:
@@ -571,11 +572,8 @@ GetDesktopResolution()
 	const HWND hDesktop = GetDesktopWindow();
 	// Get the size of screen to the variable desktop
 	GetWindowRect(hDesktop, &desktop);
-	// The top left corner will have coordinates (0,0)
-	// and the bottom right corner will have coordinates
-	// (horizontal, vertical)
-	screenHor = desktop.right;
-	screenVert = desktop.bottom;
+	initWindowX = desktop.right;
+	initWindowY = desktop.bottom;
 }
 
 // return the number of seconds since the start of the program:
@@ -666,8 +664,6 @@ InitMenus( )
 void
 InitGraphics( )
 {
-	screenHor = 0;
-	screenVert = 0;
 	GetDesktopResolution();
 	// request the display modes:
 	// ask for red-green-blue-alpha color, double-buffering, and z-buffering:
@@ -676,7 +672,7 @@ InitGraphics( )
 	// set the initial window configuration:
 	glutInitWindowPosition( 0, 0 );
 	//glutInitWindowSize( INIT_WINDOW_SIZE+300, INIT_WINDOW_SIZE);
-	glutInitWindowSize(screenHor, screenVert);
+	glutInitWindowSize(initWindowX, initWindowY);
 
 	// open the window and set its title:
 	MainWindow = glutCreateWindow( WINDOWTITLE );
