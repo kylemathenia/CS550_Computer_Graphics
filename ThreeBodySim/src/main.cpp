@@ -45,15 +45,17 @@ const int GLUIFALSE = { false };
 const int ESCAPE = { 0x1b };
 
 
-// how fast to orbit:
-const float ORBIT_SPEED = 0.6f;
+// how fast to orbit. Units of degrees/frame time. Frame time is 1/FPS;
+const float ORBIT_SPEED = 0.4f;
 
 // size of the 3d box:
 float BOXSIZE = { 2.f };
 const float ORIG_BOXSIZE = BOXSIZE;
 
 //frames per second
-const int FPS = 45;
+const int FPS = 60;
+
+const float FRAME_TIME = 1 / (float)FPS;
 
 // multiplication factors for input interaction:
 //  (these are known from previous experience)S
@@ -115,6 +117,8 @@ float	Xrot, Yrot;				// rotation angles in degrees
 float	aspectRatio;			// aspect ratio of the current window
 int		initWindowX;				// pixels in horizontal direction of monitor screen
 int		initWindowY;				// pixels in horizontal direction of monitor screen
+float	prevTime = 0;
+
 
 //// class instances:
 // 
@@ -210,16 +214,6 @@ void	Visibility( int );
 void	GetDesktopResolution(int, int);
 
 void			Axes( float );
-unsigned char *	BmpToTexture( char *, int *, int * );
-void			HsvRgb( float[3], float [3] );
-int				ReadInt( FILE * );
-short			ReadShort( FILE * );
-
-void			Cross(float[3], float[3], float[3]);
-float			Dot(float [3], float [3]);
-float			Unit(float [3], float [3]);
-
-
 
 
 ///////////////////////////////////////   Main Program:  //////////////////////////
@@ -282,13 +276,11 @@ Animate( )
 	//ms %= MS_IN_THE_ANIMATION_CYCLE;				// milliseconds in the range 0 to MS_IN_THE_ANIMATION_CYCLE-1
 	//Time = (float)ms / (float)MS_IN_THE_ANIMATION_CYCLE;        // [ 0., 1. )
 
-	//sim.step()
-
-	boxScale = (float)cos(ElapsedSeconds()) + 1 + (1 / 10);
 	sim.step();
 
 	if (OrbitOn == 0) { 
-		Yrot += -ORBIT_SPEED;
+		// The frame time is not always constant. Need to adjust with dt/frame_time ratio, otherwise jerky orbiting. 
+		Yrot += -ORBIT_SPEED * (sim.dt/FRAME_TIME);
 	}
 
 	// force a call to Display( ) next time it is convenient:

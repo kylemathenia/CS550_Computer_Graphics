@@ -39,6 +39,7 @@ public:
 		tcolor = tc;
 		selected = false;
 		lineVec = Eigen::Vector3f(0.0f, 1.0f, 0.0f);
+		lineListVec = new GLuint[tailLen];
 		hardReset();
 	};
 
@@ -76,13 +77,17 @@ public:
 	{
 		sphereList = getSphereList(r, 40, 40);
 		selectedSphereList = getSphereList(r*1.5f, 40, 40);
-		lineList = getLineList();
+		coneList = getConeList(1, 1, 1, 15, 15,false,false);
+		lineList = getLineList(1.5f);
+		getLineListVec(3.0f);
 	}
 
 	void changeLists()
 	{
 		glDeleteLists(sphereList, 1);
 		glDeleteLists(selectedSphereList, 1);
+		glDeleteLists(coneList, 1);
+		glDeleteLists(lineList, 1);
 		initLists();
 	}
 
@@ -108,46 +113,102 @@ public:
 			glPopMatrix();
 		}
 
-		// Tail using tranformations. Slower, but maybe can do cool things this way. Fading line towards end. 
-		// Could instead use cylinders...
-		for (int i = 1; i < tailLen_i; i++) {
-			static float maxAlpha = 1.0f;
-			float alpha = ((float)(tailLen - i) / (float)tailLen) * maxAlpha;
-			Eigen::Vector3f curPt = tail[i];
-			Eigen::Vector3f nextPt = tail[i-1];
-			float dist = findDist(tail[i], tail[i - 1]);
-			Eigen::Vector3f dif = nextPt - curPt;
-			Eigen::Vector3f rotAxis = findCrossProduct(lineVec, dif);
-			float ang = findAngDotProduct(dif,lineVec);
-			dx = (GLfloat)tail[i](0) - translation(0);
-			dy = (GLfloat)tail[i](1) - translation(1);
-			dz = (GLfloat)tail[i](2) - translation(2);
-			glPushMatrix();
-			glEnable(GL_BLEND);
-			glColor4f(Colors[bcolor][0], Colors[bcolor][1], Colors[bcolor][2], alpha);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-			glTranslatef(dx, dy, dz);
-			glRotatef(-ang,rotAxis(0), rotAxis(1), rotAxis(2));
-			glScalef(1, dist, 1);
-			glCallList(lineList);
-			glPopMatrix();
-		}
-
-		//// Sphere tails
-		//for (int i = 0; i < tailLen_i; i++) {
+		////// Tail using tranformations with const thickness lines, fading with length. 
+		//for (int i = 1; i < tailLen_i; i++) {
+		//	static float maxAlpha = 1.0f;
+		//	float alpha = ((float)(tailLen - i) / (float)tailLen) * maxAlpha;
+		//	Eigen::Vector3f curPt = tail[i];
+		//	Eigen::Vector3f nextPt = tail[i-1];
+		//	float dist = findDist(tail[i], tail[i - 1]);
+		//	Eigen::Vector3f dif = nextPt - curPt;
+		//	Eigen::Vector3f rotAxis = findCrossProduct(lineVec, dif);
+		//	float ang = findAngDotProduct(dif,lineVec);
 		//	dx = (GLfloat)tail[i](0) - translation(0);
 		//	dy = (GLfloat)tail[i](1) - translation(1);
 		//	dz = (GLfloat)tail[i](2) - translation(2);
 		//	glPushMatrix();
 		//	glEnable(GL_BLEND);
-		//	glColor4f(Colors[bcolor][0], Colors[bcolor][1], Colors[bcolor][2], 0.3f);
+		//	glColor4f(Colors[bcolor][0], Colors[bcolor][1], Colors[bcolor][2], alpha);
 		//	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 		//	glTranslatef(dx, dy, dz);
-		//	glScalef(0.5f, 0.5f, 0.5f);
-		//	glColor3fv(&Colors[bcolor][0]);
-		//	glCallList(sphereList);
+		//	glRotatef(-ang,rotAxis(0), rotAxis(1), rotAxis(2));
+		//	glScalef(100, dist, 100);
+		//	glCallList(lineList);
 		//	glPopMatrix();
 		//}
+
+		////// Tail using tranformations with lines. Changing the thickness of the line, fading with length.
+		//for (int i = 1; i < tailLen_i; i++) {
+		//	static float maxAlpha = 1.0f;
+		//	static float maxWidth = 3.0f;
+		//	float percentComplete = ((float)(tailLen - i) / (float)tailLen);
+		//	float alpha = percentComplete * maxAlpha;
+		//	float width = percentComplete * maxWidth;
+		//	Eigen::Vector3f curPt = tail[i];
+		//	Eigen::Vector3f nextPt = tail[i-1];
+		//	float dist = findDist(tail[i], tail[i - 1]);
+		//	Eigen::Vector3f dif = nextPt - curPt;
+		//	Eigen::Vector3f rotAxis = findCrossProduct(lineVec, dif);
+		//	float ang = findAngDotProduct(dif,lineVec);
+		//	dx = (GLfloat)tail[i](0) - translation(0);
+		//	dy = (GLfloat)tail[i](1) - translation(1);
+		//	dz = (GLfloat)tail[i](2) - translation(2);
+		//	glPushMatrix();
+		//	glEnable(GL_BLEND);
+		//	glColor4f(Colors[bcolor][0], Colors[bcolor][1], Colors[bcolor][2], alpha);
+		//	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+		//	glTranslatef(dx, dy, dz);
+		//	glRotatef(-ang,rotAxis(0), rotAxis(1), rotAxis(2));
+		//	glScalef(100, dist, 100);
+		//	glCallList(lineListVec[i]);
+		//	glPopMatrix();
+		//}
+
+		////Tail using tranformations with cylinders, fading with length. 
+		//for (int i = 1; i < tailLen_i; i++) {
+		//	static float maxAlpha = 1.0f;
+		//	static float maxScale = 0.4f;
+		//	float percentComplete = ((float)(tailLen - i) / (float)tailLen);
+		//	float alpha = percentComplete * maxAlpha;
+		//	float scale = percentComplete * maxScale;
+		//	Eigen::Vector3f curPt = tail[i];
+		//	Eigen::Vector3f nextPt = tail[i - 1];
+		//	float dist = findDist(tail[i], tail[i - 1]);
+		//	Eigen::Vector3f dif = nextPt - curPt;
+		//	Eigen::Vector3f rotAxis = findCrossProduct(lineVec, dif);
+		//	float ang = findAngDotProduct(dif, lineVec);
+		//	dx = (GLfloat)tail[i](0) - translation(0);
+		//	dy = (GLfloat)tail[i](1) - translation(1);
+		//	dz = (GLfloat)tail[i](2) - translation(2);
+		//	glPushMatrix();
+		//	glEnable(GL_BLEND);
+		//	glColor4f(Colors[bcolor][0], Colors[bcolor][1], Colors[bcolor][2], alpha);
+		//	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+		//	glTranslatef(dx, dy, dz);
+		//	glRotatef(-ang, rotAxis(0), rotAxis(1), rotAxis(2));
+		//	glScalef(scale, dist*1.01f, scale);
+		//	//glScalef(0.1, dist * 0.9f, 0.1f);
+		//	//glScalef(0.1, dist, 0.1f);
+		//	glCallList(coneList);
+		//	glPopMatrix();
+		//}
+
+		// Sphere tails.
+		for (int i = 0; i < tailLen_i; i+=sphereTailSpacing) {
+			int j = i + offset;
+			dx = (GLfloat)tail[j](0) - translation(0);
+			dy = (GLfloat)tail[j](1) - translation(1);
+			dz = (GLfloat)tail[j](2) - translation(2);
+			glPushMatrix();
+			glEnable(GL_BLEND);
+			glColor4f(Colors[bcolor][0], Colors[bcolor][1], Colors[bcolor][2], 0.3f);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+			glTranslatef(dx, dy, dz);
+			glScalef(0.5f, 0.5f, 0.5f);
+			glColor3fv(&Colors[bcolor][0]);
+			glCallList(sphereList);
+			glPopMatrix();
+		}
 
 		//// Tail
 		//glPushMatrix();
@@ -168,6 +229,8 @@ public:
 		}
 		tail[0] = S.pos;
 		getTailList();
+		offset++;
+		if (offset % sphereTailSpacing == 0) { offset = 0; }
 	}
 
 	void getTailList()
@@ -187,17 +250,26 @@ public:
 		tailList = obj_list;
 	}
 
-	GLuint getLineList()
+	GLuint getLineList(float width)
 	{
 		GLuint obj_list = glGenLists(1);
 		glNewList(obj_list, GL_COMPILE);
-		glLineWidth((GLfloat)1.5f);
+		glLineWidth((GLfloat)width);
 		glBegin(GL_LINES);
 		glVertex3f(0,0,0);
 		glVertex3f(lineVec(0), lineVec(1), lineVec(2));
 		glEnd();
 		glEndList();
 		return obj_list;
+	}
+
+	void getLineListVec(float maxWidth)
+	{
+		for (int i = 0; i < tailLen_i; i++) {
+			float percentComplete = ((float)(tailLen - i) / (float)tailLen);
+			float width = percentComplete * maxWidth;
+			lineListVec[i] = getLineList(width);
+		}
 	}
 
 	float findVolume()
@@ -243,9 +315,12 @@ public:
 	long tailLen_i, tailLen;
 	state S_i,S;
 	Eigen::Vector3f* tail;
-	GLuint sphereList, selectedSphereList, tailList, lineList;
+	GLuint sphereList, selectedSphereList, coneList, tailList, lineList;
 	enum Colors bcolor;
 	enum Colors tcolor;
 	bool selected;
 	Eigen::Vector3f lineVec;
+	GLuint* lineListVec;
+	long long offset = 0;
+	int sphereTailSpacing = 10;
 };

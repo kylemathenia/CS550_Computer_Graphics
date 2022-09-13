@@ -4,16 +4,10 @@
 #include <math.h>
 #include "glew.h"
 #include <GL/gl.h>
+#include "shapeutils.h"
 
 int		NumLngs, NumLats;
 struct point* Pts;
-
-struct point
-{
-	float x, y, z;		// coordinates
-	float nx, ny, nz;	// surface normal
-	float s, t;		// texture coords
-};
 
 inline
 struct point*
@@ -24,15 +18,6 @@ struct point*
 	if (lat > NumLats - 1)	lat -= (NumLats - 1);
 	if (lng > NumLngs - 1)	lng -= (NumLngs - 0);
 	return &Pts[NumLngs * lat + lng];
-}
-
-inline
-void
-DrawPoint(struct point* p)
-{
-	glNormal3fv(&p->nx);
-	glTexCoord2fv(&p->s);
-	glVertex3fv(&p->x);
 }
 
 void

@@ -22,6 +22,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Shapes\axes.cpp" />
     <ClCompile Include="src\Shapes\cube.cpp" />
+    <ClCompile Include="src\Shapes\osucone.cpp" />
     <ClCompile Include="src\Shapes\osusphere.cpp" />
     <ClCompile Include="src\utils.cpp" />
   </ItemGroup>
@@ -31,6 +32,7 @@
     <ClInclude Include="src\color.h" />
     <ClInclude Include="src\freeglut.h" />
     <ClInclude Include="src\options.h" />
+    <ClInclude Include="src\Shapes\shapeutils.h" />
     <ClInclude Include="src\Shapes\shapes.h" />
     <ClInclude Include="src\threebodysim.h" />
     <ClInclude Include="src\utils.h" />
