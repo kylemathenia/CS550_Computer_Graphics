@@ -47,9 +47,6 @@
     <ClInclude Include="src\color.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\freeglut.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\threebodysim.h">
       <Filter>Header Files</Filter>
     </ClInclude>

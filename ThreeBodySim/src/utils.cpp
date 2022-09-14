@@ -4,6 +4,10 @@
 #include <ctype.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include "glew.h"
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include "glut.h"
 #include "utils.h"
 #ifdef WIN32
 #include <windows.h>
@@ -355,7 +359,7 @@ Unit(float vin[3], float vout[3])
 	return dist;
 }
 
-screenSize
+pt2i
 GetDesktopResolution()
 {
 	RECT desktop;
@@ -363,5 +367,16 @@ GetDesktopResolution()
 	const HWND hDesktop = GetDesktopWindow();
 	// Get the size of screen to the variable desktop
 	GetWindowRect(hDesktop, &desktop);
-	return screenSize{ desktop.right ,desktop.bottom };
+	return pt2i{ desktop.right ,desktop.bottom };
+}
+
+// return the number of seconds since the start of the program:
+float
+ElapsedSeconds()
+{
+	// get # of milliseconds since the start of the program:
+	int ms = glutGet(GLUT_ELAPSED_TIME);
+
+	// convert it to seconds:
+	return (float)ms / 1000.f;
 }

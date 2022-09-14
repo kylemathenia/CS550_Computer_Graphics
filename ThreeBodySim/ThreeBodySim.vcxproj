@@ -30,7 +30,6 @@
     <ClInclude Include="src\axis.h" />
     <ClInclude Include="src\body.h" />
     <ClInclude Include="src\color.h" />
-    <ClInclude Include="src\freeglut.h" />
     <ClInclude Include="src\options.h" />
     <ClInclude Include="src\Shapes\shapeutils.h" />
     <ClInclude Include="src\Shapes\shapes.h" />

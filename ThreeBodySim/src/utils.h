@@ -26,10 +26,18 @@ Dot(float v1[3], float v2[3]);
 float
 Unit(float vin[3], float vout[3]);
 
-struct screenSize {
+struct pt2i {
 	int x;
 	int y;
 };
 
-screenSize
+struct pt2f {
+	double x;
+	double y;
+};
+
+pt2i
 GetDesktopResolution();
+
+float
+ElapsedSeconds();

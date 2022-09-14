@@ -28,11 +28,11 @@
 #include "threebodysim.h"
 
 
-bool usePresetConditions = false;
-// Reduce tail length if poor performance
+/* Reduce tail length or frames per second (FPS) if poor performance. */
 const int TAIL_LEN = 500;
+const int FPS = 60;
 
-////// ##################### Initial Conditions ##################### //////
+////// ##################### INITIAL CONDITIONS ##################### //////
 
 ///*Edit here*/
 //// Body 1
@@ -122,13 +122,13 @@ Body b3(2, 0.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA);
 //Body b3(2, 0.5f, 30.0f, 1000, b3InitState, Colors::RED, Colors::MAGENTA);
 
 
-////// ##################### Objects ##################### //////
+////// ##################### OBJECTS ##################### //////
 
 ThreeBodySim sim(b1, b2, b3);
 Axis axis(3);
 
 
-////// ##################### Const Globals ##################### //////
+////// ##################### CONSTANT GLOBALS ##################### //////
 // title of these windows:
 const char *WINDOWTITLE = { "Three Body Beauty -- Kyle Mathenia" };
 const char *GLUITITLE   = { "User Interface Window" };
@@ -137,12 +137,9 @@ const int GLUITRUE  = { true  };
 const int GLUIFALSE = { false };
 // how fast to orbit. Units of degrees/frame period.
 const float ORBIT_SPEED = 0.2f;
-// frames per second
-const int FPS = 60;
 // seconds per frame
 const float FRAME_PERIOD = 1 / (float)FPS;
-// multiplication factors for input interaction:
-//  (these are known from previous experience)S
+// multiplication factors for input interaction.
 const float ANGFACT = { 1. };
 const float SCLFACT = { 0.005f };
 // minimum allowable scale factor:
@@ -151,60 +148,56 @@ const float MINSCALE = { 0.05f };
 const GLfloat BACKCOLOR[ ] = { 0., 0., 0., 1. };
 
 
-////// ##################### Non-const Globals ##################### //////
+////// ##################### NON-CONSTANT GLOBALS ##################### //////
 
 int		whichView;
 int		whichProjection;
 int		axesOn;
 int		debugOn;
 int		orbitOn;
-screenSize screen;
 int		mainWindow;				// window id for main graphics window
 float	scale;					// scaling factor
 int		whichColor;				// index into Colors[ ]
-int		mouseX, mouseY;			// mouse values
-float	rotX, rotY;				// rotation angles in degrees
+pt2i	mouse;					// mouse location in pixels
+pt2f	rot;					// rotation angles in degrees
 float	aspectRatio;			// aspect ratio of the glut window
 int		tailOption;				// option selected for tail
 int		activeButton;			// current button that is down
 
 
-// function prototypes:
-void	Animate( );
+////// ##################### FUNCTION PROTOTYPES ##################### //////
+// main functions
+void	InitGraphics();
+void	InitLists();
+void	InitMenus();
 void	Display( );
-void	DoAxesMenu( int );
-void	DoColorMenu( int );
-void	DoDebugMenu( int );
-void	DoOrbitMenu( int );
-void	DoViewMenu( int );
+void	Animate();
+void	AnimateAtFPS(int);
+// ui callbacks
+void	KeyCallback(unsigned char, int, int);
+void	MouseButtonCallback(int, int, int, int);
+void	MouseMotionCallback(int, int);
+void	ResizeCallback(int, int);
+void	VisibilityCallback(int);
+// menu callbacks
+void	DoAxesMenu(int);
+void	DoColorMenu(int);
+void	DoDebugMenu(int);
+void	DoOrbitMenu(int);
+void	DoViewMenu(int);
 void	DoTailMenu(int);
-void	DoMainMenu( int );
-void	DoProjectMenu( int );
-void	DoShadowMenu();
-void	DoRasterString( float, float, float, char * );
-void	DoStrokeString( float, float, float, float, char * );
-float	ElapsedSeconds( );
-void	InitGraphics( );
-void	InitLists( );
-void	ChangeLists(int);
-void	ChangeLists2();
-void	InitMenus( );
-void	changeView();
-void	Keyboard( unsigned char, int, int );
-void	MouseButton( int, int, int, int );
-void	MouseMotion( int, int );
-void	DoResetMenu( );
+void	DoMainMenu(int);
+void	DoProjectMenu(int);
+void	DoResetMenu();
 void	DoSoftResetMenu();
-void	Resize( int, int );
-void	Visibility( int );
+void	DoRasterString(float, float, float, char*);
+void	DoStrokeString(float, float, float, float, char*);
+// keyboard callbacks
+void	DoViewKey();
 
-void	Axes( float );
 
+////// ##################### MAIN PROGRAM ##################### //////
 
-///////////////////////////////////////   Main Program:  //////////////////////////
-////// ##################### KEYBOARD CALLBACKS ##################### //////
-
-// main program:
 int
 main( int argc, char *argv[ ] )
 {
@@ -229,6 +222,144 @@ main( int argc, char *argv[ ] )
 	return 0;
 }
 
+
+// Moves things that will be drawn in the display function.
+void
+Animate()
+{
+	sim.step();
+	glutSetWindow(mainWindow);
+	glutPostRedisplay();
+}
+
+// Moves things that will be drawn in the display function at a certain rate. 
+void
+AnimateAtFPS(int)
+{
+	// The actual frame period is not always constant. Need to adjust with dt/frame_time ratio, otherwise jerky orbiting. 
+	if (orbitOn == 1) { rot.y += -ORBIT_SPEED * (sim.dt / FRAME_PERIOD); }
+	Animate();
+	glutTimerFunc(1000 / FPS, AnimateAtFPS, 0);
+}
+
+// Draw the complete scene. Happening all the time, very fast, in the glutMainLoop()
+void
+Display()
+{
+	// set which window we want to do the graphics into
+	glutSetWindow(mainWindow);
+	// erase the background
+	glDrawBuffer(GL_BACK);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	// set the viewport to a square centered in the window:
+	GLsizei vx = glutGet(GLUT_WINDOW_WIDTH);
+	GLsizei vy = glutGet(GLUT_WINDOW_HEIGHT);
+	glViewport(0, 0, vx, vy);
+	aspectRatio = (float)vx / (float)vy;
+
+	// set the viewing volume:
+	// remember that the Z clipping  values are actually
+	// given as DISTANCES IN FRONT OF THE EYE
+	// USE gluOrtho2D( ) IF YOU ARE DOING 2D !
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	if (whichProjection == ORTHO)
+		glOrtho(-3., 3., -3., 3., 0.1, 1000.);
+	else
+		gluPerspective(90., 1., 0.1, 1000.);
+
+	// place the objects into the scene:
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	// set the eye position, look-at position, and up-vector:
+	gluLookAt(0., 0., 21., 0., 0., 0., 0., 1., 0.);
+	//glTranslatef((float)sim.center(0), (float)sim.center(1), (float)sim.center(2));
+	//gluLookAt( 0., 0., 8.,     0., 8., 0.,     0., 1., 0. );
+	//gluLookAt((float)sim.center(0), (float)sim.center(1), (float)sim.center(2) + 8, (float)sim.center(0), (float)sim.center(1), (float)sim.center(2), 0., 1., 0.);
+	//glTranslatef((float)sim.center(0), (float)sim.center(1), (float)sim.center(2));
+
+	//axis.draw(Yrot,Xrot);
+
+	//axis.draw();
+
+	// uniformly scale the scene:
+	if (scale < MINSCALE)
+		scale = MINSCALE;
+	glScalef((GLfloat)scale, (GLfloat)scale * aspectRatio, (GLfloat)scale);
+
+	// rotate the scene:
+	glRotatef((GLfloat)rot.y, 0., 1., 0.);
+	glRotatef((GLfloat)rot.x, 1., 0., 0.);
+
+
+	//axis.draw();
+	sim.drawBodies((Views)whichView, (Tails)tailOption);
+
+	//draw some gratuitous text that just rotates on top of the scene:
+	glDisable(GL_DEPTH_TEST);
+	glColor3f(0., 1., 1.);
+	DoRasterString(0., 1., 0., (char*)"Text That Moves");
+
+	// swap the double-buffered framebuffers:
+	glutSwapBuffers();
+
+	// be sure the graphics buffer has been sent:
+	// note: be sure to use glFlush( ) here, not glFinish( ) !
+	glFlush();
+}
+
+// initialize the glut and OpenGL libraries:
+//	also setup display lists and callback functions
+void
+InitGraphics()
+{
+	// request the display modes:
+	// ask for red-green-blue-alpha color, double-buffering, and z-buffering:
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
+	// set the initial window configuration:
+	glutInitWindowPosition(0, 0);
+	pt2i screen = GetDesktopResolution();
+	glutInitWindowSize(screen.x, screen.y);
+	// open the window and set its title:
+	mainWindow = glutCreateWindow(WINDOWTITLE);
+	glutSetWindowTitle(WINDOWTITLE);
+	// set the framebuffer clear values:
+	glClearColor(BACKCOLOR[0], BACKCOLOR[1], BACKCOLOR[2], BACKCOLOR[3]);
+	// set glut callbacks
+	glutSetWindow(mainWindow);
+	glutDisplayFunc(Display);
+	glutReshapeFunc(ResizeCallback);
+	glutKeyboardFunc(KeyCallback);
+	glutMouseFunc(MouseButtonCallback);
+	glutMotionFunc(MouseMotionCallback);
+	glutPassiveMotionFunc(MouseMotionCallback);
+	glutVisibilityFunc(VisibilityCallback);
+	if (FPS != 0) {
+		// Using the timer to make sure the tail lengths don't change a bunch depending on the refresh rate. 
+		glutTimerFunc(1, AnimateAtFPS, 0);
+		glutIdleFunc(NULL);
+	}
+	else {
+		// Animate as fast as possible all the time.
+		glutTimerFunc(-1, NULL, 0);
+		glutIdleFunc(Animate);
+	}
+
+	// init glew (a window must be open to do this):
+#ifdef WIN32
+	GLenum err = glewInit();
+	if (err != GLEW_OK)
+	{
+		fprintf(stderr, "glewInit Error\n");
+	}
+	else
+		fprintf(stderr, "GLEW initialized OK\n");
+	fprintf(stderr, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
+#endif
+}
+
 // initialize the display lists that will not change:
 // (a display list is a way to store opengl commands in
 //  memory so that they can be played back efficiently at a later time
@@ -241,108 +372,6 @@ InitLists()
 	axis.initList();
 }
 
-// this is where one would put code that is to be called
-// everytime the glut main loop has nothing to do
-//
-// this is typically where animation parameters are set
-//
-// do not call Display( ) from here -- let glutMainLoop( ) do it
-//glutIdleFunc(Animate) would crash the program after ~20 seconds. Something was going wrong with glutIdleFunc, but glutTimerFunc works. 
-void
-Animate( )
-{
-	sim.step();
-	if (orbitOn == 1) { 
-		// The frame time is not always constant. Need to adjust with dt/frame_time ratio, otherwise jerky orbiting. 
-		rotY += -ORBIT_SPEED * (sim.dt/FRAME_PERIOD);
-	}
-	glutSetWindow( mainWindow );
-	glutPostRedisplay( );
-}
-
-void
-AnimateAtFPS(int)
-{
-	Animate();
-	glutTimerFunc(1000 / FPS, AnimateAtFPS, 0);
-}
-
-// draw the complete scene:
-void
-Display( )
-{
-	// set which window we want to do the graphics into:
-	glutSetWindow( mainWindow );
-	// erase the background:
-	glDrawBuffer( GL_BACK );
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
-	glEnable( GL_DEPTH_TEST );
-
-	// specify shading to be flat:
-	glShadeModel( GL_FLAT );
-
-	// set the viewport to a square centered in the window:
-	GLsizei vx = glutGet(GLUT_WINDOW_WIDTH);
-	GLsizei vy = glutGet(GLUT_WINDOW_HEIGHT);
-	GLsizei v = vx < vy ? vx : vy;			// minimum dimension
-	GLint xl = (vx - v) / 2;
-	GLint yb = (vy - v) / 2;
-	glViewport(0, 0, vx, vy);
-	aspectRatio = (float)vx / (float)vy;
-
-	// set the viewing volume:
-	// remember that the Z clipping  values are actually
-	// given as DISTANCES IN FRONT OF THE EYE
-	// USE gluOrtho2D( ) IF YOU ARE DOING 2D !
-
-	glMatrixMode( GL_PROJECTION );
-	glLoadIdentity( );
-	if( whichProjection == ORTHO )
-		glOrtho( -3., 3.,     -3., 3.,     0.1, 1000. );
-	else
-		gluPerspective( 90., 1.,	0.1, 1000. );
-
-	// place the objects into the scene:
-	glMatrixMode( GL_MODELVIEW );
-	glLoadIdentity( );
-
-	// set the eye position, look-at position, and up-vector:
-	gluLookAt( 0., 0., 21.,     0., 0., 0.,     0., 1., 0. );
-	//glTranslatef((float)sim.center(0), (float)sim.center(1), (float)sim.center(2));
-	//gluLookAt( 0., 0., 8.,     0., 8., 0.,     0., 1., 0. );
-	//gluLookAt((float)sim.center(0), (float)sim.center(1), (float)sim.center(2) + 8, (float)sim.center(0), (float)sim.center(1), (float)sim.center(2), 0., 1., 0.);
-	//glTranslatef((float)sim.center(0), (float)sim.center(1), (float)sim.center(2));
-
-	//axis.draw(Yrot,Xrot);
-
-	//axis.draw();
-
-	// uniformly scale the scene:
-	if( scale < MINSCALE )
-		scale = MINSCALE;
-	glScalef( (GLfloat)scale, (GLfloat)scale*aspectRatio, (GLfloat)scale);
-
-	// rotate the scene:
-	glRotatef((GLfloat)rotY, 0., 1., 0.);
-	glRotatef((GLfloat)rotX, 1., 0., 0.);
-
-
-	//axis.draw();
-	sim.drawBodies((Views)whichView, (Tails)tailOption);
-
-	 //draw some gratuitous text that just rotates on top of the scene:
-	glDisable( GL_DEPTH_TEST );
-	glColor3f( 0., 1., 1. );
-	DoRasterString( 0., 1., 0., (char *)"Text That Moves" );
-	
-	// swap the double-buffered framebuffers:
-	glutSwapBuffers( );
-
-	// be sure the graphics buffer has been sent:
-	// note: be sure to use glFlush( ) here, not glFinish( ) !
-	glFlush( );
-}
 
 
 ////// ##################### MENU CALLBACKS ##################### //////
@@ -443,7 +472,7 @@ DoResetMenu()
 	debugOn = 1;
 	scale = 1.0;
 	whichProjection = PERSP;
-	rotX = rotY = 0.;
+	rot.x = rot.y = 0;
 	sim.reset();
 }
 
@@ -485,22 +514,11 @@ DoStrokeString( float x, float y, float z, float ht, char *s )
 ////// ##################### KEYBOARD CALLBACKS ##################### //////
 
 void
-changeView()
+DoViewKey()
 {
 	static int count = 0;
 	count++;
 	whichView = count % int(Views::MAX_NUM_VIEWS + 1);
-}
-
-// return the number of seconds since the start of the program:
-float
-ElapsedSeconds( )
-{
-	// get # of milliseconds since the start of the program:
-	int ms = glutGet( GLUT_ELAPSED_TIME );
-
-	// convert it to seconds:
-	return (float)ms / 1000.f;
 }
 
 // initialize the glui window:
@@ -559,93 +577,9 @@ InitMenus( )
 	glutAttachMenu( GLUT_RIGHT_BUTTON );
 }
 
-
-// initialize the glut and OpenGL libraries:
-//	also setup display lists and callback functions
-void
-InitGraphics( )
-{
-	screen = GetDesktopResolution();
-	// request the display modes:
-	// ask for red-green-blue-alpha color, double-buffering, and z-buffering:
-	glutInitDisplayMode( GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH );
-
-	// set the initial window configuration:
-	glutInitWindowPosition( 0, 0 );
-	//glutInitWindowSize( INIT_WINDOW_SIZE+300, INIT_WINDOW_SIZE);
-	//glutInitWindowSize(initWindowX, initWindowY);
-	glutInitWindowSize(screen.x,screen.y);
-
-	// open the window and set its title:
-	mainWindow = glutCreateWindow( WINDOWTITLE );
-	glutSetWindowTitle( WINDOWTITLE );
-	//glutFullScreen();
-
-	// set the framebuffer clear values:
-	glClearColor( BACKCOLOR[0], BACKCOLOR[1], BACKCOLOR[2], BACKCOLOR[3] );
-
-	// setup the callback functions:
-	// DisplayFunc -- redraw the window
-	// ReshapeFunc -- handle the user resizing the window
-	// KeyboardFunc -- handle a keyboard input
-	// MouseFunc -- handle the mouse button going down or up
-	// MotionFunc -- handle the mouse moving with a button down
-	// PassiveMotionFunc -- handle the mouse moving with a button up
-	// VisibilityFunc -- handle a change in window visibility
-	// EntryFunc	-- handle the cursor entering or leaving the window
-	// SpecialFunc -- handle special keys on the keyboard
-	// SpaceballMotionFunc -- handle spaceball translation
-	// SpaceballRotateFunc -- handle spaceball rotation
-	// SpaceballButtonFunc -- handle spaceball button hits
-	// ButtonBoxFunc -- handle button box hits
-	// DialsFunc -- handle dial rotations
-	// TabletMotionFunc -- handle digitizing tablet motion
-	// TabletButtonFunc -- handle digitizing tablet button hits
-	// MenuStateFunc -- declare when a pop-up menu is in use
-	// TimerFunc -- trigger something to happen a certain time from now
-	// IdleFunc -- what to do when nothing else is going on
-
-	glutSetWindow( mainWindow );
-	glutDisplayFunc( Display );
-	glutReshapeFunc( Resize );
-	glutKeyboardFunc( Keyboard );
-	glutMouseFunc( MouseButton );
-	glutMotionFunc( MouseMotion );
-	glutPassiveMotionFunc(MouseMotion);
-	//glutPassiveMotionFunc( NULL );
-	glutVisibilityFunc( Visibility );
-	glutEntryFunc( NULL );
-	glutSpecialFunc( NULL );
-	glutSpaceballMotionFunc( NULL );
-	glutSpaceballRotateFunc( NULL );
-	glutSpaceballButtonFunc( NULL );
-	glutButtonBoxFunc( NULL );
-	glutDialsFunc( NULL );
-	glutTabletMotionFunc( NULL );
-	glutTabletButtonFunc( NULL );
-	glutMenuStateFunc( NULL );
-	// Using the timer to make sure the tail lengths don't change a bunch depending on the refresh rate. 
-	glutTimerFunc( 1, AnimateAtFPS, 0 );
-	//glutTimerFunc(-1, NULL, 0);
-	//glutIdleFunc(Animate);
-	glutIdleFunc(NULL);
-
-	// init glew (a window must be open to do this):
-#ifdef WIN32
-	GLenum err = glewInit( );
-	if( err != GLEW_OK )
-	{
-		fprintf( stderr, "glewInit Error\n" );
-	}
-	else
-		fprintf( stderr, "GLEW initialized OK\n" );
-	fprintf( stderr, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
-#endif
-}
-
 // the keyboard callback:
 void
-Keyboard( unsigned char c, int x, int y )
+KeyCallback( unsigned char c, int x, int y )
 {
 	if( debugOn != 0 )
 		fprintf( stderr, "Keyboard: '%c' (0x%0x)\n", c, c );
@@ -658,7 +592,7 @@ Keyboard( unsigned char c, int x, int y )
 			break;
 
 		case ' ':
-			changeView();
+			DoViewKey();
 			break;
 		
 		case 'r':
@@ -708,7 +642,7 @@ Keyboard( unsigned char c, int x, int y )
 
 // called when the mouse button transitions down or up:
 void
-MouseButton( int button, int state, int x, int y )
+MouseButtonCallback( int button, int state, int x, int y )
 {
 	int b = 0;			// LEFT, MIDDLE, or RIGHT
 
@@ -743,8 +677,8 @@ MouseButton( int button, int state, int x, int y )
 
 	// button down sets the bit, up clears the bit:
 	if( state == GLUT_DOWN ){
-		mouseX = x;
-		mouseY = y;
+		mouse.x = x;
+		mouse.y = y;
 		activeButton |= b;		// set the proper bit
 	} 
 	else{
@@ -758,18 +692,18 @@ MouseButton( int button, int state, int x, int y )
 
 // called when the mouse moves while a button is down:
 void
-MouseMotion( int x, int y )
+MouseMotionCallback( int x, int y )
 {
 	if( debugOn != 0 )
 		fprintf( stderr, "MouseMotion: %d, %d\n", x, y );
 
-	int dx = x - mouseX;		// change in mouse coords
-	int dy = y - mouseY;
+	int dx = x - mouse.x;		// change in mouse coords
+	int dy = y - mouse.y;
 
 	if( ( activeButton & EventEnums::LEFT ) != 0 )
 	{
-		rotX += ( ANGFACT*dy );
-		rotY += ( ANGFACT*dx );
+		rot.x += ( ANGFACT*dy );
+		rot.y += ( ANGFACT*dx );
 	}
 
 	if( ( activeButton & EventEnums::MIDDLE ) != 0 )
@@ -780,8 +714,8 @@ MouseMotion( int x, int y )
 			scale = MINSCALE;
 	}
 
-	mouseX = x;			// new current position
-	mouseY = y;
+	mouse.x = x;			// new current position
+	mouse.y = y;
 
 	glutSetWindow( mainWindow );
 	glutPostRedisplay( );
@@ -789,7 +723,7 @@ MouseMotion( int x, int y )
 
 // called when user resizes the window:
 void
-Resize( int width, int height )
+ResizeCallback( int width, int height )
 {
 	if( debugOn != 0 )
 		fprintf( stderr, "ReSize: %d, %d\n", width, height );
@@ -802,7 +736,7 @@ Resize( int width, int height )
 
 // handle a change to the window's visibility:
 void
-Visibility ( int state )
+VisibilityCallback ( int state )
 {
 	if( debugOn != 0 )
 		fprintf( stderr, "Visibility: %d\n", state );
