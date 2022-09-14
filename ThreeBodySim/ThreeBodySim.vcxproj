@@ -19,23 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Shapes\axes.cpp" />
-    <ClCompile Include="src\Shapes\cube.cpp" />
-    <ClCompile Include="src\Shapes\osucone.cpp" />
-    <ClCompile Include="src\Shapes\osusphere.cpp" />
-    <ClCompile Include="src\utils.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\axis.h" />
-    <ClInclude Include="src\body.h" />
-    <ClInclude Include="src\color.h" />
-    <ClInclude Include="src\freeglut.h" />
-    <ClInclude Include="src\options.h" />
-    <ClInclude Include="src\Shapes\shapeutils.h" />
-    <ClInclude Include="src\Shapes\shapes.h" />
-    <ClInclude Include="src\threebodysim.h" />
-    <ClInclude Include="src\utils.h" />
+    <ClCompile Include="src\sample.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
