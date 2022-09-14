@@ -1,81 +1,53 @@
+// standard
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <chrono>
 #include <iostream>
-
 #define _USE_MATH_DEFINES
 #include <math.h>
-
 #ifdef WIN32
 #include <windows.h>
 #pragma warning(disable:4996)
 #endif
 
+// dependencies
 #include "glew.h"
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include "glut.h"
 #include "Eigen/Dense"
 
-
-// I split out utility functions to other files.  
+// src
 #include "utils.h"
 #include "color.h"
 #include "options.h"
-// I moved shapes, like osusphere, to a shapes dir and made a common header.
 #include "Shapes/shapes.h"
-// I created some classes.
 #include "body.h"
 #include "axis.h"
 #include "threebodysim.h"
 
 
-///////////////////////////////////////   SETUP:  //////////////////////////
+////// ##################### Const Globals ##################### //////
 
 // title of these windows:
 const char *WINDOWTITLE = { "Three Body Beauty -- Kyle Mathenia" };
 const char *GLUITITLE   = { "User Interface Window" };
-
 // what the glui package defines as true and false:
 const int GLUITRUE  = { true  };
 const int GLUIFALSE = { false };
-
-// the escape key:
-const int ESCAPE = { 0x1b };
-
-
-// how fast to orbit. Units of degrees/frame time. Frame time is 1/FPS;
+// how fast to orbit. Units of degrees/frame period.
 const float ORBIT_SPEED = 0.2f;
-
-// size of the 3d box:
-float BOXSIZE = { 2.f };
-const float ORIG_BOXSIZE = BOXSIZE;
-
-//frames per second
+// frames per second
 const int FPS = 60;
-
-const float FRAME_TIME = 1 / (float)FPS;
-
+// seconds per frame
+const float FRAME_PERIOD = 1 / (float)FPS;
 // multiplication factors for input interaction:
 //  (these are known from previous experience)S
 const float ANGFACT = { 1. };
 const float SCLFACT = { 0.005f };
-
 // minimum allowable scale factor:
 const float MINSCALE = { 0.05f };
-
-// scroll wheel button values:
-const int SCROLL_WHEEL_UP   = { 3 };
-const int SCROLL_WHEEL_DOWN = { 4 };
-
-// equivalent mouse movement when we click a the scroll wheel:
-const float SCROLL_WHEEL_CLICK_FACTOR = { 5. };
-
-// active mouse buttons (or them together):
-const int LEFT   = { 4 };
-const int MIDDLE = { 2 };
-const int RIGHT  = { 1 };
 
 // window background color (rgba):
 const GLfloat BACKCOLOR[ ] = { 0., 0., 0., 1. };
@@ -219,6 +191,7 @@ void	Axes( float );
 
 
 ///////////////////////////////////////   Main Program:  //////////////////////////
+////// ##################### KEYBOARD CALLBACKS ##################### //////
 
 // main program:
 int
@@ -253,14 +226,8 @@ void
 InitLists()
 {
 	glutSetWindow(MainWindow);
-	// create the objects:
-	// If adding more than one object, need to create multiple seperate lists...
-	boxList = getCubeList(BOXSIZE);
-	//b1.m_initList();
 	sim.initLists();
-	//sphereList = getSphereList(0.5f, 40, 40);
 	axis.initList();
-	//axesList = getAxesList(AXES_WIDTH);
 }
 
 // this is where one would put code that is to be called
@@ -282,7 +249,7 @@ Animate( )
 
 	if (OrbitOn == 1) { 
 		// The frame time is not always constant. Need to adjust with dt/frame_time ratio, otherwise jerky orbiting. 
-		Yrot += -ORBIT_SPEED * (sim.dt/FRAME_TIME);
+		Yrot += -ORBIT_SPEED * (sim.dt/FRAME_PERIOD);
 	}
 
 	// force a call to Display( ) next time it is convenient:
@@ -404,7 +371,7 @@ Display( )
 }
 
 
-// ##################### MENU CALLBACKS ##################### //
+////// ##################### MENU CALLBACKS ##################### //////
 
 void
 DoAxesMenu( int id )
@@ -570,7 +537,7 @@ DoStrokeString( float x, float y, float z, float ht, char *s )
 }
 
 
-// ##################### KEYBOARD CALLBACKS ##################### //
+////// ##################### KEYBOARD CALLBACKS ##################### //////
 
 void
 changeView()
@@ -803,7 +770,7 @@ Keyboard( unsigned char c, int x, int y )
 			break;
 
 		case 'q':
-		case ESCAPE:
+		case EventEnums::ESCAPE:
 			DoMainMenu( QUIT );	// will not return here
 			break;				// happy compiler
 
@@ -830,19 +797,19 @@ MouseButton( int button, int state, int x, int y )
 	switch( button )
 	{
 		case GLUT_LEFT_BUTTON:
-			b = LEFT;		break;
+			b = EventEnums::LEFT;		break;
 		case GLUT_MIDDLE_BUTTON:
-			b = MIDDLE;		break;
+			b = EventEnums::MIDDLE;		break;
 		case GLUT_RIGHT_BUTTON:
-			b = RIGHT;		break;
-		case SCROLL_WHEEL_UP:
-			Scale += SCLFACT * SCROLL_WHEEL_CLICK_FACTOR;
+			b = EventEnums::RIGHT;		break;
+		case EventEnums::SCROLL_WHEEL_UP:
+			Scale += SCLFACT * EventEnums::SCROLL_WHEEL_CLICK_FACTOR;
 			// keep object from turning inside-out or disappearing:
 			if (Scale < MINSCALE)
 				Scale = MINSCALE;
 			break;
-		case SCROLL_WHEEL_DOWN:
-			Scale -= SCLFACT * SCROLL_WHEEL_CLICK_FACTOR;
+		case EventEnums::SCROLL_WHEEL_DOWN:
+			Scale -= SCLFACT * EventEnums::SCROLL_WHEEL_CLICK_FACTOR;
 			// keep object from turning inside-out or disappearing:
 			if (Scale < MINSCALE)
 				Scale = MINSCALE;
@@ -877,13 +844,13 @@ MouseMotion( int x, int y )
 	int dx = x - Xmouse;		// change in mouse coords
 	int dy = y - Ymouse;
 
-	if( ( ActiveButton & LEFT ) != 0 )
+	if( ( ActiveButton & EventEnums::LEFT ) != 0 )
 	{
 		Xrot += ( ANGFACT*dy );
 		Yrot += ( ANGFACT*dx );
 	}
 
-	if( ( ActiveButton & MIDDLE ) != 0 )
+	if( ( ActiveButton & EventEnums::MIDDLE ) != 0 )
 	{
 		Scale += SCLFACT * (float) ( dx - dy );
 		// keep object from turning inside-out or disappearing:

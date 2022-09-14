@@ -34,3 +34,15 @@ enum Tails
 	SPHERES,
 	NONE
 };
+
+// glut buttons:
+enum EventEnums
+{
+	ESCAPE = 0x1b,
+	SCROLL_WHEEL_UP = 3,
+	SCROLL_WHEEL_DOWN = 4,
+	SCROLL_WHEEL_CLICK_FACTOR = 5,
+	LEFT = 4,
+	MIDDLE = 2,
+	RIGHT = 1
+};
