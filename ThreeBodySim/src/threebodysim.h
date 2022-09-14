@@ -42,7 +42,7 @@ public:
 		updateCenter();
 	}
 
-	void drawBodies(Views view)
+	void drawBodies(Views view,Tails tailOption)
 	{
 		Eigen::Vector3f translation;
 		if (view == Views::CENTER) { translation = center; }
@@ -51,9 +51,9 @@ public:
 		else { translation = b3.S.pos; }
 		// since we are using glScalef( ), be sure normals get unitized:
 		glEnable(GL_NORMALIZE);
-		b1.draw(translation);
-		b2.draw(translation);
-		b3.draw(translation);
+		b1.draw(translation, tailOption);
+		b2.draw(translation, tailOption);
+		b3.draw(translation, tailOption);
 	}
 
 	void initLists()

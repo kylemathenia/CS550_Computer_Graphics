@@ -96,6 +96,7 @@ const GLfloat FOGEND      = { 4. };
 
 // non-constant global variables:
 int		view;					// current view
+int		tailOption;				// option selected for tail
 int		ActiveButton;			// current button that is down
 GLuint	axesList;				// list to hold the axes
 int		AxesOn;					// != 0 means to draw the axes
@@ -115,9 +116,9 @@ int		WhichProjection;		// ORTHO or PERSP
 int		Xmouse, Ymouse;			// mouse values
 float	Xrot, Yrot;				// rotation angles in degrees
 float	aspectRatio;			// aspect ratio of the current window
-int		initWindowX;				// pixels in horizontal direction of monitor screen
-int		initWindowY;				// pixels in horizontal direction of monitor screen
-float	prevTime = 0;
+int		initWindowX;			// pixels in horizontal direction of monitor screen
+int		initWindowY;			// pixels in horizontal direction of monitor screen
+screenSize screen;
 
 
 //// class instances:
@@ -193,6 +194,7 @@ void	DoDepthMenu( int );
 void	DoDebugMenu( int );
 void	DoOrbitMenu( int );
 void	DoViewMenu( int );
+void	DoTailMenu(int);
 void	DoMainMenu( int );
 void	DoProjectMenu( int );
 void	DoShadowMenu();
@@ -208,12 +210,12 @@ void	changeView();
 void	Keyboard( unsigned char, int, int );
 void	MouseButton( int, int, int, int );
 void	MouseMotion( int, int );
-void	Reset( );
+void	DoResetMenu( );
+void	DoSoftResetMenu();
 void	Resize( int, int );
 void	Visibility( int );
-void	GetDesktopResolution(int, int);
 
-void			Axes( float );
+void	Axes( float );
 
 
 ///////////////////////////////////////   Main Program:  //////////////////////////
@@ -229,7 +231,7 @@ main( int argc, char *argv[ ] )
 	// setup all the graphics stuff:
 	InitGraphics( );
 	// init all the global variables used by Display( ):
-	Reset( );
+	DoResetMenu( );
 	// create the display structures that will not change:
 	InitLists( );
 	// setup all the user interface stuff:
@@ -376,7 +378,7 @@ Display( )
 	}
 
 	//axis.draw();
-	sim.drawBodies((Views)view);
+	sim.drawBodies((Views)view, (Tails)tailOption);
 
 #ifdef DEMO_Z_FIGHTING
 	if( DepthFightingOn != 0 )
@@ -388,30 +390,11 @@ Display( )
 	}
 #endif
 
-	// draw some gratuitous text that just rotates on top of the scene:
-	//glDisable( GL_DEPTH_TEST );
-	//glColor3f( 0., 1., 1. );
-	//DoRasterString( 0., 1., 0., (char *)"Text That Moves" );
-
-	// draw some gratuitous text that is fixed on the screen:
-	//
-	// the projection matrix is reset to define a scene whose
-	// world coordinate system goes from 0-100 in each axis
-	//
-	// this is called "percent units", and is just a convenience
-	//
-	// the modelview matrix is reset to identity as we don't
-	// want to transform these coordinates
-
-	//glDisable( GL_DEPTH_TEST );
-	//glMatrixMode( GL_PROJECTION );
-	//glLoadIdentity( );
-	//gluOrtho2D( 0., 100.,     0., 100. );
-	//glMatrixMode( GL_MODELVIEW );
-	//glLoadIdentity( );
-	//glColor3f( 1., 1., 1. );
-	//DoRasterString( 5., 5., 0., (char *)"Text That Doesn't" );
-
+	 //draw some gratuitous text that just rotates on top of the scene:
+	glDisable( GL_DEPTH_TEST );
+	glColor3f( 0., 1., 1. );
+	DoRasterString( 0., 1., 0., (char *)"Text That Moves" );
+	
 	// swap the double-buffered framebuffers:
 	glutSwapBuffers( );
 
@@ -419,6 +402,9 @@ Display( )
 	// note: be sure to use glFlush( ) here, not glFinish( ) !
 	glFlush( );
 }
+
+
+// ##################### MENU CALLBACKS ##################### //
 
 void
 DoAxesMenu( int id )
@@ -461,6 +447,14 @@ DoViewMenu(int id)
 }
 
 void
+DoTailMenu(int id)
+{
+	tailOption = id;
+	glutSetWindow(MainWindow);
+	glutPostRedisplay();
+}
+
+void
 DoDepthBufferMenu( int id )
 {
 	DepthBufferOn = id;
@@ -491,7 +485,11 @@ DoMainMenu( int id )
 	switch( id )
 	{
 		case RESET:
-			Reset( );
+			DoResetMenu( );
+			break;
+		
+		case SOFT_RESET:
+			DoSoftResetMenu();
 			break;
 
 		case QUIT:
@@ -518,6 +516,29 @@ DoProjectMenu( int id )
 	WhichProjection = id;
 	glutSetWindow( MainWindow );
 	glutPostRedisplay( );
+}
+
+void
+DoResetMenu()
+{
+	ActiveButton = 0;
+	AxesOn = 1;
+	DebugOn = 1;
+	DepthBufferOn = 1;
+	DepthFightingOn = 0;
+	DepthCueOn = 0;
+	Scale = 1.0;
+	WhichColor = WHITE;
+	WhichProjection = PERSP;
+	Xrot = Yrot = 0.;
+	boxScale = 1;
+	sim.reset();
+}
+
+void
+DoSoftResetMenu()
+{
+	sim.reset();
 }
 
 // use glut to display a string of characters using a raster font:
@@ -548,24 +569,15 @@ DoStrokeString( float x, float y, float z, float ht, char *s )
 	glPopMatrix( );
 }
 
+
+// ##################### KEYBOARD CALLBACKS ##################### //
+
 void
 changeView()
 {
 	static int count = 0;
 	count++;
 	view = count % int(Views::MAX_NUM_VIEWS + 1);
-}
-
-void 
-GetDesktopResolution()
-{
-	RECT desktop;
-	// Get a handle to the desktop window
-	const HWND hDesktop = GetDesktopWindow();
-	// Get the size of screen to the variable desktop
-	GetWindowRect(hDesktop, &desktop);
-	initWindowX = desktop.right;
-	initWindowY = desktop.bottom;
 }
 
 // return the number of seconds since the start of the program:
@@ -622,13 +634,20 @@ InitMenus( )
 	glutAddMenuEntry("Body 2", (int)Views::BODY2);
 	glutAddMenuEntry("Body 3", (int)Views::BODY3);
 
+	int tailmenu = glutCreateMenu(DoTailMenu);
+	glutAddMenuEntry("None", (int)Tails::NONE);
+	glutAddMenuEntry("Con Thick Line", (int)Tails::CONST_THICK_LINE);
+	glutAddMenuEntry("Var Thick Line", (int)Tails::VAR_THICK_LINE);
+	glutAddMenuEntry("Cylinders", (int)Tails::CYLINDERS);
+	glutAddMenuEntry("Spheres", (int)Tails::SPHERES);
+
 	int projmenu = glutCreateMenu( DoProjectMenu );
 	glutAddMenuEntry( "Orthographic",  ORTHO );
 	glutAddMenuEntry( "Perspective",   PERSP );
 
 	int mainmenu = glutCreateMenu( DoMainMenu );
-	glutAddSubMenu(   "Axes",          axesmenu);
-	glutAddSubMenu(   "Colors",        colormenu);
+	//glutAddSubMenu(   "Axes",          axesmenu);
+	//glutAddSubMenu(   "Colors",        colormenu);
 
 #ifdef DEMO_DEPTH_BUFFER
 	glutAddSubMenu(   "Depth Buffer",  depthbuffermenu);
@@ -637,14 +656,15 @@ InitMenus( )
 #ifdef DEMO_Z_FIGHTING
 	glutAddSubMenu(   "Depth Fighting",depthfightingmenu);
 #endif
-
-	glutAddSubMenu(   "Depth Cue",     depthcuemenu);
-	glutAddSubMenu(   "Projection",    projmenu );
-	glutAddMenuEntry( "Reset",         RESET );
-	glutAddSubMenu(   "Debug",         debugmenu);
-	glutAddSubMenu(	  "Orbit",         orbitmenu);
-	glutAddSubMenu(   "View",          viewmenu);
-	glutAddMenuEntry( "Quit",          QUIT );
+	glutAddSubMenu("View (space)", viewmenu);
+	glutAddSubMenu("Tail (t)", tailmenu);
+	glutAddSubMenu("Orbit (o)", orbitmenu);
+	//glutAddSubMenu(   "Depth Cue",     depthcuemenu);
+	glutAddSubMenu(   "Projection (p)",    projmenu );
+	glutAddMenuEntry("Soft Reset (r)", SOFT_RESET);
+	glutAddMenuEntry( "Reset (R)",         RESET );
+	//glutAddSubMenu(   "Debug",         debugmenu);
+	glutAddMenuEntry( "Quit (q/esc)",          QUIT );
 
 // attach the pop-up menu to the right mouse button:
 	glutAttachMenu( GLUT_RIGHT_BUTTON );
@@ -656,7 +676,7 @@ InitMenus( )
 void
 InitGraphics( )
 {
-	GetDesktopResolution();
+	screen = GetDesktopResolution();
 	// request the display modes:
 	// ask for red-green-blue-alpha color, double-buffering, and z-buffering:
 	glutInitDisplayMode( GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH );
@@ -664,7 +684,8 @@ InitGraphics( )
 	// set the initial window configuration:
 	glutInitWindowPosition( 0, 0 );
 	//glutInitWindowSize( INIT_WINDOW_SIZE+300, INIT_WINDOW_SIZE);
-	glutInitWindowSize(initWindowX, initWindowY);
+	//glutInitWindowSize(initWindowX, initWindowY);
+	glutInitWindowSize(screen.x,screen.y);
 
 	// open the window and set its title:
 	MainWindow = glutCreateWindow( WINDOWTITLE );
@@ -876,27 +897,6 @@ MouseMotion( int x, int y )
 	glutSetWindow( MainWindow );
 	glutPostRedisplay( );
 }
-
-
-// reset the transformations and the colors:
-// this only sets the global variables --
-// the glut main loop is responsible for redrawing the scene
-void
-Reset( )
-{
-	ActiveButton = 0;
-	AxesOn = 1;
-	DebugOn = 1;
-	DepthBufferOn = 1;
-	DepthFightingOn = 0;
-	DepthCueOn = 0;
-	Scale  = 1.0;
-	WhichColor = WHITE;
-	WhichProjection = PERSP;
-	Xrot = Yrot = 0.;
-	boxScale = 1;
-}
-
 
 // called when user resizes the window:
 void

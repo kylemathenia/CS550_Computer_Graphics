@@ -5,6 +5,10 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include "utils.h"
+#ifdef WIN32
+#include <windows.h>
+#pragma warning(disable:4996)
+#endif
 
 
 // read a BMP file into a Texture:
@@ -349,4 +353,15 @@ Unit(float vin[3], float vout[3])
 		vout[2] = vin[2];
 	}
 	return dist;
+}
+
+screenSize
+GetDesktopResolution()
+{
+	RECT desktop;
+	// Get a handle to the desktop window
+	const HWND hDesktop = GetDesktopWindow();
+	// Get the size of screen to the variable desktop
+	GetWindowRect(hDesktop, &desktop);
+	return screenSize{ desktop.right ,desktop.bottom };
 }

@@ -123,7 +123,7 @@ public:
 
 	// ##################### RENDER FUNCTIONS ##################### //
 
-	void draw(Eigen::Vector3f translation)
+	void draw(Eigen::Vector3f translation,Tails tailOption)
 	{
 		GLfloat dx = (GLfloat)S.pos(0) - translation(0);
 		GLfloat dy = (GLfloat)S.pos(1) - translation(1);
@@ -131,10 +131,11 @@ public:
 
 		drawBody(dx, dy, dz);
 		if (selected == true) { drawSelector(dx, dy, dz); }
-		//drawConstThickLineTail(translation, 1.0f,1.5f);
-		//drawVarThickLineTail(translation, 1.0f, 3.0f);
-		//drawCylinderTail(translation, 1.0f, 0.1f);
-		drawSphereTail(translation, 0.5f, 0.5f,false);
+		// Tail options
+		if (tailOption == Tails::CONST_THICK_LINE){drawConstThickLineTail(translation, 1.0f, 1.5f);}
+		else if (tailOption == Tails::VAR_THICK_LINE){drawVarThickLineTail(translation, 1.0f, 3.0f);}
+		else if (tailOption == Tails::CYLINDERS){drawCylinderTail(translation, 1.0f, 0.1f);}
+		else if (tailOption == Tails::SPHERES){drawSphereTail(translation, 0.5f, 0.5f, false);}
 	}
 
 	void drawBody(GLfloat dx, GLfloat dy, GLfloat dz)

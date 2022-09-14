@@ -25,3 +25,11 @@ Dot(float v1[3], float v2[3]);
 
 float
 Unit(float vin[3], float vout[3]);
+
+struct screenSize {
+	int x;
+	int y;
+};
+
+screenSize
+GetDesktopResolution();
