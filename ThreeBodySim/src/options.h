@@ -27,12 +27,13 @@ enum Views
 
 // which view:
 enum Tails
-{
+{	
+	SPHERES,
+	CYLINDERS,
 	CONST_THICK_LINE,
 	VAR_THICK_LINE,
-	CYLINDERS,
-	SPHERES,
-	NONE
+	SPHERES_AND_LINES,
+	NONE,
 };
 
 // glut buttons:

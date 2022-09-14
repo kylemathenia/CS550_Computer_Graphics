@@ -29,8 +29,8 @@
 
 
 /* Reduce tail length or frames per second (FPS) if poor performance. */
-const int TAIL_LEN = 500;
-const int FPS = 60;
+const int TAIL_LEN = 700;
+const int FPS = 120;
 
 ////// ##################### INITIAL CONDITIONS ##################### //////
 
@@ -55,9 +55,9 @@ const int FPS = 60;
 //state b1InitState = { b1Pos0,b1Vel0 ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
 //state b2InitState = { b2Pos0,b2Vel0 ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
 //state b3InitState = { b3Pos0,b3Vel0 ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b1(0, b1Rad, b1Mass, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE);
-//Body b2(1, b2Rad, b2Mass, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN);
-//Body b3(2, b3Rad, b3Mass, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA);
+//Body b1(0, b1Rad, b1Mass, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
+//Body b2(1, b2Rad, b2Mass, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
+//Body b3(2, b3Rad, b3Mass, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
 
 
 
@@ -67,59 +67,67 @@ const int FPS = 60;
 
 // //// Nice.
 //state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -11.0f) ,Eigen::Vector3f(-3.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b1(0, 0.5f, 10.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE);
+//Body b1(0, 0.5f, 10.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
 //state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b2(1, 0.5f, 20.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN);
+//Body b2(1, 0.5f, 20.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
 //state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(3.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b3(2, 0.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA);
+//Body b3(2, 0.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
 ////
 //// // Interesting perfectly balanced conditions. Symmetrical.
 //state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(-3.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b1(0, 0.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE);
+//Body b1(0, 0.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
 //state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b2(1, 0.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN);
+//Body b2(1, 0.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
 //state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(3.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b3(2, 0.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA);
+//Body b3(2, 0.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
 ////
 ////// Different interesting perfectly balanced conditions. Non-symmetrical! Amazing how the center of mass stays constant. Beautiful
 //state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(-1.0f, 0.0f, 2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b1(0, 0.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE);
+//Body b1(0, 0.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
 //state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 2.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b2(1, 0.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN);
+//Body b2(1, 0.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
 //state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(1.0f, -2.0f, -2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b3(2, 0.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA);
+//Body b3(2, 0.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
 ////
 //// Coming directly at you. 
 //state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(-1.0f, 0.0f, 5.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b1(0, 0.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE);
+//Body b1(0, 0.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
 //state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 2.0f, 3.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b2(1, 0.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN);
+//Body b2(1, 0.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
 //state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(1.0f, -2.0f, 1.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b3(2, 0.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA);
+//Body b3(2, 0.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
+////
+// // Going directly away.
+state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(1.0f, 0.0f, -5.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+Body b1(0, 1.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
+state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, -2.0f, -3.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+Body b2(1, 1.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
+state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(-1.0f, 2.0f, -1.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+Body b3(2, 1.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
 //
-//// Going directly right.
-state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(1.0f, 0.0f, 2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-Body b1(0, 0.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE);
-state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(2.0f, 2.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-Body b2(1, 0.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN);
-state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(3.0f, -2.0f, -2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-Body b3(2, 0.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA);
+////// Going directly right.
+//state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(1.0f, 0.0f, 2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+//Body b1(0, 0.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
+//state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(2.0f, 2.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+//Body b2(1, 0.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
+//state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(3.0f, -2.0f, -2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+//Body b3(2, 0.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
 ////
 ////// Going directly right. Good size to show collisions.
 //state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(1.0f, 0.0f, 2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b1(0, 2.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE);
+//Body b1(0, 2.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
 //state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(2.0f, 2.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b2(1, 2.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN);
+//Body b2(1, 2.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
 //state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(3.0f, -2.0f, -2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b3(2, 2.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA);
+//Body b3(2, 2.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
 ////
 ////// Different interesting perfectly balanced conditions. 
 //state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(-3.0f, 2.0f, 2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b1(0, 0.5f, 30.0f, 1000, b1InitState, Colors::BLUE, Colors::WHITE);
+//Body b1(0, 0.5f, 30.0f, 1000, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
 //state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b2(1, 0.5f, 30.0f, 1000, b2InitState, Colors::CYAN, Colors::GREEN);
+//Body b2(1, 0.5f, 30.0f, 1000, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
 //state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(3.0f, -2.0f, -2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b3(2, 0.5f, 30.0f, 1000, b3InitState, Colors::RED, Colors::MAGENTA);
+//Body b3(2, 0.5f, 30.0f, 1000, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
 
 
 ////// ##################### OBJECTS ##################### //////
@@ -152,28 +160,30 @@ const GLfloat BACKCOLOR[ ] = { 0., 0., 0., 1. };
 
 int		whichView;
 int		whichProjection;
+int		whichTail;			
 int		axesOn;
 int		debugOn;
 int		orbitOn;
 int		mainWindow;				// window id for main graphics window
 float	scale;					// scaling factor
-int		whichColor;				// index into Colors[ ]
 pt2i	mouse;					// mouse location in pixels
 pt2f	rot;					// rotation angles in degrees
+pt2i	windowSize;				// pixels size of current glut window
 float	aspectRatio;			// aspect ratio of the glut window
-int		tailOption;				// option selected for tail
 int		activeButton;			// current button that is down
 
 
 ////// ##################### FUNCTION PROTOTYPES ##################### //////
 // main functions
+void	DisplaySetup();
+void	Display();
+void	Animate();
+void	AnimateAtFPS(int);
+// init functions
 void	InitGraphics();
 void	InitLists();
 void	InitMenus();
-void	Display( );
-void	Animate();
-void	AnimateAtFPS(int);
-// ui callbacks
+// event callbacks
 void	KeyCallback(unsigned char, int, int);
 void	MouseButtonCallback(int, int, int, int);
 void	MouseMotionCallback(int, int);
@@ -181,7 +191,6 @@ void	ResizeCallback(int, int);
 void	VisibilityCallback(int);
 // menu callbacks
 void	DoAxesMenu(int);
-void	DoColorMenu(int);
 void	DoDebugMenu(int);
 void	DoOrbitMenu(int);
 void	DoViewMenu(int);
@@ -190,10 +199,15 @@ void	DoMainMenu(int);
 void	DoProjectMenu(int);
 void	DoResetMenu();
 void	DoSoftResetMenu();
+void	DoQuitMenu();
 void	DoRasterString(float, float, float, char*);
 void	DoStrokeString(float, float, float, float, char*);
-// keyboard callbacks
+// ui callbacks
 void	DoViewKey();
+void	DoTailKey();
+void	DoProjectionKey();
+void	DoOrbitKey();
+void	DoScrollWheel(int upOrDown);
 
 
 ////// ##################### MAIN PROGRAM ##################### //////
@@ -246,69 +260,60 @@ AnimateAtFPS(int)
 void
 Display()
 {
+	DisplaySetup();
+	// place the objects into the scene:
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	// set the eye position, look-at position, and up-vector:
+	gluLookAt(0., 0., 21., 0., 0., 0., 0., 1., 0.);
+	// draw the axis before any global transformations.
+	if (axesOn == 1) {
+		pt3i axisTranslation = { -10, -10, 8 };
+		axis.draw(rot, axisTranslation);
+	}
+	// uniformly scale the scene:
+	if (scale < MINSCALE)
+		scale = MINSCALE;
+	glScalef((GLfloat)scale, (GLfloat)scale * aspectRatio, (GLfloat)scale);
+	// rotate the scene:
+	glRotatef((GLfloat)rot.y, 0., 1., 0.);
+	glRotatef((GLfloat)rot.x, 1., 0., 0.);
+	// draw the bodies
+	sim.drawBodies((Views)whichView, (Tails)whichTail);
+	// finish
+	glutSwapBuffers();
+	glFlush();
+}
+
+
+
+// Set some glut and opengl parameters every display call. 
+void
+DisplaySetup()
+{
 	// set which window we want to do the graphics into
 	glutSetWindow(mainWindow);
 	// erase the background
 	glDrawBuffer(GL_BACK);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	// specify shading to be flat:
+	glShadeModel(GL_FLAT);
 	// set the viewport to a square centered in the window:
-	GLsizei vx = glutGet(GLUT_WINDOW_WIDTH);
-	GLsizei vy = glutGet(GLUT_WINDOW_HEIGHT);
-	glViewport(0, 0, vx, vy);
-	aspectRatio = (float)vx / (float)vy;
-
+	windowSize.x = glutGet(GLUT_WINDOW_WIDTH);
+	windowSize.y = glutGet(GLUT_WINDOW_HEIGHT);
+	glViewport(0, 0, windowSize.x, windowSize.y);
+	aspectRatio = (float)windowSize.x / (float)windowSize.y;
 	// set the viewing volume:
-	// remember that the Z clipping  values are actually
-	// given as DISTANCES IN FRONT OF THE EYE
-	// USE gluOrtho2D( ) IF YOU ARE DOING 2D !
-
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	if (whichProjection == ORTHO)
-		glOrtho(-3., 3., -3., 3., 0.1, 1000.);
+		glOrtho(-3., 3., -3., 3., 0.1, 10000.);
 	else
-		gluPerspective(90., 1., 0.1, 1000.);
-
-	// place the objects into the scene:
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	// set the eye position, look-at position, and up-vector:
-	gluLookAt(0., 0., 21., 0., 0., 0., 0., 1., 0.);
-	//glTranslatef((float)sim.center(0), (float)sim.center(1), (float)sim.center(2));
-	//gluLookAt( 0., 0., 8.,     0., 8., 0.,     0., 1., 0. );
-	//gluLookAt((float)sim.center(0), (float)sim.center(1), (float)sim.center(2) + 8, (float)sim.center(0), (float)sim.center(1), (float)sim.center(2), 0., 1., 0.);
-	//glTranslatef((float)sim.center(0), (float)sim.center(1), (float)sim.center(2));
-
-	//axis.draw(Yrot,Xrot);
-
-	//axis.draw();
-
-	// uniformly scale the scene:
-	if (scale < MINSCALE)
-		scale = MINSCALE;
-	glScalef((GLfloat)scale, (GLfloat)scale * aspectRatio, (GLfloat)scale);
-
-	// rotate the scene:
-	glRotatef((GLfloat)rot.y, 0., 1., 0.);
-	glRotatef((GLfloat)rot.x, 1., 0., 0.);
-
-
-	//axis.draw();
-	sim.drawBodies((Views)whichView, (Tails)tailOption);
-
-	//draw some gratuitous text that just rotates on top of the scene:
-	glDisable(GL_DEPTH_TEST);
-	glColor3f(0., 1., 1.);
-	DoRasterString(0., 1., 0., (char*)"Text That Moves");
-
-	// swap the double-buffered framebuffers:
-	glutSwapBuffers();
-
-	// be sure the graphics buffer has been sent:
-	// note: be sure to use glFlush( ) here, not glFinish( ) !
-	glFlush();
+		gluPerspective(90, 1., 0.1, 10000.);
 }
+
+
+////// ##################### INIT FUNCTIONS ##################### //////
 
 // initialize the glut and OpenGL libraries:
 //	also setup display lists and callback functions
@@ -346,7 +351,6 @@ InitGraphics()
 		glutTimerFunc(-1, NULL, 0);
 		glutIdleFunc(Animate);
 	}
-
 	// init glew (a window must be open to do this):
 #ifdef WIN32
 	GLenum err = glewInit();
@@ -358,12 +362,50 @@ InitGraphics()
 		fprintf(stderr, "GLEW initialized OK\n");
 	fprintf(stderr, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 #endif
+	//glutFullScreen();
 }
 
-// initialize the display lists that will not change:
-// (a display list is a way to store opengl commands in
-//  memory so that they can be played back efficiently at a later time
-//  with a call to glCallList( )
+
+void
+InitMenus()
+{
+	glutSetWindow(mainWindow);
+	int axesmenu = glutCreateMenu(DoAxesMenu);
+	glutAddMenuEntry("Off", 0);
+	glutAddMenuEntry("On", 1);
+	int debugmenu = glutCreateMenu(DoDebugMenu);
+	glutAddMenuEntry("Off", 0);
+	glutAddMenuEntry("On", 1);
+	int orbitmenu = glutCreateMenu(DoOrbitMenu);
+	glutAddMenuEntry("Off", 0);
+	glutAddMenuEntry("On", 1);
+	int viewmenu = glutCreateMenu(DoViewMenu);
+	glutAddMenuEntry("Center", (int)Views::CENTER);
+	glutAddMenuEntry("Body 1", (int)Views::BODY1);
+	glutAddMenuEntry("Body 2", (int)Views::BODY2);
+	glutAddMenuEntry("Body 3", (int)Views::BODY3);
+	int tailmenu = glutCreateMenu(DoTailMenu);
+	glutAddMenuEntry("None", (int)Tails::NONE);
+	glutAddMenuEntry("Con Thick Line", (int)Tails::CONST_THICK_LINE);
+	glutAddMenuEntry("Var Thick Line", (int)Tails::VAR_THICK_LINE);
+	glutAddMenuEntry("Cylinders", (int)Tails::CYLINDERS);
+	glutAddMenuEntry("Spheres", (int)Tails::SPHERES);
+	int projmenu = glutCreateMenu(DoProjectMenu);
+	glutAddMenuEntry("Orthographic", ORTHO);
+	glutAddMenuEntry("Perspective", PERSP);
+	int mainmenu = glutCreateMenu(DoMainMenu);
+	glutAddSubMenu("View (space)", viewmenu);
+	glutAddSubMenu("Tail (t)", tailmenu);
+	glutAddSubMenu("Orbit (o)", orbitmenu);
+	glutAddSubMenu("Projection (p)", projmenu);
+	glutAddMenuEntry("Soft Reset (r)", SOFT_RESET);
+	glutAddMenuEntry("Reset (R)", RESET);
+	glutAddMenuEntry("Quit (q/esc)", QUIT);
+	// attach the pop-up menu to the right mouse button:
+	glutAttachMenu(GLUT_RIGHT_BUTTON);
+}
+
+// initialize the display lists.
 void
 InitLists()
 {
@@ -373,21 +415,157 @@ InitLists()
 }
 
 
+////// ##################### GLUT CALLBACKS ##################### //////
+
+// called when any key is pressed
+void
+KeyCallback(unsigned char c, int x, int y)
+{
+	if (debugOn != 0) { fprintf(stderr, "Keyboard: '%c' (0x%0x)\n", c, c); }
+
+	if (c == 'p') { DoProjectionKey(); }
+	else if (c == 'o') { DoOrbitKey(); }
+	else if (c == ' '){ DoViewKey(); }
+	else if (c == 't') { DoTailKey(); }
+	else if (c == 'r'){ DoSoftResetMenu(); }
+	else if (c == 'R') { DoResetMenu(); }
+	else if (c == 'd') { sim.changeSpeed(0.5f); }
+	else if (c == 'e') { sim.changeSpeed(2.0f); }
+	else if (c == 's') { sim.changeSelected(-1); }
+	else if (c == 'f') { sim.changeSelected(1); }
+	else if (c == 'g') { sim.changeSize(0.05f); }
+	else if (c == 'a') { sim.changeSize(-0.05f); }
+	else if (c == 'q' || c == EventEnums::ESCAPE) { DoMainMenu(QUIT); }
+	else { fprintf(stderr, "Don't know what to do with keyboard hit: '%c' (0x%0x)\n", c, c); }
+
+	// force a call to Display( ):
+	glutSetWindow(mainWindow);
+	glutPostRedisplay();
+}
+
+
+// called when the mouse button transitions down or up
+void
+MouseButtonCallback(int button, int state, int x, int y)
+{
+	if (debugOn != 0) { fprintf(stderr, "MouseButton: %d, %d, %d, %d\n", button, state, x, y); }
+
+	int b = 0;			// LEFT, MIDDLE, or RIGHT
+	// get the proper button bit mask:
+	if (button == GLUT_LEFT_BUTTON){ b = EventEnums::LEFT; }
+	else if (button == GLUT_MIDDLE_BUTTON) { b = EventEnums::MIDDLE; }
+	else if (button == GLUT_RIGHT_BUTTON) { b = EventEnums::RIGHT; }
+	else if (button == EventEnums::SCROLL_WHEEL_UP) {DoScrollWheel(1);}
+	else if (button == EventEnums::SCROLL_WHEEL_DOWN) { DoScrollWheel(-1); }
+	else {fprintf(stderr, "Unknown mouse button: %d\n", button);}
+
+	// button down sets the bit, up clears the bit:
+	if (state == GLUT_DOWN) {
+		mouse.x = x;
+		mouse.y = y;
+		activeButton |= b;		// set the proper bit
+	}
+	else {
+		activeButton &= ~b;		// clear the proper bit
+	}
+
+	glutSetWindow(mainWindow);
+	glutPostRedisplay();
+}
+
+
+// called when the mouse moves while a button is down
+void
+MouseMotionCallback(int x, int y)
+{
+	if (debugOn != 0) { fprintf(stderr, "MouseMotion: %d, %d\n", x, y); }
+
+	// change in mouse coords
+	int dx = x - mouse.x;
+	int dy = y - mouse.y;
+	if ((activeButton & EventEnums::LEFT) != 0)
+	{
+		rot.x += (ANGFACT * dy);
+		rot.y += (ANGFACT * dx);
+	}
+	if ((activeButton & EventEnums::MIDDLE) != 0)
+	{
+		scale += SCLFACT * (float)(dx - dy);
+		// keep object from turning inside-out or disappearing:
+		if (scale < MINSCALE)
+			scale = MINSCALE;
+	}
+	// new current position
+	mouse.x = x;			
+	mouse.y = y;
+
+	glutSetWindow(mainWindow);
+	glutPostRedisplay();
+}
+
+
+// called when user resizes the window:
+void
+ResizeCallback(int width, int height)
+{
+	if (debugOn != 0) { fprintf(stderr, "ReSize: %d, %d\n", width, height); }
+	// don't really need to do anything since the window size is checked each time in Display( )
+	glutSetWindow(mainWindow);
+	glutPostRedisplay();
+}
+
+
+// handle a change to the window's visibility:
+void
+VisibilityCallback(int state)
+{
+	if (debugOn != 0) { fprintf(stderr, "Visibility: %d\n", state); }
+
+	if (state == GLUT_VISIBLE) {
+		glutSetWindow(mainWindow);
+		glutPostRedisplay();
+	}
+	else {
+		// could optimize by keeping track of the fact that the window is not visible and avoid
+		// animating or redrawing it ...
+	}
+}
+
 
 ////// ##################### MENU CALLBACKS ##################### //////
+
+// This is where initial variables are set
+void
+DoResetMenu()
+{
+	activeButton = 0;
+	axesOn = 0;
+	debugOn = 0;
+	orbitOn = 0;
+	scale = 1.0f;
+	whichProjection = PERSP;
+	whichView = (int)Views::CENTER;
+	whichTail = (int)Tails::SPHERES;
+	rot.x = rot.y = 0;
+	sim.reset();
+}
+
+void
+DoMainMenu(int id)
+{
+	if (id == RESET){ DoResetMenu(); }
+	else if (id == SOFT_RESET) { DoSoftResetMenu(); }
+	else if (id == QUIT) { DoQuitMenu(); }
+	else { fprintf(stderr, "Don't know what to do with Main Menu ID %d\n", id); }
+
+	glutSetWindow(mainWindow);
+	glutPostRedisplay();
+}
 
 void
 DoAxesMenu( int id )
 {
 	axesOn = id;
-	glutSetWindow( mainWindow );
-	glutPostRedisplay( );
-}
-
-void
-DoColorMenu( int id )
-{
-	whichColor = id - RED;
 	glutSetWindow( mainWindow );
 	glutPostRedisplay( );
 }
@@ -419,41 +597,9 @@ DoViewMenu(int id)
 void
 DoTailMenu(int id)
 {
-	tailOption = id;
+	whichTail = id;
 	glutSetWindow(mainWindow);
 	glutPostRedisplay();
-}
-
-// main menu callback:
-void
-DoMainMenu( int id )
-{
-	switch( id )
-	{
-		case RESET:
-			DoResetMenu( );
-			break;
-		
-		case SOFT_RESET:
-			DoSoftResetMenu();
-			break;
-
-		case QUIT:
-			// gracefully close out the graphics:
-			// gracefully close the graphics window:
-			// gracefully exit the program:
-			glutSetWindow( mainWindow );
-			glFinish( );
-			glutDestroyWindow( mainWindow );
-			exit( 0 );
-			break;
-
-		default:
-			fprintf( stderr, "Don't know what to do with Main Menu ID %d\n", id );
-	}
-
-	glutSetWindow( mainWindow );
-	glutPostRedisplay( );
 }
 
 void
@@ -465,53 +611,22 @@ DoProjectMenu( int id )
 }
 
 void
-DoResetMenu()
-{
-	activeButton = 0;
-	axesOn = 1;
-	debugOn = 1;
-	scale = 1.0;
-	whichProjection = PERSP;
-	rot.x = rot.y = 0;
-	sim.reset();
-}
-
-void
 DoSoftResetMenu()
 {
 	sim.reset();
 }
 
-// use glut to display a string of characters using a raster font:
 void
-DoRasterString( float x, float y, float z, char *s )
+DoQuitMenu()
 {
-	glRasterPos3f( (GLfloat)x, (GLfloat)y, (GLfloat)z );
-	char c;			// one character to print
-	for( ; ( c = *s ) != '\0'; s++ )
-	{
-		glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, c );
-	}
-}
-
-// use glut to display a string of characters using a stroke font:
-void
-DoStrokeString( float x, float y, float z, float ht, char *s )
-{
-	glPushMatrix( );
-		glTranslatef( (GLfloat)x, (GLfloat)y, (GLfloat)z );
-		float sf = ht / ( 119.05f + 33.33f );
-		glScalef( (GLfloat)sf, (GLfloat)sf, (GLfloat)sf );
-		char c;			// one character to print
-		for( ; ( c = *s ) != '\0'; s++ )
-		{
-			glutStrokeCharacter( GLUT_STROKE_ROMAN, c );
-		}
-	glPopMatrix( );
+	glutSetWindow(mainWindow);
+	glFinish();
+	glutDestroyWindow(mainWindow);
+	exit(0);
 }
 
 
-////// ##################### KEYBOARD CALLBACKS ##################### //////
+////// ##################### UI CALLBACKS ##################### //////
 
 void
 DoViewKey()
@@ -521,233 +636,33 @@ DoViewKey()
 	whichView = count % int(Views::MAX_NUM_VIEWS + 1);
 }
 
-// initialize the glui window:
 void
-InitMenus( )
+DoTailKey()
 {
-	glutSetWindow( mainWindow );
-
-	int numColors = sizeof( Colors ) / ( 3*sizeof(int) );
-	int colormenu = glutCreateMenu( DoColorMenu );
-	for( int i = 0; i < numColors; i++ )
-	{
-		glutAddMenuEntry( ColorNames[i], i );
-	}
-
-	int axesmenu = glutCreateMenu( DoAxesMenu );
-	glutAddMenuEntry( "Off",  0 );
-	glutAddMenuEntry( "On",   1 );
-
-	int debugmenu = glutCreateMenu( DoDebugMenu );
-	glutAddMenuEntry( "Off",  0 );
-	glutAddMenuEntry( "On",   1 );
-
-	int orbitmenu = glutCreateMenu(DoOrbitMenu);
-	glutAddMenuEntry("Off", 0);
-	glutAddMenuEntry("On", 1);
-
-	int viewmenu = glutCreateMenu(DoViewMenu);
-	glutAddMenuEntry("Center", (int)Views::CENTER);
-	glutAddMenuEntry("Body 1", (int)Views::BODY1);
-	glutAddMenuEntry("Body 2", (int)Views::BODY2);
-	glutAddMenuEntry("Body 3", (int)Views::BODY3);
-
-	int tailmenu = glutCreateMenu(DoTailMenu);
-	glutAddMenuEntry("None", (int)Tails::NONE);
-	glutAddMenuEntry("Con Thick Line", (int)Tails::CONST_THICK_LINE);
-	glutAddMenuEntry("Var Thick Line", (int)Tails::VAR_THICK_LINE);
-	glutAddMenuEntry("Cylinders", (int)Tails::CYLINDERS);
-	glutAddMenuEntry("Spheres", (int)Tails::SPHERES);
-
-	int projmenu = glutCreateMenu( DoProjectMenu );
-	glutAddMenuEntry( "Orthographic",  ORTHO );
-	glutAddMenuEntry( "Perspective",   PERSP );
-
-	int mainmenu = glutCreateMenu( DoMainMenu );
-
-	glutAddSubMenu("View (space)", viewmenu);
-	glutAddSubMenu("Tail (t)", tailmenu);
-	glutAddSubMenu("Orbit (o)", orbitmenu);
-	glutAddSubMenu(   "Projection (p)",    projmenu );
-	glutAddMenuEntry("Soft Reset (r)", SOFT_RESET);
-	glutAddMenuEntry( "Reset (R)",         RESET );
-	glutAddMenuEntry( "Quit (q/esc)",          QUIT );
-
-// attach the pop-up menu to the right mouse button:
-	glutAttachMenu( GLUT_RIGHT_BUTTON );
+	static int count = 0;
+	count++;
+	whichTail = count % int(Tails::NONE + 1);
 }
 
-// the keyboard callback:
 void
-KeyCallback( unsigned char c, int x, int y )
+DoProjectionKey()
 {
-	if( debugOn != 0 )
-		fprintf( stderr, "Keyboard: '%c' (0x%0x)\n", c, c );
-
-	switch( c )
-	{
-		case 'p':
-			if (whichProjection == PERSP) { whichProjection = ORTHO; }
-			else { whichProjection = PERSP; }
-			break;
-
-		case ' ':
-			DoViewKey();
-			break;
-		
-		case 'r':
-			sim.reset();
-			break;
-
-		case 'o':
-			if (orbitOn == 0) { orbitOn = 1; }
-			else { orbitOn = 0; }
-			break;
-
-		case 'd':
-			sim.changeSpeed(0.5f);
-			break;
-		case 'e':
-			sim.changeSpeed(2.0f);
-			break;
-
-		case 's':
-			sim.changeSelected(-1);
-			break;
-		case 'f':
-			sim.changeSelected(1);
-			break;
-
-		case 'g':
-			sim.changeSize(0.05f);
-			break;
-		case 'a':
-			sim.changeSize(-0.05f);
-			break;
-
-		case 'q':
-		case EventEnums::ESCAPE:
-			DoMainMenu( QUIT );	// will not return here
-			break;				// happy compiler
-
-		default:
-			fprintf( stderr, "Don't know what to do with keyboard hit: '%c' (0x%0x)\n", c, c );
-	}
-
-	// force a call to Display( ):
-	glutSetWindow( mainWindow );
-	glutPostRedisplay( );
+	if (whichProjection == PERSP) { whichProjection = ORTHO; }
+	else { whichProjection = PERSP; }
 }
 
-
-// called when the mouse button transitions down or up:
 void
-MouseButtonCallback( int button, int state, int x, int y )
+DoOrbitKey()
 {
-	int b = 0;			// LEFT, MIDDLE, or RIGHT
-
-	if( debugOn != 0 )
-		fprintf( stderr, "MouseButton: %d, %d, %d, %d\n", button, state, x, y );
-
-	// get the proper button bit mask:
-	switch( button )
-	{
-		case GLUT_LEFT_BUTTON:
-			b = EventEnums::LEFT;		break;
-		case GLUT_MIDDLE_BUTTON:
-			b = EventEnums::MIDDLE;		break;
-		case GLUT_RIGHT_BUTTON:
-			b = EventEnums::RIGHT;		break;
-		case EventEnums::SCROLL_WHEEL_UP:
-			scale += SCLFACT * EventEnums::SCROLL_WHEEL_CLICK_FACTOR;
-			// keep object from turning inside-out or disappearing:
-			if (scale < MINSCALE)
-				scale = MINSCALE;
-			break;
-		case EventEnums::SCROLL_WHEEL_DOWN:
-			scale -= SCLFACT * EventEnums::SCROLL_WHEEL_CLICK_FACTOR;
-			// keep object from turning inside-out or disappearing:
-			if (scale < MINSCALE)
-				scale = MINSCALE;
-			break;
-		default:
-			b = 0;
-			fprintf( stderr, "Unknown mouse button: %d\n", button );
-	}
-
-	// button down sets the bit, up clears the bit:
-	if( state == GLUT_DOWN ){
-		mouse.x = x;
-		mouse.y = y;
-		activeButton |= b;		// set the proper bit
-	} 
-	else{
-		activeButton &= ~b;		// clear the proper bit
-	}
-
-	glutSetWindow(mainWindow);
-	glutPostRedisplay();
+	if (orbitOn == 0) { orbitOn = 1; }
+	else { orbitOn = 0; }
 }
 
-
-// called when the mouse moves while a button is down:
 void
-MouseMotionCallback( int x, int y )
+DoScrollWheel(int upOrDown)
 {
-	if( debugOn != 0 )
-		fprintf( stderr, "MouseMotion: %d, %d\n", x, y );
-
-	int dx = x - mouse.x;		// change in mouse coords
-	int dy = y - mouse.y;
-
-	if( ( activeButton & EventEnums::LEFT ) != 0 )
-	{
-		rot.x += ( ANGFACT*dy );
-		rot.y += ( ANGFACT*dx );
-	}
-
-	if( ( activeButton & EventEnums::MIDDLE ) != 0 )
-	{
-		scale += SCLFACT * (float) ( dx - dy );
-		// keep object from turning inside-out or disappearing:
-		if( scale < MINSCALE )
-			scale = MINSCALE;
-	}
-
-	mouse.x = x;			// new current position
-	mouse.y = y;
-
-	glutSetWindow( mainWindow );
-	glutPostRedisplay( );
-}
-
-// called when user resizes the window:
-void
-ResizeCallback( int width, int height )
-{
-	if( debugOn != 0 )
-		fprintf( stderr, "ReSize: %d, %d\n", width, height );
-	// don't really need to do anything since the window size is
-	// checked each time in Display( ):
-	glutSetWindow( mainWindow );
-	glutPostRedisplay( );
-}
-
-
-// handle a change to the window's visibility:
-void
-VisibilityCallback ( int state )
-{
-	if( debugOn != 0 )
-		fprintf( stderr, "Visibility: %d\n", state );
-
-	if( state == GLUT_VISIBLE ){
-		glutSetWindow( mainWindow );
-		glutPostRedisplay( );
-	}
-	else{
-		// could optimize by keeping track of the fact
-		// that the window is not visible and avoid
-		// animating or redrawing it ...
-	}
+	scale += (SCLFACT * EventEnums::SCROLL_WHEEL_CLICK_FACTOR) * upOrDown;
+	// keep object from turning inside-out or disappearing:
+	if (scale < MINSCALE)
+		scale = MINSCALE;
 }

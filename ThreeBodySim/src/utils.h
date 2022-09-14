@@ -36,8 +36,21 @@ struct pt2f {
 	double y;
 };
 
+struct pt3i {
+	double x;
+	double y;
+	double z;
+};
+
 pt2i
 GetDesktopResolution();
 
 float
 ElapsedSeconds();
+
+void
+DoRasterString(float x, float y, float z, char* s);
+
+
+void
+DoStrokeString(float x, float y, float z, float ht, char* s);

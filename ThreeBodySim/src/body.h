@@ -27,7 +27,7 @@ public:
 
 	};
 
-	Body(int id, float rad,float mass, int tailLen, state init_state, enum Colors bc, enum Colors tc)
+	Body(int id, float rad,float mass, int tailLen, state init_state, enum Colors bc, enum Colors tc,int fps)
 	{
 		id = id;
 		r_i = rad;
@@ -38,6 +38,9 @@ public:
 		bcolor = bc;
 		tcolor = tc;
 		selected = false;
+		// This just happens to often be a good spacing. 
+		tailSpacing = fps / 10;
+		tailUpdateCount = -tailSpacing;
 		lineVec = Eigen::Vector3f(0.0f, 1.0f, 0.0f);
 		lineListVec = new GLuint[tailLen];
 		hardReset();
@@ -45,13 +48,16 @@ public:
 
 	void hardReset()
 	{
+		static int resets = 0;
 		r = r_i;
 		m = m_i;
 		tailLen = tailLen_i;
 		S = state{ S_i.pos,S_i.vel,S_i.acc };
 		V = findVolume();
+		if (resets > 0) { delLists(); }
 		initLists();
 		initTail();
+		resets++;
 	}
 
 	void initTail()
@@ -70,6 +76,7 @@ public:
 		V = findVolume();
 		float change_ratio = V / prev_V;
 		m = m * change_ratio;
+		delLists();
 		initLists();
 	}
 
@@ -80,6 +87,15 @@ public:
 		coneList = getConeList(1, 1, 1, 15, 15,false,false);
 		lineList = getLineList(1.5f);
 		getLineListVec(3.0f);
+	}
+
+	void delLists()
+	{
+		glDeleteLists(sphereList,1);
+		glDeleteLists(selectedSphereList, 1);
+		glDeleteLists(coneList, 1);
+		glDeleteLists(lineList, 1);
+		delLineListVec();
 	}
 
 
@@ -121,6 +137,13 @@ public:
 		}
 	}
 
+	void delLineListVec()
+	{
+		for (int i = 0; i < tailLen_i; i++) {
+			glDeleteLists(lineListVec[i],1);
+		}
+	}
+
 	// ##################### RENDER FUNCTIONS ##################### //
 
 	void draw(Eigen::Vector3f translation,Tails tailOption)
@@ -136,6 +159,10 @@ public:
 		else if (tailOption == Tails::VAR_THICK_LINE){drawVarThickLineTail(translation, 1.0f, 3.0f);}
 		else if (tailOption == Tails::CYLINDERS){drawCylinderTail(translation, 1.0f, 0.1f);}
 		else if (tailOption == Tails::SPHERES){drawSphereTail(translation, 0.5f, 0.5f, false);}
+		else if (tailOption == Tails::SPHERES_AND_LINES) { 
+			drawSphereTail(translation, 0.5f, 0.5f, false); 
+			drawCylinderTail(translation, 0.8f, 0.1f);
+		}
 	}
 
 	void drawBody(GLfloat dx, GLfloat dy, GLfloat dz)
@@ -326,6 +353,6 @@ public:
 	Eigen::Vector3f lineVec;
 	GLuint* lineListVec;
 	int tailSpacingOffset = 0;
-	int tailSpacing = 6;
-	long long tailUpdateCount = -tailSpacing;
+	int tailSpacing;
+	long long tailUpdateCount;
 };

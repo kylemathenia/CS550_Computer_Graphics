@@ -380,3 +380,31 @@ ElapsedSeconds()
 	// convert it to seconds:
 	return (float)ms / 1000.f;
 }
+
+// use glut to display a string of characters using a raster font:
+void
+DoRasterString(float x, float y, float z, char* s)
+{
+	glRasterPos3f((GLfloat)x, (GLfloat)y, (GLfloat)z);
+	char c;			// one character to print
+	for (; (c = *s) != '\0'; s++)
+	{
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, c);
+	}
+}
+
+// use glut to display a string of characters using a stroke font:
+void
+DoStrokeString(float x, float y, float z, float ht, char* s)
+{
+	glPushMatrix();
+	glTranslatef((GLfloat)x, (GLfloat)y, (GLfloat)z);
+	float sf = ht / (119.05f + 33.33f);
+	glScalef((GLfloat)sf, (GLfloat)sf, (GLfloat)sf);
+	char c;			// one character to print
+	for (; (c = *s) != '\0'; s++)
+	{
+		glutStrokeCharacter(GLUT_STROKE_ROMAN, c);
+	}
+	glPopMatrix();
+}

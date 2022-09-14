@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include "glew.h"
 #include <GL/gl.h>
-
 #include "Shapes/shapes.h"
 #include "color.h"
+#include "utils.h"
 
 class Axis
 {
@@ -30,12 +30,12 @@ public:
 		axisList = getAxesList(axisWidth);
 	}
 
-	void draw(GLfloat Yrot, GLfloat Xrot)
+	void draw(pt2f rot, pt3i translation)
 	{
 		glPushMatrix();
-		glTranslatef((GLfloat)-8, -8, -2);
-		glRotatef((GLfloat)Yrot, 0., 1., 0.);
-		glRotatef((GLfloat)Xrot, 1., 0., 0.);
+		glTranslatef((GLfloat)translation.x, translation.y, translation.z);
+		glRotatef((GLfloat)rot.y, 0., 1., 0.);
+		glRotatef((GLfloat)rot.x, 1., 0., 0.);
 		glColor3fv(&Colors[Colors::WHITE][0]);
 		glCallList(axisList);
 		glPopMatrix();
