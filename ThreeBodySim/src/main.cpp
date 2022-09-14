@@ -48,25 +48,12 @@ const float ANGFACT = { 1. };
 const float SCLFACT = { 0.005f };
 // minimum allowable scale factor:
 const float MINSCALE = { 0.05f };
-
 // window background color (rgba):
 const GLfloat BACKCOLOR[ ] = { 0., 0., 0., 1. };
 
-// fog parameters:
-const GLfloat FOGCOLOR[4] = { .0, .0, .0, 1. };
-const GLenum  FOGMODE     = { GL_LINEAR };
-const GLfloat FOGDENSITY  = { 0.30f };
-const GLfloat FOGSTART    = { 1.5 };
-const GLfloat FOGEND      = { 4. };
 
+////// ##################### Non-const Globals ##################### //////
 
-// what options should we compile-in?
-// in general, you don't need to worry about these
-// i compile these in to show class examples of things going wrong
-//#define DEMO_Z_FIGHTING
-//#define DEMO_DEPTH_BUFFER
-
-// non-constant global variables:
 int		view;					// current view
 int		tailOption;				// option selected for tail
 int		ActiveButton;			// current button that is down
@@ -76,9 +63,6 @@ GLuint	boxList;				// object display list
 GLuint	sphereList;
 int		DebugOn;				// != 0 means to print debugging info
 int		OrbitOn;				// != 0 means the view will orbit at a const rate
-int		DepthCueOn;				// != 0 means to use intensity depth cueing
-int		DepthBufferOn;			// != 0 means to use the z-buffer
-int		DepthFightingOn;		// != 0 means to force the creation of z-fighting
 int		MainWindow;				// window id for main graphics window
 float	Scale;					// scaling factor
 float	boxScale;				// scalling factor for the box.
@@ -160,9 +144,6 @@ void	Animate( );
 void	Display( );
 void	DoAxesMenu( int );
 void	DoColorMenu( int );
-void	DoDepthBufferMenu( int );
-void	DoDepthFightingMenu( int );
-void	DoDepthMenu( int );
 void	DoDebugMenu( int );
 void	DoOrbitMenu( int );
 void	DoViewMenu( int );
@@ -275,10 +256,6 @@ Display( )
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 	glEnable( GL_DEPTH_TEST );
-#ifdef DEMO_DEPTH_BUFFER
-	if( DepthBufferOn == 0 )
-		glDisable( GL_DEPTH_TEST );
-#endif
 
 	// specify shading to be flat:
 	glShadeModel( GL_FLAT );
@@ -328,34 +305,9 @@ Display( )
 	glRotatef((GLfloat)Yrot, 0., 1., 0.);
 	glRotatef((GLfloat)Xrot, 1., 0., 0.);
 
-	// set the fog parameters:
-	// (this is really here to do intensity depth cueing)
-	if( DepthCueOn != 0 )
-	{
-		glFogi( GL_FOG_MODE, FOGMODE );
-		glFogfv( GL_FOG_COLOR, FOGCOLOR );
-		glFogf( GL_FOG_DENSITY, FOGDENSITY );
-		glFogf( GL_FOG_START, FOGSTART );
-		glFogf( GL_FOG_END, FOGEND );
-		glEnable( GL_FOG );
-	}
-	else
-	{
-		glDisable( GL_FOG );
-	}
 
 	//axis.draw();
 	sim.drawBodies((Views)view, (Tails)tailOption);
-
-#ifdef DEMO_Z_FIGHTING
-	if( DepthFightingOn != 0 )
-	{
-		glPushMatrix( );
-			glRotatef( 90.,   0., 1., 0. );
-			glCallList( BoxList );
-		glPopMatrix( );
-	}
-#endif
 
 	 //draw some gratuitous text that just rotates on top of the scene:
 	glDisable( GL_DEPTH_TEST );
@@ -421,30 +373,6 @@ DoTailMenu(int id)
 	glutPostRedisplay();
 }
 
-void
-DoDepthBufferMenu( int id )
-{
-	DepthBufferOn = id;
-	glutSetWindow( MainWindow );
-	glutPostRedisplay( );
-}
-
-void
-DoDepthFightingMenu( int id )
-{
-	DepthFightingOn = id;
-	glutSetWindow( MainWindow );
-	glutPostRedisplay( );
-}
-
-void
-DoDepthMenu( int id )
-{
-	DepthCueOn = id;
-	glutSetWindow( MainWindow );
-	glutPostRedisplay( );
-}
-
 // main menu callback:
 void
 DoMainMenu( int id )
@@ -491,14 +419,9 @@ DoResetMenu()
 	ActiveButton = 0;
 	AxesOn = 1;
 	DebugOn = 1;
-	DepthBufferOn = 1;
-	DepthFightingOn = 0;
-	DepthCueOn = 0;
 	Scale = 1.0;
-	WhichColor = WHITE;
 	WhichProjection = PERSP;
 	Xrot = Yrot = 0.;
-	boxScale = 1;
 	sim.reset();
 }
 
@@ -575,18 +498,6 @@ InitMenus( )
 	glutAddMenuEntry( "Off",  0 );
 	glutAddMenuEntry( "On",   1 );
 
-	int depthcuemenu = glutCreateMenu( DoDepthMenu );
-	glutAddMenuEntry( "Off",  0 );
-	glutAddMenuEntry( "On",   1 );
-
-	int depthbuffermenu = glutCreateMenu( DoDepthBufferMenu );
-	glutAddMenuEntry( "Off",  0 );
-	glutAddMenuEntry( "On",   1 );
-
-	int depthfightingmenu = glutCreateMenu( DoDepthFightingMenu );
-	glutAddMenuEntry( "Off",  0 );
-	glutAddMenuEntry( "On",   1 );
-
 	int debugmenu = glutCreateMenu( DoDebugMenu );
 	glutAddMenuEntry( "Off",  0 );
 	glutAddMenuEntry( "On",   1 );
@@ -613,24 +524,13 @@ InitMenus( )
 	glutAddMenuEntry( "Perspective",   PERSP );
 
 	int mainmenu = glutCreateMenu( DoMainMenu );
-	//glutAddSubMenu(   "Axes",          axesmenu);
-	//glutAddSubMenu(   "Colors",        colormenu);
 
-#ifdef DEMO_DEPTH_BUFFER
-	glutAddSubMenu(   "Depth Buffer",  depthbuffermenu);
-#endif
-
-#ifdef DEMO_Z_FIGHTING
-	glutAddSubMenu(   "Depth Fighting",depthfightingmenu);
-#endif
 	glutAddSubMenu("View (space)", viewmenu);
 	glutAddSubMenu("Tail (t)", tailmenu);
 	glutAddSubMenu("Orbit (o)", orbitmenu);
-	//glutAddSubMenu(   "Depth Cue",     depthcuemenu);
 	glutAddSubMenu(   "Projection (p)",    projmenu );
 	glutAddMenuEntry("Soft Reset (r)", SOFT_RESET);
 	glutAddMenuEntry( "Reset (R)",         RESET );
-	//glutAddSubMenu(   "Debug",         debugmenu);
 	glutAddMenuEntry( "Quit (q/esc)",          QUIT );
 
 // attach the pop-up menu to the right mouse button:
