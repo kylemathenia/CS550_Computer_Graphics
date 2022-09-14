@@ -1,0 +1,3 @@
+# CS550_Computer_Graphics
+
+TODO: create a setup.py script that moves the .dll files from the dependancies directory to the bin directories...
