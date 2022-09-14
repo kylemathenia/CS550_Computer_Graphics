@@ -27,7 +27,7 @@ public:
 
 	};
 
-	Body(int id, float rad,float mass, long tailLen, state init_state, enum Colors bc, enum Colors tc)
+	Body(int id, float rad,float mass, int tailLen, state init_state, enum Colors bc, enum Colors tc)
 	{
 		id = id;
 		r_i = rad;
