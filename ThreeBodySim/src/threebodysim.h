@@ -4,10 +4,10 @@
 #include <GL/gl.h>
 #include <iostream>
 #include <math.h>
-
 #include "body.h"
 #include "Eigen/Dense"
 #include "options.h"
+#include "math_utils.h"
 
 
 class ThreeBodySim
@@ -39,6 +39,8 @@ public:
 		findAccels();
 		updateTime();
 		updateBodies();
+		resolveIfContact();
+		updateTails();
 		updateCenter();
 	}
 
@@ -106,15 +108,6 @@ public:
 		}
 	}
 
-	double prevTime, dt;
-	Eigen::Vector3f c;
-	Body b1, b2, b3;
-	Body* bodyList[3] = { &b1,&b2,&b3 };
-	Eigen::Vector3f center;
-	float speed;
-	int bufferChangeCount;
-
-private:
 	void findAccels()
 	{
 		b1.S.acc = (numerator(b1, b2) / denominator(b1, b2)) + (numerator(b1, b3) / denominator(b1, b3));
@@ -128,14 +121,139 @@ private:
 		b2.S.vel = b2.S.vel + (b2.S.acc * dt * speed);
 		b3.S.vel = b3.S.vel + (b3.S.acc * dt * speed);
 
+		b1.prevPos = b1.S.pos;
 		b1.S.pos = b1.S.pos + (b1.S.vel * dt * speed);
+		b2.prevPos = b2.S.pos;
 		b2.S.pos = b2.S.pos + (b2.S.vel * dt * speed);
+		b3.prevPos = b3.S.pos;
 		b3.S.pos = b3.S.pos + (b3.S.vel * dt * speed);
+	}
 
+	void resolveIfContact()
+	{
+		if (inContact(b1, b2) == true) { 
+			resolveContact(b1, b2); 
+		}
+		if (inContact(b1, b3) == true) { 
+			resolveContact(b1, b3); 
+		}
+		if (inContact(b2, b3) == true) { 
+			resolveContact(b2 , b3); 
+		}
+	}
+
+	bool inContact(Body& bodyA, Body& bodyB) 
+	{
+		if (findDist(bodyA.S.pos, bodyB.S.pos) <= (bodyA.r + bodyB.r)){
+			return true;
+		}
+		else {return false;}
+	}
+
+	void resolveContact(Body& bodyA, Body& bodyB) 
+	{
+		float dtAfter = moveToPtOfContact(bodyA,bodyB);
+		resolveTranslationalCollision(bodyA, bodyB);
+		// find the change in vel from rotation and add that vector to final vel. 
+		// What direction will that be? Do the cross product of the rotational axes??
+		//resolveRotationalCollision(bodyA, bodyB);
+
+		// I think this is leaving the position still inside sometimes??? Something probably going on here. 
+		bodyA.S.pos = bodyA.S.pos + (bodyA.S.vel * dtAfter * speed);
+		bodyB.S.pos = bodyB.S.pos + (bodyB.S.vel * dtAfter * speed);
+	}
+
+	// Elastic collision with a coefficient of restitution. 
+	void resolveTranslationalCollision(Body& bodyA, Body& bodyB)
+	{
+		Eigen::Vector3f ContactVecA = bodyB.S.pos - bodyA.S.pos;
+		Eigen::Vector3f ContactRotAxisA = findCrossProduct(bodyA.S.vel, ContactVecA);
+
+		Eigen::Vector3f ContactVecB = bodyA.S.pos - bodyB.S.pos;
+		Eigen::Vector3f ContactRotAxisB = findCrossProduct(bodyB.S.vel, ContactVecB);
+
+		// If one of the velocity vectors has a zero magnitude, this will not work.
+		double contactVecVelAngA = findAngDotProductR(ContactVecA, bodyA.S.vel);
+		double contactVecVelAngB = findAngDotProductR(ContactVecB, bodyB.S.vel);
+
+		Eigen::Vector3f componentVelBefContactA = findUnit(ContactVecA) * (findMagVec(bodyA.S.vel) * cos(contactVecVelAngA));
+		Eigen::Vector3f componentVelOrthoContactA = bodyA.S.vel - componentVelBefContactA;
+		Eigen::Vector3f componentVelBefContactB = findUnit(ContactVecB) * (findMagVec(bodyB.S.vel) * cos(contactVecVelAngB));
+		Eigen::Vector3f componentVelOrthoContactB = bodyB.S.vel - componentVelBefContactB;
+
+
+		//TODO left off here. 
+		// Collapse the collision to 1d on the contact axis. Need to define which way is positive in 1d.
+		// Define bodyA ContactVecA as the positive direction. 
+		// For A, if the angle is acute, the velocity on the 1d ContactVecA axis is positve. 
+		double velA_bef = findMagVec(componentVelBefContactA) * angleAcuteR(contactVecVelAngA);
+		// For A if the angle is acute, it is moving in the negative direction on ContactVecA.
+		double velB_bef = findMagVec(componentVelBefContactB) * (-1) * angleAcuteR(contactVecVelAngB);
+		double velA_aft = solveElasticCollision1D(bodyA.m, bodyB.m, velA_bef, velB_bef,coefRest);
+		double velB_aft = solveElasticCollision1D(bodyB.m, bodyA.m, velB_bef, velA_bef, coefRest);
+	
+		Eigen::Vector3f componentVelAftContactA = velA_aft * findUnit(ContactVecA);
+		Eigen::Vector3f componentVelAftContactB = velB_aft * findUnit(ContactVecA);
+
+		bodyA.S.vel = componentVelAftContactA + componentVelOrthoContactA;
+		bodyB.S.vel = componentVelAftContactB + componentVelOrthoContactB;
+	}
+
+
+	void resolveRotationalCollision(Body& bodyA, Body& bodyB,Eigen::Vector3f& VelA, Eigen::Vector3f& VelB)
+	{
+		// Inelastic collision. Finds the axis of rotation after the collision, and spin velocity. 
+		Eigen::Vector3f rotCollisionVelModA, rotCollisionVelModB;
+
+		// Remember to add the rotation component to cartesian velocity.
+		bodyA.S.vel += rotCollisionVelModA;
+		bodyB.S.vel += rotCollisionVelModB;	
+	}
+
+	void updateTails()
+	{
 		b1.updateTail();
 		b2.updateTail();
 		b3.updateTail();
+	}
 
+	float moveToPtOfContact(Body& bodyA, Body& bodyB)
+	{
+		// Binary search to find the point in space where contact was made for each body.
+		// Returns the dt left to simulate after the collision.
+		Eigen::Vector3f segVecA = bodyA.S.pos - bodyA.prevPos;
+		Eigen::Vector3f segVecB = bodyB.S.pos - bodyB.prevPos;
+		Eigen::Vector3f ptA, ptB;
+		float totalRad = bodyA.r + bodyB.r;
+		float leftX = 0;
+		float rightX = 1;
+		float X;
+		float interferance = (totalRad - findDist(bodyA.S.pos, bodyB.S.pos));
+		int maxIters = 100;
+		int i; 
+		for (i = 0; i < maxIters; i++)
+		{
+			X = (rightX + leftX) / 2;
+			ptA = bodyA.prevPos + (X * segVecA);
+			ptB = bodyB.prevPos + (X * segVecB);
+			interferance = (totalRad - findDist(ptA, ptB));
+			if (interferance > 0) {
+				rightX = X;
+			}
+			else { leftX = X; }
+			// Make sure the bodies don't interfere. 
+			if (interferance <= 0.0f && interferance > -0.001f) { break; }
+		}
+		// It could be the case that the binary search fails because the bodies collided too fast and are now moving
+		// away from each other. If so, set pos to prevPos, which should be not in contact. 
+		if (i == maxIters - 1) {
+			ptA = bodyA.prevPos;
+			ptB = bodyB.prevPos;
+			X = 0;
+		}
+		bodyA.S.pos = ptA;
+		bodyB.S.pos = ptB;
+		return dt - (X * dt);
 	}
 
 	void updateCenter()
@@ -171,5 +289,14 @@ private:
 	{
 		return std::pow(sqrt(diffSquared(a, b, 0) + diffSquared(a, b, 1) + diffSquared(a, b, 2)), 3);
 	}
+
+	double prevTime, dt;
+	Eigen::Vector3f c;
+	Body b1, b2, b3;
+	Body* bodyList[3] = { &b1,&b2,&b3 };
+	Eigen::Vector3f center;
+	float speed;
+	float coefRest = 0.9f;
+	int bufferChangeCount;
 
 };

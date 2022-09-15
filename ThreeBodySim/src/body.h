@@ -3,10 +3,10 @@
 #include "glew.h"
 #include <GL/gl.h>
 #include <tgmath.h>
-
 #include "color.h"
 #include "Shapes/shapes.h"
 #include "Eigen/Dense"
+#include "math_utils.h"
 
 struct state {
 	Eigen::Vector3f pos;
@@ -53,7 +53,7 @@ public:
 		m = m_i;
 		tailLen = tailLen_i;
 		S = state{ S_i.pos,S_i.vel,S_i.acc };
-		V = findVolume();
+		V = findSphereVolume(r);
 		if (resets > 0) { delLists(); }
 		initLists();
 		initTail();
@@ -72,8 +72,8 @@ public:
 	{
 		if (r + rad_change < 0) { return; }
 		float prev_V = V;
-		r = r + rad_change;
-		V = findVolume();
+		r += rad_change;
+		V = findSphereVolume(r);
 		float change_ratio = V / prev_V;
 		m = m * change_ratio;
 		delLists();
@@ -201,7 +201,7 @@ public:
 			dist = findDist(tail[i], tail[i - 1]);
 			dif = nextPt - curPt;
 			rotAxis = findCrossProduct(lineVec, dif);
-			ang = findAngDotProduct(dif, lineVec);
+			ang = findAngDotProductD(dif, lineVec);
 			dx = (GLfloat)tail[i](0) - translation(0);
 			dy = (GLfloat)tail[i](1) - translation(1);
 			dz = (GLfloat)tail[i](2) - translation(2);
@@ -232,7 +232,7 @@ public:
 			dist = findDist(tail[i], tail[i - 1]);
 			dif = nextPt - curPt;
 			rotAxis = findCrossProduct(lineVec, dif);
-			ang = findAngDotProduct(dif, lineVec);
+			ang = findAngDotProductD(dif, lineVec);
 			dx = (GLfloat)tail[i](0) - translation(0);
 			dy = (GLfloat)tail[i](1) - translation(1);
 			dz = (GLfloat)tail[i](2) - translation(2);
@@ -263,7 +263,7 @@ public:
 			dist = findDist(tail[i], tail[i - 1]);
 			dif = nextPt - curPt;
 			rotAxis = findCrossProduct(lineVec, dif);
-			ang = findAngDotProduct(dif, lineVec);
+			ang = findAngDotProductD(dif, lineVec);
 			dx = (GLfloat)tail[i](0) - translation(0);
 			dy = (GLfloat)tail[i](1) - translation(1);
 			dz = (GLfloat)tail[i](2) - translation(2);
@@ -287,7 +287,7 @@ public:
 		Eigen::Vector3f curPt, nextPt, dif, rotAxis;
 		int j;
 		for (int i = 0; i < tailLen_i - tailSpacing; i += tailSpacing) {
-			percentComplete = ((float)(tailLen - i)) / (tailLen);
+			percentComplete = ((float)(tailLen - (i+ tailSpacingOffset))) / (tailLen);
 			alpha = percentComplete * maxAlpha;
 			if (gettingSmaller == true) { scale = percentComplete * maxScale; }
 			else { scale = maxScale; }
@@ -308,39 +308,6 @@ public:
 		}
 	}
 
-	// ##################### MATH FUNCTIONS ##################### //
-
-	float findVolume()
-	{
-		return (4.0f * 3.14 * pow(r, 3)) / 3.0f;
-	}
-
-	float findDist(Eigen::Vector3f p1, Eigen::Vector3f p2)
-	{
-		return sqrt(pow(p1(0) - p2(0), 2) + pow(p1(1) - p2(1), 2) + pow(p1(2) - p2(2), 2));
-	}
-
-	Eigen::Vector3f findCrossProduct(Eigen::Vector3f b, Eigen::Vector3f a)
-	{
-		// The rotation angle is the cross product.
-		float i = (a(1) * b(2)) - (a(2) * b(1));
-		float j = (a(0) * b(2)) - (a(2) * b(0));
-		float k = (a(0) * b(1)) - (a(1) * b(0));
-		return Eigen::Vector3f(i, j, k);
-	}
-
-	float findMag(Eigen::Vector3f x)
-	{
-		return sqrt(pow(x(0), 2) + pow(x(1), 2) + pow(x(2), 2));
-	}
-
-	float findAngDotProduct(Eigen::Vector3f a, Eigen::Vector3f b)
-	{
-		float numer = a(0)*b(2) + a(1)*b(1) + a(2)*b(0);
-		float denom = findMag(a) * findMag(b);
-		return (180.0f / 3.1416f) * acos(numer / denom);
-	}
-
 	int id;
 	float r_i, m_i, r, m, V;
 	long tailLen_i, tailLen;
@@ -350,7 +317,7 @@ public:
 	enum Colors bcolor;
 	enum Colors tcolor;
 	bool selected;
-	Eigen::Vector3f lineVec;
+	Eigen::Vector3f lineVec, prevPos;
 	GLuint* lineListVec;
 	int tailSpacingOffset = 0;
 	int tailSpacing;

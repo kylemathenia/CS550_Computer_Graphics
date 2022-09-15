@@ -27,8 +27,8 @@ float
 Unit(float vin[3], float vout[3]);
 
 struct pt2i {
-	int x;
-	int y;
+	long x;
+	long y;
 };
 
 struct pt2f {
@@ -37,6 +37,12 @@ struct pt2f {
 };
 
 struct pt3i {
+	long x;
+	long y;
+	long z;
+};
+
+struct pt3f {
 	double x;
 	double y;
 	double z;
