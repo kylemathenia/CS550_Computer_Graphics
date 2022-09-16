@@ -133,12 +133,30 @@ public:
 		else if (tailOption == Tails::SPHERES){drawSphereTail(translation, 0.3f, 0.5f, false);}
 	}
 
-	void drawBody(Eigen::Vector3f delta)
+	void drawTail(Eigen::Vector3f translation, Tails tailOption)
 	{
+		if (tailOption == Tails::LINES) { drawLineTail(translation, 1.0f, 1.5f); }
+		else if (tailOption == Tails::CYLINDERS) { drawCylinderTail(translation, 1.0f, 0.1f); }
+		else if (tailOption == Tails::SPHERES) { drawSphereTail(translation, 0.3f, 0.5f, false); }
+	}
+
+	void drawBody(Eigen::Vector3f translation)
+	{
+		Eigen::Vector3f d = S.pos - translation;
 		Eigen::Vector3f scale = { 1, 1, 1 };
 		Eigen::Vector3f rotAxis = { 1, 0, 0 };
 		float ang = 0;
-		drawGlSeq(sphereList, scale, delta, rotAxis, ang, 1.0f, bcolor);
+		glPushMatrix();
+		glEnable(GL_DEPTH_TEST);
+		glColor3f(Colors[bcolor][0], Colors[bcolor][1], Colors[bcolor][2]);
+		glTranslatef(d(0), d(1), d(2));
+		glRotatef(ang, rotAxis(0), rotAxis(1), rotAxis(2));
+		glScalef(scale(0), scale(1), scale(2));
+		glCallList(sphereList);
+		glPopMatrix();
+
+
+		//drawGlSeq(sphereList, scale, S.pos - translation, rotAxis, ang, 1.0f, bcolor);
 	}
 
 	void drawSelector(Eigen::Vector3f delta)

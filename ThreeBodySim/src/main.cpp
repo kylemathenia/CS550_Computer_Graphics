@@ -316,6 +316,7 @@ DisplaySetup()
 	// erase the background
 	glDrawBuffer(GL_BACK);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
 	// specify shading to be flat:
 	glShadeModel(GL_FLAT);
 	// set the viewport to a square centered in the window:

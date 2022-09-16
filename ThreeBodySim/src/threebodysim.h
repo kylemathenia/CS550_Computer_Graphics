@@ -53,9 +53,18 @@ public:
 		else { translation = b3.S.pos; }
 		// since we are using glScalef( ), be sure normals get unitized:
 		glEnable(GL_NORMALIZE);
-		b1.draw(translation, tailOption);
-		b2.draw(translation, tailOption);
-		b3.draw(translation, tailOption);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		// Need to draw all opaque things first (bodies)
+		b1.drawBody(translation);
+		b2.drawBody(translation);
+		b3.drawBody(translation);
+
+		//glEnable(GL_BLEND);
+		//glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+		////glDepthMask(GL_FALSE);
+		//b1.drawTail(translation, tailOption);
+		//b2.drawTail(translation, tailOption);
+		//b3.drawTail(translation, tailOption);
 	}
 
 	void initLists()
