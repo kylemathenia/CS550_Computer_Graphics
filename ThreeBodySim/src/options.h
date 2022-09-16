@@ -1,13 +1,11 @@
 #pragma once
 
-// which projection:
 enum Projections
 {
 	ORTHO,
 	PERSP
 };
 
-// which button:
 enum ButtonVals
 {
 	RESET,
@@ -15,7 +13,6 @@ enum ButtonVals
 	QUIT
 };
 
-// which view:
 enum Views
 {
 	CENTER,
@@ -25,17 +22,24 @@ enum Views
 	MAX_NUM_VIEWS = BODY3
 };
 
-// which view:
+enum class Selections
+{
+	B1,
+	B2,
+	B3,
+	ALL,
+	NONE,
+	MAX_NUM_SELECTIONS = NONE
+};
+
 enum Tails
 {	
-	
 	LINES, 
 	CYLINDERS,
 	SPHERES,
-	NONE,
+	NONE
 };
 
-// glut buttons:
 enum EventEnums
 {
 	ESCAPE = 0x1b,

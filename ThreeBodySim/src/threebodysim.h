@@ -75,9 +75,9 @@ public:
 	void changeSize(float rad_change)
 	{
 		for (int i = 0; i < 3; i++) {
-			if (bodyList[i]->selected == true)
+			if (bList[i]->selected == true)
 			{
-				bodyList[i]->changeSize(rad_change);
+				bList[i]->changeSize(rad_change);
 			}
 		}
 	}
@@ -86,27 +86,12 @@ public:
 	void changeSelected(int change)
 	{
 		bufferChangeCount+= change;
-		int num = bufferChangeCount % (Views::MAX_NUM_VIEWS+1);
-		if (num < 0) { num = num * -1; }
-		if (num == 0) {
-			b1.selected = false;
-			b2.selected = false;
-			b3.selected = false;
-		}
-		else if (num == 1) {
-			b1.selected = true;
-			b2.selected = false;
-			b3.selected = false;
-		}
-		else if (num == 2) {
-			b1.selected = false;
-			b2.selected = true;
-			b3.selected = false;
-		}
-		else if (num == 3) {
-			b1.selected = false;
-			b2.selected = false;
-			b3.selected = true;
+		int sel = bufferChangeCount % (int(Selections::MAX_NUM_SELECTIONS) + 1);
+		if (sel < 0) { sel = sel * -1; }
+		for (int i = 0; i < 3; i++)
+		{
+			if (bList[i]->id == sel || sel == int(Selections::ALL)) { bList[i]->selected = true; }
+			else { bList[i]->selected = false; }
 		}
 	}
 
@@ -295,7 +280,7 @@ public:
 	double prevTime, dt;
 	Eigen::Vector3f c;
 	Body b1, b2, b3;
-	Body* bodyList[3] = { &b1,&b2,&b3 };
+	Body* bList[3] = {&b1,&b2,&b3};
 	Eigen::Vector3f center;
 	float speed;
 	float coefRest = 0.9f;

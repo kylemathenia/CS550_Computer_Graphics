@@ -27,9 +27,9 @@ public:
 
 	};
 
-	Body(int id, float rad,float mass, int tailLen, state init_state, enum Colors bc, enum Colors tc,int fps)
+	Body(int id_num, float rad,float mass, int tailLen, state init_state, enum Colors bc, enum Colors tc,int fps)
 	{
-		id = id;
+		id = id_num;
 		r_i = rad;
 		m_i = mass;
 		tailLen_i = tailLen;
@@ -38,8 +38,8 @@ public:
 		bcolor = bc;
 		tcolor = tc;
 		selected = false;
-		// This just happens to often be a good spacing. 
-		tailSpacing = fps / 10;
+		// This just happens to often be a good spacing for the sphere tail most of the time. 
+		tailSpacing = fps / 5;
 		tailUpdateCount = -tailSpacing;
 		lineVec = Eigen::Vector3f(0.0f, 1.0f, 0.0f);
 		hardReset();
@@ -81,14 +81,14 @@ public:
 	void initLists()
 	{
 		sphereList = getSphereList(r, 40, 40);
-		coneList = getConeList(1, 1, 1, 15, 15,false,false);
+		cylinderList = getConeList(1, 1, 1, 15, 15,false,false);
 		lineList = getLineList(1.5f);
 	}
 
 	void delLists()
 	{
 		glDeleteLists(sphereList,1);
-		glDeleteLists(coneList, 1);
+		glDeleteLists(cylinderList, 1);
 		glDeleteLists(lineList, 1);
 	}
 
@@ -128,10 +128,9 @@ public:
 	{
 		drawBody(S.pos - translation);
 		if (selected == true) { drawSelector(S.pos - translation); }
-		// Tail options
 		if (tailOption == Tails::LINES){drawLineTail(translation, 1.0f, 1.5f);}
 		else if (tailOption == Tails::CYLINDERS){drawCylinderTail(translation, 1.0f, 0.1f);}
-		else if (tailOption == Tails::SPHERES){drawSphereTail(translation, 0.5f, 0.5f, false);}
+		else if (tailOption == Tails::SPHERES){drawSphereTail(translation, 0.3f, 0.5f, false);}
 	}
 
 	void drawBody(Eigen::Vector3f delta)
@@ -188,7 +187,7 @@ public:
 			ang = -findAngDotProductD(dif, lineVec);
 			delta = tail[i] - translation;
 			scale = { r * scaleMod,dist * 1.01f,r * scaleMod };
-			drawGlSeq(coneList, scale, delta, rotAxis, ang, alpha, bcolor);
+			drawGlSeq(cylinderList, scale, delta, rotAxis, ang, alpha, bcolor);
 		}
 	}
 
@@ -230,7 +229,7 @@ public:
 	long tailLen_i, tailLen;
 	state S_i,S;
 	Eigen::Vector3f* tail;
-	GLuint sphereList, coneList, lineList;
+	GLuint sphereList, cylinderList, lineList;
 	enum Colors bcolor;
 	enum Colors tcolor;
 	bool selected;
