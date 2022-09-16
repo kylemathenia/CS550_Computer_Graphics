@@ -30,7 +30,7 @@
 
 /* Reduce tail length or frames per second (FPS) if poor performance. */
 const int TAIL_LEN = 700;
-const int FPS = 120;
+const int FPS = 30;
 
 ////// ##################### INITIAL CONDITIONS ##################### //////
 
@@ -97,14 +97,14 @@ const int FPS = 120;
 //state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(1.0f, -2.0f, 1.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
 //Body b3(2, 0.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
 ////
-// // Going directly away.
-state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(1.0f, 0.0f, -5.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-Body b1(0, 0.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
-state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, -2.0f, -3.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-Body b2(1, 0.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
-state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(-1.0f, 2.0f, -1.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-Body b3(2, 0.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
-//
+//// // Going directly away.
+//state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(1.0f, 0.0f, -5.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+//Body b1(0, 0.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
+//state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, -2.0f, -3.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+//Body b2(1, 0.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
+//state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(-1.0f, 2.0f, -1.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+//Body b3(2, 0.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
+////
 ////// Going directly right.
 //state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(1.0f, 0.0f, 2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
 //Body b1(0, 0.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
@@ -113,14 +113,6 @@ Body b3(2, 0.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS
 //state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(3.0f, -2.0f, -2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
 //Body b3(2, 0.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
 ////
-////// Going directly right. Good size to show collisions.
-//state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(1.0f, 0.0f, 2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b1(0, 2.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
-//state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(2.0f, 2.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b2(1, 2.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
-//state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(3.0f, -2.0f, -2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b3(2, 2.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
-////
 ////// Different interesting perfectly balanced conditions. 
 //state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(-3.0f, 2.0f, 2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
 //Body b1(0, 0.5f, 30.0f, 1000, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
@@ -128,6 +120,33 @@ Body b3(2, 0.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS
 //Body b2(1, 0.5f, 30.0f, 1000, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
 //state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(3.0f, -2.0f, -2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
 //Body b3(2, 0.5f, 30.0f, 1000, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
+// ////
+////// Good size to show collisions.
+//state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(1.0f, 0.0f, 2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+//Body b1(0, 2.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
+//state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(2.0f, 2.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+//Body b2(1, 2.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
+//state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(3.0f, -2.0f, -2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+//Body b3(2, 2.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
+//////
+////
+//// Different interesting perfectly balanced conditions. Non-symmetrical! Amazing how the center of mass stays constant. Beautiful
+state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(-1.0f, 0.0f, 2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+Body b1(0, 2.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
+state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 2.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+Body b2(1, 2.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
+state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(1.0f, -2.0f, -2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+Body b3(2, 2.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
+////
+//////
+////// Test collision.
+//state b1InitState = { Eigen::Vector3f(-1000.0f, 1000.0f, -1200.0f) ,Eigen::Vector3f(-1.0f, 0.0f, 2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+//Body b1(0, 2.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
+//state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+//Body b2(1, 2.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
+//state b3InitState = { Eigen::Vector3f(30.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+//Body b3(2, 2.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
+//////
 
 
 ////// ##################### OBJECTS ##################### //////
@@ -149,11 +168,12 @@ const float ORBIT_SPEED = 0.2f;
 const float FRAME_PERIOD = 1 / (float)FPS;
 // multiplication factors for input interaction.
 const float ANGFACT = { 1. };
-const float SCLFACT = { 0.005f };
+const float SCLFACT = { 0.001f };
 // minimum allowable scale factor:
-const float MINSCALE = { 0.05f };
+const float MINSCALE = { 0.01f };
 // window background color (rgba):
 const GLfloat BACKCOLOR[ ] = { 0., 0., 0., 1. };
+const pt2i SCREEN = GetDesktopResolution();
 
 
 ////// ##################### NON-CONSTANT GLOBALS ##################### //////
@@ -283,7 +303,7 @@ Display()
 	// finish
 	glutSwapBuffers();
 	glFlush();
-}
+  }
 
 
 
@@ -296,6 +316,7 @@ DisplaySetup()
 	// erase the background
 	glDrawBuffer(GL_BACK);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
 	// specify shading to be flat:
 	glShadeModel(GL_FLAT);
 	// set the viewport to a square centered in the window:
@@ -325,8 +346,7 @@ InitGraphics()
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 	// set the initial window configuration:
 	glutInitWindowPosition(0, 0);
-	pt2i screen = GetDesktopResolution();
-	glutInitWindowSize(screen.x, screen.y);
+	glutInitWindowSize(SCREEN.x, SCREEN.y);
 	// open the window and set its title:
 	mainWindow = glutCreateWindow(WINDOWTITLE);
 	glutSetWindowTitle(WINDOWTITLE);
@@ -362,7 +382,7 @@ InitGraphics()
 		fprintf(stderr, "GLEW initialized OK\n");
 	fprintf(stderr, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 #endif
-	//glutFullScreen();
+	glutFullScreen();
 }
 
 
@@ -385,11 +405,10 @@ InitMenus()
 	glutAddMenuEntry("Body 2", (int)Views::BODY2);
 	glutAddMenuEntry("Body 3", (int)Views::BODY3);
 	int tailmenu = glutCreateMenu(DoTailMenu);
-	glutAddMenuEntry("None", (int)Tails::NONE);
-	glutAddMenuEntry("Con Thick Line", (int)Tails::CONST_THICK_LINE);
-	glutAddMenuEntry("Var Thick Line", (int)Tails::VAR_THICK_LINE);
-	glutAddMenuEntry("Cylinders", (int)Tails::CYLINDERS);
 	glutAddMenuEntry("Spheres", (int)Tails::SPHERES);
+	glutAddMenuEntry("Cylinders", (int)Tails::CYLINDERS);
+	glutAddMenuEntry("Line", (int)Tails::LINES);
+	glutAddMenuEntry("None", (int)Tails::NONE);
 	int projmenu = glutCreateMenu(DoProjectMenu);
 	glutAddMenuEntry("Orthographic", ORTHO);
 	glutAddMenuEntry("Perspective", PERSP);
@@ -427,6 +446,7 @@ KeyCallback(unsigned char c, int x, int y)
 	else if (c == 'o') { DoOrbitKey(); }
 	else if (c == ' '){ DoViewKey(); }
 	else if (c == 't') { DoTailKey(); }
+	else if (c == 'n') { glutReshapeWindow(SCREEN.x, SCREEN.y); }
 	else if (c == 'r'){ DoSoftResetMenu(); }
 	else if (c == 'R') { DoResetMenu(); }
 	else if (c == 'd') { sim.changeSpeed(0.5f); }
@@ -545,7 +565,7 @@ DoResetMenu()
 	scale = 1.0f;
 	whichProjection = PERSP;
 	whichView = (int)Views::CENTER;
-	whichTail = (int)Tails::SPHERES;
+	whichTail = (int)Tails::LINES;
 	rot.x = rot.y = 0;
 	sim.reset();
 }
