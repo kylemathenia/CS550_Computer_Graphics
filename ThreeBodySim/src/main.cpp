@@ -168,11 +168,12 @@ const float ORBIT_SPEED = 0.2f;
 const float FRAME_PERIOD = 1 / (float)FPS;
 // multiplication factors for input interaction.
 const float ANGFACT = { 1. };
-const float SCLFACT = { 0.005f };
+const float SCLFACT = { 0.001f };
 // minimum allowable scale factor:
-const float MINSCALE = { 0.05f };
+const float MINSCALE = { 0.01f };
 // window background color (rgba):
 const GLfloat BACKCOLOR[ ] = { 0., 0., 0., 1. };
+const pt2i SCREEN = GetDesktopResolution();
 
 
 ////// ##################### NON-CONSTANT GLOBALS ##################### //////
@@ -344,8 +345,7 @@ InitGraphics()
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 	// set the initial window configuration:
 	glutInitWindowPosition(0, 0);
-	pt2i screen = GetDesktopResolution();
-	glutInitWindowSize(screen.x, screen.y);
+	glutInitWindowSize(SCREEN.x, SCREEN.y);
 	// open the window and set its title:
 	mainWindow = glutCreateWindow(WINDOWTITLE);
 	glutSetWindowTitle(WINDOWTITLE);
@@ -381,7 +381,7 @@ InitGraphics()
 		fprintf(stderr, "GLEW initialized OK\n");
 	fprintf(stderr, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 #endif
-	//glutFullScreen();
+	glutFullScreen();
 }
 
 
@@ -446,6 +446,7 @@ KeyCallback(unsigned char c, int x, int y)
 	else if (c == 'o') { DoOrbitKey(); }
 	else if (c == ' '){ DoViewKey(); }
 	else if (c == 't') { DoTailKey(); }
+	else if (c == 'n') { glutReshapeWindow(SCREEN.x, SCREEN.y); }
 	else if (c == 'r'){ DoSoftResetMenu(); }
 	else if (c == 'R') { DoResetMenu(); }
 	else if (c == 'd') { sim.changeSpeed(0.5f); }

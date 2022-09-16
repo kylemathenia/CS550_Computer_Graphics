@@ -67,7 +67,9 @@ public:
 
 	void changeSpeed(float multiplier)
 	{
-		speed = speed * multiplier;
+		float newSpeed = speed * multiplier;
+		if (newSpeed > 9 || newSpeed < 0.062) { return; }
+		speed = newSpeed;
 	}
 
 	void changeSize(float rad_change)
