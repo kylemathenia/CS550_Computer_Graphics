@@ -28,11 +28,10 @@ enum Views
 // which view:
 enum Tails
 {	
-	SPHERES,
+	
+	LINES, 
 	CYLINDERS,
-	CONST_THICK_LINE,
-	VAR_THICK_LINE,
-	SPHERES_AND_LINES,
+	SPHERES,
 	NONE,
 };
 

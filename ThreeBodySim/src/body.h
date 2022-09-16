@@ -42,7 +42,6 @@ public:
 		tailSpacing = fps / 10;
 		tailUpdateCount = -tailSpacing;
 		lineVec = Eigen::Vector3f(0.0f, 1.0f, 0.0f);
-		lineListVec = new GLuint[tailLen];
 		hardReset();
 	};
 
@@ -62,7 +61,6 @@ public:
 
 	void initTail()
 	{
-		// Tail is the last tailLen states of the body. 
 		for (int i = 0; i < tailLen; i++) {
 			tail[i] = S.pos;
 		}
@@ -85,7 +83,6 @@ public:
 		sphereList = getSphereList(r, 40, 40);
 		coneList = getConeList(1, 1, 1, 15, 15,false,false);
 		lineList = getLineList(1.5f);
-		getLineListVec(3.0f);
 	}
 
 	void delLists()
@@ -93,7 +90,6 @@ public:
 		glDeleteLists(sphereList,1);
 		glDeleteLists(coneList, 1);
 		glDeleteLists(lineList, 1);
-		delLineListVec();
 	}
 
 
@@ -126,22 +122,6 @@ public:
 		return obj_list;
 	}
 
-	void getLineListVec(float maxWidth)
-	{
-		for (int i = 0; i < tailLen_i; i++) {
-			float percentComplete = ((float)(tailLen - i) / (float)tailLen);
-			float width = percentComplete * maxWidth;
-			lineListVec[i] = getLineList(width);
-		}
-	}
-
-	void delLineListVec()
-	{
-		for (int i = 0; i < tailLen_i; i++) {
-			glDeleteLists(lineListVec[i],1);
-		}
-	}
-
 	// ##################### RENDER FUNCTIONS ##################### //
 
 	void draw(Eigen::Vector3f translation,Tails tailOption)
@@ -149,14 +129,9 @@ public:
 		drawBody(S.pos - translation);
 		if (selected == true) { drawSelector(S.pos - translation); }
 		// Tail options
-		if (tailOption == Tails::CONST_THICK_LINE){drawConstThickLineTail(translation, 1.0f, 1.5f);}
-		else if (tailOption == Tails::VAR_THICK_LINE){drawVarThickLineTail(translation, 1.0f, 3.0f);}
+		if (tailOption == Tails::LINES){drawLineTail(translation, 1.0f, 1.5f);}
 		else if (tailOption == Tails::CYLINDERS){drawCylinderTail(translation, 1.0f, 0.1f);}
 		else if (tailOption == Tails::SPHERES){drawSphereTail(translation, 0.5f, 0.5f, false);}
-		else if (tailOption == Tails::SPHERES_AND_LINES) { 
-			drawSphereTail(translation, 0.5f, 0.5f, false); 
-			drawCylinderTail(translation, 0.8f, 0.1f);
-		}
 	}
 
 	void drawBody(Eigen::Vector3f delta)
@@ -175,7 +150,7 @@ public:
 		drawGlSeq(sphereList, scale, delta, rotAxis, ang, 0.3f, Colors::WHITE);
 	}
 
-	void drawConstThickLineTail(Eigen::Vector3f translation, float maxAlpha,float width)
+	void drawLineTail(Eigen::Vector3f translation, float maxAlpha,float width)
 	{
 		// Tail using tranformations with const thickness lines, fading with length. 
 		glDeleteLists(lineList, 1);
@@ -193,26 +168,6 @@ public:
 			delta = tail[i] - translation;
 			scale = { 1,dist,1 };
 			drawGlSeq(lineList, scale, delta, rotAxis, ang, alpha, bcolor);
-		}
-	}
-
-	void drawVarThickLineTail(Eigen::Vector3f translation, float maxAlpha, float maxWidth)
-	{
-		// Tail using tranformations with lines. Changing the thickness of the line, fading with length.
-		float alpha, dist, ang,width, percentComplete;
-		Eigen::Vector3f curPt, nextPt, dif, rotAxis, delta, scale;
-		for (int i = 1; i < tailLen_i; i++) {
-			percentComplete = ((float)(tailLen - i) / (float)tailLen);
-			alpha = percentComplete * maxAlpha;
-			curPt = tail[i];
-			nextPt = tail[i - 1];
-			dist = findDist(tail[i], tail[i - 1]);
-			dif = nextPt - curPt;
-			rotAxis = findCrossProduct(lineVec, dif);
-			ang = -findAngDotProductD(dif, lineVec);
-			delta = tail[i] - translation;
-			scale = { 1,dist,1 };
-			drawGlSeq(lineListVec[i], scale, delta, rotAxis, ang, alpha, bcolor);
 		}
 	}
 

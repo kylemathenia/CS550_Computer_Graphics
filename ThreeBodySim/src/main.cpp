@@ -404,11 +404,10 @@ InitMenus()
 	glutAddMenuEntry("Body 2", (int)Views::BODY2);
 	glutAddMenuEntry("Body 3", (int)Views::BODY3);
 	int tailmenu = glutCreateMenu(DoTailMenu);
-	glutAddMenuEntry("None", (int)Tails::NONE);
-	glutAddMenuEntry("Con Thick Line", (int)Tails::CONST_THICK_LINE);
-	glutAddMenuEntry("Var Thick Line", (int)Tails::VAR_THICK_LINE);
-	glutAddMenuEntry("Cylinders", (int)Tails::CYLINDERS);
 	glutAddMenuEntry("Spheres", (int)Tails::SPHERES);
+	glutAddMenuEntry("Cylinders", (int)Tails::CYLINDERS);
+	glutAddMenuEntry("Line", (int)Tails::LINES);
+	glutAddMenuEntry("None", (int)Tails::NONE);
 	int projmenu = glutCreateMenu(DoProjectMenu);
 	glutAddMenuEntry("Orthographic", ORTHO);
 	glutAddMenuEntry("Perspective", PERSP);
@@ -565,7 +564,7 @@ DoResetMenu()
 	scale = 1.0f;
 	whichProjection = PERSP;
 	whichView = (int)Views::CENTER;
-	whichTail = (int)Tails::SPHERES;
+	whichTail = (int)Tails::LINES;
 	rot.x = rot.y = 0;
 	sim.reset();
 }
