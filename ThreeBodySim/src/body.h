@@ -68,9 +68,10 @@ public:
 
 	void changeSize(float rad_change)
 	{
-		if (r + rad_change < 0) { return; }
+		float newR = r * rad_change;
+		if (newR < bodyMinRad) { return; }
 		float prev_V = V;
-		r += rad_change;
+		r = newR;
 		V = findSphereVolume(r);
 		float change_ratio = V / prev_V;
 		m = m * change_ratio;
@@ -259,4 +260,5 @@ public:
 	int tailSpacing;
 	long long tailUpdateCount;
 	float selectorScale = 1.1f;
+	float bodyMinRad = 0.1f;
 };

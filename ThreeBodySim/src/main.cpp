@@ -453,8 +453,8 @@ KeyCallback(unsigned char c, int x, int y)
 	else if (c == 'e') { sim.changeSpeed(2.0f); }
 	else if (c == 's') { sim.changeSelected(-1); }
 	else if (c == 'f') { sim.changeSelected(1); }
-	else if (c == 'g') { sim.changeSize(0.05f); }
-	else if (c == 'a') { sim.changeSize(-0.05f); }
+	else if (c == 'g') { sim.changeSize(1.0526316f); }
+	else if (c == 'a') { sim.changeSize(0.95f); }
 	else if (c == 'q' || c == EventEnums::ESCAPE) { DoMainMenu(QUIT); }
 	else { fprintf(stderr, "Don't know what to do with keyboard hit: '%c' (0x%0x)\n", c, c); }
 
