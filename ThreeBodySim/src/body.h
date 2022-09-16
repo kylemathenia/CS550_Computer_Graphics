@@ -273,7 +273,7 @@ public:
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 			glTranslatef(dx, dy, dz);
 			glRotatef(-ang, rotAxis(0), rotAxis(1), rotAxis(2));
-			glScalef(scale, dist * 1.01f, scale);
+			glScalef(r*scale, dist * 1.01f, r*scale);
 			glCallList(coneList);
 			glPopMatrix();
 		}
