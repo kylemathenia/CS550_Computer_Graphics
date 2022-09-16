@@ -266,7 +266,7 @@ public:
 		glTranslatef(d(0), d(1), d(2));
 		glRotatef(ang, rotAxis(0), rotAxis(1), rotAxis(2));
 		glScalef(scale(0), scale(1), scale(2));
-		glCallList(sphereList);
+		glCallList(list);
 		glPopMatrix();
 	}
 
