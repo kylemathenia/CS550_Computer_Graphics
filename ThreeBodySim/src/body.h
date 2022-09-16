@@ -122,54 +122,41 @@ public:
 		return obj_list;
 	}
 
+
 	// ##################### RENDER FUNCTIONS ##################### //
 
-	void draw(Eigen::Vector3f translation,Tails tailOption)
+	void drawObliq(Eigen::Vector3f translation)
 	{
-		drawBody(S.pos - translation);
-		if (selected == true) { drawSelector(S.pos - translation); }
-		if (tailOption == Tails::LINES){drawLineTail(translation, 1.0f, 1.5f);}
-		else if (tailOption == Tails::CYLINDERS){drawCylinderTail(translation, 1.0f, 0.1f);}
-		else if (tailOption == Tails::SPHERES){drawSphereTail(translation, 0.3f, 0.5f, false);}
-	}
-
-	void drawTail(Eigen::Vector3f translation, Tails tailOption)
-	{
-		if (tailOption == Tails::LINES) { drawLineTail(translation, 1.0f, 1.5f); }
-		else if (tailOption == Tails::CYLINDERS) { drawCylinderTail(translation, 1.0f, 0.1f); }
-		else if (tailOption == Tails::SPHERES) { drawSphereTail(translation, 0.3f, 0.5f, false); }
-	}
-
-	void drawBody(Eigen::Vector3f translation)
-	{
-		Eigen::Vector3f d = S.pos - translation;
+		Eigen::Vector3f delta = S.pos - translation;
 		Eigen::Vector3f scale = { 1, 1, 1 };
 		Eigen::Vector3f rotAxis = { 1, 0, 0 };
 		float ang = 0;
-		glPushMatrix();
-		glEnable(GL_DEPTH_TEST);
-		glColor3f(Colors[bcolor][0], Colors[bcolor][1], Colors[bcolor][2]);
-		glTranslatef(d(0), d(1), d(2));
-		glRotatef(ang, rotAxis(0), rotAxis(1), rotAxis(2));
-		glScalef(scale(0), scale(1), scale(2));
-		glCallList(sphereList);
-		glPopMatrix();
-
-
-		//drawGlSeq(sphereList, scale, S.pos - translation, rotAxis, ang, 1.0f, bcolor);
+		drawGlSeqOpaq(sphereList, scale, delta, rotAxis, ang, bcolor);
 	}
 
-	void drawSelector(Eigen::Vector3f delta)
+	void drawTran(Eigen::Vector3f translation, Tails tailOption)
 	{
+		glDepthMask(GL_FALSE);
+		if (selected == true) { drawSelector(translation); }
+		if (tailOption == Tails::LINES) { drawLineTail(translation, 1.0f, 1.5f); }
+		else if (tailOption == Tails::CYLINDERS) { drawCylinderTail(translation, 1.0f, 0.1f); }
+		else if (tailOption == Tails::SPHERES) { drawSphereTail(translation, 0.3f, 0.5f, false); }
+		glDepthMask(GL_TRUE);
+		glDisable(GL_BLEND);
+	}
+
+	void drawSelector(Eigen::Vector3f translation)
+	{
+		Eigen::Vector3f delta = S.pos - translation;
 		Eigen::Vector3f scale = { selectorScale, selectorScale, selectorScale };
 		Eigen::Vector3f rotAxis = { 1, 0, 0 };
 		float ang = 0;
-		drawGlSeq(sphereList, scale, delta, rotAxis, ang, 0.3f, Colors::WHITE);
+		drawGlSeqTran(sphereList, scale, delta, rotAxis, ang, 0.3f, Colors::WHITE);
 	}
 
 	void drawLineTail(Eigen::Vector3f translation, float maxAlpha,float width)
 	{
-		// Tail using tranformations with const thickness lines, fading with length. 
+		// Be able to change the width of the line.
 		glDeleteLists(lineList, 1);
 		lineList = getLineList(width);
 		float alpha, dist, ang;
@@ -184,7 +171,7 @@ public:
 			ang = -findAngDotProductD(dif, lineVec);
 			delta = tail[i] - translation;
 			scale = { 1,dist,1 };
-			drawGlSeq(lineList, scale, delta, rotAxis, ang, alpha, bcolor);
+			drawGlSeqTran(lineList, scale, delta, rotAxis, ang, alpha, bcolor);
 		}
 	}
 
@@ -205,7 +192,7 @@ public:
 			ang = -findAngDotProductD(dif, lineVec);
 			delta = tail[i] - translation;
 			scale = { r * scaleMod,dist * 1.01f,r * scaleMod };
-			drawGlSeq(cylinderList, scale, delta, rotAxis, ang, alpha, bcolor);
+			drawGlSeqTran(cylinderList, scale, delta, rotAxis, ang, alpha, bcolor);
 		}
 	}
 
@@ -225,22 +212,37 @@ public:
 			// Don't draw the first sphere because there is an ugly gap. 
 			if (i > tailUpdateCount) { break; }
 			delta = (tail[j] - translation);
-			drawGlSeq(sphereList, scale, delta, Eigen::Vector3f{1,0,0}, 0, alpha,bcolor);
+			drawGlSeqTran(sphereList, scale, delta, Eigen::Vector3f{1,0,0}, 0, alpha,bcolor);
 		}
 	}
 
-	void drawGlSeq(GLuint list, Eigen::Vector3f scale, Eigen::Vector3f d, Eigen::Vector3f rotAxis, float ang, float alpha, enum Colors c)
+
+	void drawGlSeqOpaq(GLuint list, Eigen::Vector3f scale, Eigen::Vector3f d, Eigen::Vector3f rotAxis, float ang, enum Colors c)
+	{
+		glPushMatrix();
+		glEnable(GL_DEPTH_TEST);
+		glColor3f(Colors[c][0], Colors[c][1], Colors[c][2]);
+		drawGlSeq(list, scale, d, rotAxis, ang);
+	}
+
+	void drawGlSeqTran(GLuint list, Eigen::Vector3f scale, Eigen::Vector3f d, Eigen::Vector3f rotAxis, float ang, float alpha, enum Colors c)
 	{
 		glPushMatrix();
 		glEnable(GL_BLEND);
-		glColor4f(Colors[c][0], Colors[c][1], Colors[c][2], alpha);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+		glColor4f(Colors[c][0], Colors[c][1], Colors[c][2], alpha);
+		drawGlSeq(list, scale, d, rotAxis, ang);
+	}
+
+	void drawGlSeq(GLuint list, Eigen::Vector3f scale, Eigen::Vector3f d, Eigen::Vector3f rotAxis, float ang)
+	{
 		glTranslatef(d(0), d(1), d(2));
 		glRotatef(ang, rotAxis(0), rotAxis(1), rotAxis(2));
 		glScalef(scale(0), scale(1), scale(2));
 		glCallList(list);
 		glPopMatrix();
 	}
+
 
 	int id;
 	float r_i, m_i, r, m, V;
