@@ -27,9 +27,9 @@ public:
 
 	};
 
-	Body(int id_num, float rad,float mass, int tailLen, state init_state, enum Colors bc, enum Colors tc,int fps)
+	Body(Bodies bID, float rad,float mass, int tailLen, state init_state, enum Colors bc, enum Colors tc,int fps)
 	{
-		id = id_num;
+		bType = bID;
 		r_i = rad;
 		m_i = mass;
 		tailLen_i = tailLen;
@@ -245,7 +245,7 @@ public:
 	}
 
 
-	int id;
+	Bodies bType;
 	float r_i, m_i, r, m, V;
 	long tailLen_i, tailLen;
 	state S_i,S;

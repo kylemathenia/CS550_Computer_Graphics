@@ -31,7 +31,7 @@ public:
 		updateCenter();
 		speed = 1.0f;
 		bufferChangeCount = 0;
-		changeSelected(0);
+		changeSelected(int(Selections::NONE));
 	}
 
 	void step()
@@ -95,7 +95,7 @@ public:
 		if (sel < 0) { sel = sel * -1; }
 		for (int i = 0; i < 3; i++)
 		{
-			if (bList[i]->id == sel || sel == int(Selections::ALL)) { bList[i]->selected = true; }
+			if (int(bList[i]->bType) == sel || sel == int(Selections::ALL)) { bList[i]->selected = true; }
 			else { bList[i]->selected = false; }
 		}
 	}
@@ -123,14 +123,16 @@ public:
 
 	void resolveIfContact()
 	{
-		if (inContact(b1, b2) == true) { 
-			resolveContact(b1, b2); 
-		}
-		if (inContact(b1, b3) == true) { 
-			resolveContact(b1, b3); 
-		}
-		if (inContact(b2, b3) == true) { 
-			resolveContact(b2 , b3); 
+		// All combinations of boundary and bodies
+		int i, j;
+		for (i = 0; i < 3; i++)
+		{
+			//if (inContact(boundary, *bList[i]) == true) { resolveContact(*bList[i], *bList[j]); }
+			j = i + 1;
+			for (j; j < 3; j++)
+			{
+				if (inContact(*bList[i], *bList[j]) == true) {resolveContact(*bList[i], *bList[j]);}
+			}
 		}
 	}
 
@@ -164,7 +166,7 @@ public:
 		Eigen::Vector3f ContactVecB = bodyA.S.pos - bodyB.S.pos;
 		Eigen::Vector3f ContactRotAxisB = findCrossProduct(bodyB.S.vel, ContactVecB);
 
-		// If one of the velocity vectors has a zero magnitude, this will not work.
+		// TODO If one of the velocity vectors has a zero magnitude, this will not work.
 		double contactVecVelAngA = findAngDotProductR(ContactVecA, bodyA.S.vel);
 		double contactVecVelAngB = findAngDotProductR(ContactVecB, bodyB.S.vel);
 
@@ -173,13 +175,12 @@ public:
 		Eigen::Vector3f componentVelBefContactB = findUnit(ContactVecB) * (findMagVec(bodyB.S.vel) * cos(contactVecVelAngB));
 		Eigen::Vector3f componentVelOrthoContactB = bodyB.S.vel - componentVelBefContactB;
 
-
-		//TODO left off here. 
-		// Collapse the collision to 1d on the contact axis. Need to define which way is positive in 1d.
-		// Define bodyA ContactVecA as the positive direction. 
+		// Collapse the collision to 1d on the contact axis. This is possible because, for spheres, the contact axis is also in 
+		// the direction of the center of mass.
+		// Need to define which way is positive in 1d. Define bodyA ContactVecA as the positive direction. 
 		// For A, if the angle is acute, the velocity on the 1d ContactVecA axis is positve. 
 		double velA_bef = findMagVec(componentVelBefContactA) * angleAcuteR(contactVecVelAngA);
-		// For A if the angle is acute, it is moving in the negative direction on ContactVecA.
+		// For B if the angle is acute, it is moving in the negative direction on ContactVecA.
 		double velB_bef = findMagVec(componentVelBefContactB) * (-1) * angleAcuteR(contactVecVelAngB);
 		double velA_aft = solveElasticCollision1D(bodyA.m, bodyB.m, velA_bef, velB_bef,coefRest);
 		double velB_aft = solveElasticCollision1D(bodyB.m, bodyA.m, velB_bef, velA_bef, coefRest);
@@ -238,6 +239,8 @@ public:
 		}
 		// It could be the case that the binary search fails because the bodies collided too fast and are now moving
 		// away from each other. If so, set pos to prevPos, which should be not in contact. 
+
+		// TODO in this case, keep reducing X negatively until not in contact...
 		if (i == maxIters - 1) {
 			ptA = bodyA.prevPos;
 			ptB = bodyB.prevPos;
