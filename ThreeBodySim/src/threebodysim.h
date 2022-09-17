@@ -217,7 +217,13 @@ public:
 		Eigen::Vector3f segVecA = bodyA.S.pos - bodyA.prevPos;
 		Eigen::Vector3f segVecB = bodyB.S.pos - bodyB.prevPos;
 		Eigen::Vector3f ptA, ptB;
+		int dir = findSignf(bodyA.r*bodyB.r);
 		float totalRad = abs(bodyA.r + bodyB.r);
+		float tolerance = 0.001f * (totalRad);
+		float criteria1 = -1 * dir * tolerance;
+		float criteria2 = 0.0f;
+		float critLow = criteria1 < criteria2 ? criteria1 : criteria2;
+		float critHigh = criteria1 > criteria2 ? criteria1 : criteria2;
 		float leftX = 0;
 		float rightX = 1;
 		float X;
@@ -235,14 +241,14 @@ public:
 			}
 			else { leftX = X; }
 			// Make sure the bodies don't interfere. 
-			if (interferance <= 0.0f && interferance > -0.001f) { break; }
+			if (interferance <= critHigh && interferance > critLow) { break; }
 		}
 		// It could be the case that the binary search fails because the bodies collided too fast and are now moving
 		// away from each other. If so, set pos to prevPos, which should be not in contact. 
 
 		// TODO in this case, keep moving the bodies directly away from eachother until not in contact. 
 		if (i == maxIters - 1) {
-			moveUntilNoContact()
+			//moveUntilNoContact()
 			ptA = bodyA.prevPos;
 			ptB = bodyB.prevPos;
 			X = 0;
@@ -251,6 +257,45 @@ public:
 		bodyB.S.pos = ptB;
 		return dt - (X * dt);
 	}
+
+
+
+	void moveToPtOfContact2(Body& bodyA, Body& bodyB)
+	{
+		int dir = findSignf(bodyA.r) * findSignf(bodyB.r);
+		float magTotalRad = abs(bodyA.r + bodyB.r);
+		float tolerance = 0.001f * (magTotalRad);
+		float criteria1 = -1 * dir * tolerance;
+		float criteria2 = 0.0f;
+		float critLow = criteria1 < criteria2 ? criteria1 : criteria2;
+		float critHigh = criteria1 > criteria2 ? criteria1 : criteria2;
+		// If the ratio is high, bodyA should move more, if the ratio is lower bodyB should move more. 
+		float totMagVel = findMagVec(bodyA.S.vel) + findMagVec(bodyB.S.vel);
+		float totalTrav = findMagVec(bodyA.S.pos - bodyA.prevPos) + findMagVec(bodyB.S.pos - bodyB.prevPos);
+		float propA = findMagVec(bodyA.S.pos - bodyA.prevPos) / totMagVel;
+		float propB = findMagVec(bodyB.S.pos - bodyB.prevPos) / totMagVel;
+		int maxIters = 10;
+		Eigen::Vector3f ContactVecA = dir * findUnit(bodyB.S.pos - bodyA.S.pos);
+		Eigen::Vector3f ContactVecB = dir * findUnit(bodyA.S.pos - bodyB.S.pos);
+		float eval;
+		float leftX = 0;
+		float rightX = .1;
+		Eigen::Vector3f ptA, ptB;
+		float X = (rightX + leftX) / 2;
+		for (int i = 0; i < maxIters; i++)
+		{
+			ptA = bodyA.prevPos + (X * propA * -ContactVecA);
+			ptB = bodyB.prevPos + (X * propB * -ContactVecB);
+			eval = (magTotalRad - findDist(ptA, ptB));
+			if (eval > 0) { rightX = X; }
+			else { leftX = X; }
+			if (eval <= critHigh && eval >= critLow) { break; }
+		}
+		bodyA.S.pos = bodyA.prevPos + (X * propA * -ContactVecA);
+		bodyB.S.pos = bodyB.prevPos + (X * propB * -ContactVecB);
+	}
+
+
 
 	void updateCenter()
 	{
