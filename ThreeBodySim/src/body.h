@@ -159,7 +159,7 @@ public:
 	void drawBoundary(Eigen::Vector3f translation,float timeSinceContact)
 	{
 		//glDepthMask(GL_FALSE);
-		float visDuration = 0.3;
+		float visDuration = 0.5;
 		float minAlpha = 0.05;
 		float maxAlpha = 0.15;
 		float alpha = maxAlpha * (visDuration - timeSinceContact) / visDuration;
