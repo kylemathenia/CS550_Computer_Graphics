@@ -217,7 +217,7 @@ public:
 		Eigen::Vector3f segVecA = bodyA.S.pos - bodyA.prevPos;
 		Eigen::Vector3f segVecB = bodyB.S.pos - bodyB.prevPos;
 		Eigen::Vector3f ptA, ptB;
-		float totalRad = bodyA.r + bodyB.r;
+		float totalRad = abs(bodyA.r + bodyB.r);
 		float leftX = 0;
 		float rightX = 1;
 		float X;
