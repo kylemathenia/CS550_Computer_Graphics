@@ -130,28 +130,36 @@ const int FPS = 30;
 //Body b3(2, 2.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
 //////
 ////
-//// Different interesting perfectly balanced conditions. Non-symmetrical! Amazing how the center of mass stays constant. Beautiful
-state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(-1.0f, 0.0f, 2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-Body b1(0, 2.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
-state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 2.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-Body b2(1, 2.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
-state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(1.0f, -2.0f, -2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-Body b3(2, 2.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
-////
+//////// Test collision. Stationary center.
+//state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(-1.0f, 0.0f, 2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+//Body b1(Bodies::B1, 2.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
+//state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 2.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+//Body b2(Bodies::B2, 2.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
+//state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(1.0f, -2.0f, -2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+//Body b3(Bodies::B3, 2.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
 //////
-////// Test collision.
+ //////// Test collision. Moving center.
+state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(-1.0f, 0.0f, 4.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+Body b1(Bodies::B1, 2.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
+state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 2.0f, 2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+Body b2(Bodies::B2, 2.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
+state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(1.0f, -2.0f, 2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+Body b3(Bodies::B3, 2.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
+////
+////// Test collision. Linear.
 //state b1InitState = { Eigen::Vector3f(-1000.0f, 1000.0f, -1200.0f) ,Eigen::Vector3f(-1.0f, 0.0f, 2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b1(0, 2.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
+//Body b1(Bodies::B1, 2.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
 //state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b2(1, 2.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
+//Body b2(Bodies::B2, 2.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
 //state b3InitState = { Eigen::Vector3f(30.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b3(2, 2.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
+//Body b3(Bodies::B3, 2.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
 //////
 
 
 ////// ##################### OBJECTS ##################### //////
-
-ThreeBodySim sim(b1, b2, b3);
+state boundaryInitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
+Body boundary(Bodies::BOUNDARY, -70.0f, 3000000.0f, TAIL_LEN, boundaryInitState, Colors::WHITE, Colors::WHITE, FPS);
+ThreeBodySim sim(b1, b2, b3, boundary);
 Axis axis(3);
 
 
@@ -163,7 +171,7 @@ const char *GLUITITLE   = { "User Interface Window" };
 const int GLUITRUE  = { true  };
 const int GLUIFALSE = { false };
 // how fast to orbit. Units of degrees/frame period.
-const float ORBIT_SPEED = 0.2f;
+const float ORBIT_SPEED = 0.5f;
 // seconds per frame
 const float FRAME_PERIOD = 1 / (float)FPS;
 // multiplication factors for input interaction.
@@ -453,8 +461,8 @@ KeyCallback(unsigned char c, int x, int y)
 	else if (c == 'e') { sim.changeSpeed(2.0f); }
 	else if (c == 's') { sim.changeSelected(-1); }
 	else if (c == 'f') { sim.changeSelected(1); }
-	else if (c == 'g') { sim.changeSize(0.05f); }
-	else if (c == 'a') { sim.changeSize(-0.05f); }
+	else if (c == 'g') { sim.changeSize(1.0526316f); }
+	else if (c == 'a') { sim.changeSize(0.95f); }
 	else if (c == 'q' || c == EventEnums::ESCAPE) { DoMainMenu(QUIT); }
 	else { fprintf(stderr, "Don't know what to do with keyboard hit: '%c' (0x%0x)\n", c, c); }
 

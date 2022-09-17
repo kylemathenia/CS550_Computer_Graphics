@@ -32,6 +32,14 @@ enum class Selections
 	MAX_NUM_SELECTIONS = NONE
 };
 
+enum class Bodies
+{
+	B1,
+	B2,
+	B3,
+	BOUNDARY
+};
+
 enum Tails
 {	
 	LINES, 
