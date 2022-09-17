@@ -226,9 +226,8 @@ public:
 		float critHigh = criteria1 > criteria2 ? criteria1 : criteria2;
 		float leftX = 0;
 		float rightX = 1;
-		float X;
-		float interferance = (totalRad - findDist(bodyA.S.pos, bodyB.S.pos));
-		int maxIters = 100;
+		float X, interferance;
+		int maxIters = 40;
 		int i; 
 		for (i = 0; i < maxIters; i++)
 		{
@@ -240,22 +239,38 @@ public:
 				rightX = X;
 			}
 			else { leftX = X; }
-			// Make sure the bodies don't interfere. 
 			if (interferance <= critHigh && interferance > critLow) { break; }
 		}
 		// It could be the case that the binary search fails because the bodies collided too fast and are now moving
-		// away from each other. If so, set pos to prevPos, which should be not in contact. 
-
-		// TODO in this case, keep moving the bodies directly away from eachother until not in contact. 
+		// away from each other. If so, move away until in a good position.  
 		if (i == maxIters - 1) {
 			//moveUntilNoContact()
 			ptA = bodyA.prevPos;
 			ptB = bodyB.prevPos;
-			X = 0;
+			moveUntilNoContact(bodyA,bodyB,dir);
+			return 0.0f;
 		}
 		bodyA.S.pos = ptA;
 		bodyB.S.pos = ptB;
 		return dt - (X * dt);
+	}
+
+	void moveUntilNoContact(Body& bodyA, Body& bodyB,int dir)
+	{
+		float totalRad = abs(bodyA.r + bodyB.r);
+		float stepSize = 0.1f * (totalRad);
+		Eigen::Vector3f ContactVecA = dir * findUnit(bodyB.S.pos - bodyA.S.pos);
+		Eigen::Vector3f ContactVecB = dir * findUnit(bodyA.S.pos - bodyB.S.pos);
+		Eigen::Vector3f ptA,ptB;
+		float interferance;
+		do {
+			ptA = bodyA.prevPos + (stepSize * -ContactVecA);
+			ptB = bodyB.prevPos + (stepSize * -ContactVecB);
+			interferance = dir * (totalRad - findDist(ptA, ptB));
+		}
+		while (interferance > stepSize);
+		bodyA.S.pos = ptA;
+		bodyB.S.pos = ptB;
 	}
 
 
