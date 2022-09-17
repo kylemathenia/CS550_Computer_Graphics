@@ -13,11 +13,12 @@
 class ThreeBodySim
 {
 public:
-	ThreeBodySim(Body& body1, Body& body2, Body& body3, Body& boundary)
+	ThreeBodySim(Body& body1, Body& body2, Body& body3, Body& bound)
 	{
 		b1 = body1;
 		b2 = body2;
 		b3 = body3;
+		boundary = bound;
 		prevTime = 0;
 		dt = 0;
 		reset();
@@ -39,8 +40,8 @@ public:
 		findAccels();
 		updateTime();
 		updateBodies();
-		updateCenter();
 		resolveIfContact();
+		updateCenter();
 		updateTails();
 	}
 
@@ -113,6 +114,9 @@ public:
 		b2.S.vel = b2.S.vel + (b2.S.acc * dt * speed);
 		b3.S.vel = b3.S.vel + (b3.S.acc * dt * speed);
 
+		//boundary.prevPos = boundary.S.pos;
+		//boundary.S.pos = center;
+		boundary.S.pos = Eigen::Vector3f{ 0,0,0 };
 		b1.prevPos = b1.S.pos;
 		b1.S.pos = b1.S.pos + (b1.S.vel * dt * speed);
 		b2.prevPos = b2.S.pos;
@@ -142,7 +146,9 @@ public:
 		int i, j;
 		for (i = 0; i < 3; i++)
 		{
-			//if (inContact(boundary, *bList[i]) == true) { resolveContact(*bList[i], *bList[j]); }
+			if (inContact(boundary, *bList[i]) == true) { 
+				resolveContact(boundary, *bList[i]);
+			}
 			j = i + 1;
 			for (j; j < 3; j++)
 			{
@@ -310,7 +316,7 @@ public:
 
 	double prevTime, dt;
 	Eigen::Vector3f c;
-	Body b1, b2, b3;
+	Body b1, b2, b3,boundary;
 	Body* bList[3] = {&b1,&b2,&b3};
 	Eigen::Vector3f center;
 	float speed;
