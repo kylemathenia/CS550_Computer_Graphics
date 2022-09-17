@@ -59,9 +59,13 @@ public:
 		b2.drawObliq(translation);
 		b3.drawObliq(translation);
 
+		glDepthMask(GL_FALSE);
 		b1.drawTran(translation, tailOption);
 		b2.drawTran(translation, tailOption);
 		b3.drawTran(translation, tailOption);
+		boundary.drawBoundary(translation, timeSinceBoundContact);
+		glDepthMask(GL_TRUE);
+		glDisable(GL_BLEND);
 	}
 
 	void initLists()
@@ -69,6 +73,7 @@ public:
 		b1.initLists();
 		b2.initLists();
 		b3.initLists();
+		boundary.initLists();
 	}
 
 	void changeSpeed(float multiplier)
@@ -115,6 +120,7 @@ public:
 		b3.S.vel = b3.S.vel + (b3.S.acc * dt * speed);
 
 		boundary.S.pos = Eigen::Vector3f{ 0,0,0 };
+		timeSinceBoundContact += dt;
 		b1.prevPos = b1.S.pos;
 		b1.S.pos = b1.S.pos + (b1.S.vel * dt * speed);
 		b2.prevPos = b2.S.pos;
@@ -146,6 +152,7 @@ public:
 		{
 			if (inContact(boundary, *bList[i]) == true) { 
 				resolveContact(boundary, *bList[i]);
+				timeSinceBoundContact = 0.0f;
 			}
 			j = i + 1;
 			for (j; j < 3; j++)
@@ -221,7 +228,7 @@ public:
 	void moveUntilNoContact(Body& bodyA, Body& bodyB, int dir)
 	{
 		float totalRad = abs(bodyA.r + bodyB.r);
-		float stepSize = 0.05f * (totalRad);
+		float stepSize = 0.1f * (totalRad);
 		Eigen::Vector3f ContactVecA = dir * findUnit(bodyB.S.pos - bodyA.S.pos);
 		Eigen::Vector3f ContactVecB = dir * findUnit(bodyA.S.pos - bodyB.S.pos);
 		Eigen::Vector3f ptA, ptB;
@@ -320,5 +327,5 @@ public:
 	float speed;
 	float coefRest = 0.5f;
 	int bufferChangeCount;
-
+	float timeSinceBoundContact = 100000;
 };

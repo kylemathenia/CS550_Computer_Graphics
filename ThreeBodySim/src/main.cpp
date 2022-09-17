@@ -158,7 +158,7 @@ Body b3(Bodies::B3, 2.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAG
 
 ////// ##################### OBJECTS ##################### //////
 state boundaryInitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-Body boundary(Bodies::BOUNDARY, -200.0f, 3000000.0f, TAIL_LEN, boundaryInitState, Colors::WHITE, Colors::WHITE, FPS);
+Body boundary(Bodies::BOUNDARY, -70.0f, 3000000.0f, TAIL_LEN, boundaryInitState, Colors::WHITE, Colors::WHITE, FPS);
 ThreeBodySim sim(b1, b2, b3, boundary);
 Axis axis(3);
 

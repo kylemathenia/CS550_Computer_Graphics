@@ -81,7 +81,7 @@ public:
 
 	void initLists()
 	{
-		sphereList = getSphereList(r, 40, 40);
+		sphereList = getSphereList(abs(r), 40, 40);
 		cylinderList = getConeList(1, 1, 1, 15, 15,false,false);
 		lineList = getLineList(1.5f);
 	}
@@ -137,13 +137,14 @@ public:
 
 	void drawTran(Eigen::Vector3f translation, Tails tailOption)
 	{
-		glDepthMask(GL_FALSE);
+		//glDepthMask(GL_FALSE);
 		if (selected == true) { drawSelector(translation); }
-		if (tailOption == Tails::LINES) { drawLineTail(translation, 1.0f, 1.5f); }
+		if (bType == Bodies::BOUNDARY) { drawLineTail(translation, 1.0f, 1.5f);; }
+		else if (tailOption == Tails::LINES) { drawLineTail(translation, 1.0f, 1.5f); }
 		else if (tailOption == Tails::CYLINDERS) { drawCylinderTail(translation, 1.0f, 0.1f); }
 		else if (tailOption == Tails::SPHERES) { drawSphereTail(translation, 0.3f, 0.5f, false); }
-		glDepthMask(GL_TRUE);
-		glDisable(GL_BLEND);
+		//glDepthMask(GL_TRUE);
+		//glDisable(GL_BLEND);
 	}
 
 	void drawSelector(Eigen::Vector3f translation)
@@ -153,6 +154,23 @@ public:
 		Eigen::Vector3f rotAxis = { 1, 0, 0 };
 		float ang = 0;
 		drawGlSeqTran(sphereList, scale, delta, rotAxis, ang, 0.3f, Colors::WHITE);
+	}
+
+	void drawBoundary(Eigen::Vector3f translation,float timeSinceContact)
+	{
+		//glDepthMask(GL_FALSE);
+		float visDuration = 0.3;
+		float minAlpha = 0.05;
+		float maxAlpha = 0.15;
+		float alpha = maxAlpha * (visDuration - timeSinceContact) / visDuration;
+		if (timeSinceContact > visDuration) { alpha = minAlpha; }
+		Eigen::Vector3f delta = S.pos - translation;
+		Eigen::Vector3f scale = { 1, 1, 1 };
+		Eigen::Vector3f rotAxis = { 1, 0, 0 };
+		float ang = 0;
+		drawGlSeqTran(sphereList, scale, delta, rotAxis, ang, alpha, Colors::WHITE);
+		//glDepthMask(GL_TRUE);
+		//glDisable(GL_BLEND);
 	}
 
 	void drawLineTail(Eigen::Vector3f translation, float maxAlpha,float width)
