@@ -240,8 +240,9 @@ public:
 		// It could be the case that the binary search fails because the bodies collided too fast and are now moving
 		// away from each other. If so, set pos to prevPos, which should be not in contact. 
 
-		// TODO in this case, keep reducing X negatively until not in contact...
+		// TODO in this case, keep moving the bodies directly away from eachother until not in contact. 
 		if (i == maxIters - 1) {
+			moveUntilNoContact()
 			ptA = bodyA.prevPos;
 			ptB = bodyB.prevPos;
 			X = 0;
