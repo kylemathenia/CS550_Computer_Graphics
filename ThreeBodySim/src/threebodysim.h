@@ -39,9 +39,9 @@ public:
 		findAccels();
 		updateTime();
 		updateBodies();
+		updateCenter();
 		resolveIfContact();
 		updateTails();
-		updateCenter();
 	}
 
 	void drawBodies(Views view,Tails tailOption)
@@ -205,7 +205,7 @@ public:
 		}
 		// It could be the case that the binary search fails because the bodies collided too fast and are now moving
 		// away from each other. If so, move away until in a good position.  
-		if (i == maxIters - 1) {
+		if (i == maxIters) {
 			moveUntilNoContact(bodyA, bodyB, dir);
 			return 0.0f;
 		}
@@ -217,7 +217,7 @@ public:
 	void moveUntilNoContact(Body& bodyA, Body& bodyB, int dir)
 	{
 		float totalRad = abs(bodyA.r + bodyB.r);
-		float stepSize = 0.1f * (totalRad);
+		float stepSize = 0.05f * (totalRad);
 		Eigen::Vector3f ContactVecA = dir * findUnit(bodyB.S.pos - bodyA.S.pos);
 		Eigen::Vector3f ContactVecB = dir * findUnit(bodyA.S.pos - bodyB.S.pos);
 		Eigen::Vector3f ptA, ptB;
