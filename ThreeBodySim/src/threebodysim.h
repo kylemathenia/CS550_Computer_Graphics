@@ -114,8 +114,6 @@ public:
 		b2.S.vel = b2.S.vel + (b2.S.acc * dt * speed);
 		b3.S.vel = b3.S.vel + (b3.S.acc * dt * speed);
 
-		//boundary.prevPos = boundary.S.pos;
-		//boundary.S.pos = center;
 		boundary.S.pos = Eigen::Vector3f{ 0,0,0 };
 		b1.prevPos = b1.S.pos;
 		b1.S.pos = b1.S.pos + (b1.S.vel * dt * speed);
@@ -202,7 +200,7 @@ public:
 			X = (rightX + leftX) / 2;
 			ptA = bodyA.prevPos + (X * segVecA);
 			ptB = bodyB.prevPos + (X * segVecB);
-			interferance = (totalRad - findDist(ptA, ptB));
+			interferance = ((dir*totalRad) - (dir*findDist(ptA, ptB)));
 			if (interferance > 0) {
 				rightX = X;
 			}
