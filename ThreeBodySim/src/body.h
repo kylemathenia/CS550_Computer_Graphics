@@ -246,7 +246,8 @@ public:
 
 
 	Bodies bType;
-	float r_i, m_i, r, m, V;
+	float r_i, m_i, r, m;
+	double V;
 	long tailLen_i, tailLen;
 	state S_i,S;
 	Eigen::Vector3f* tail;

@@ -13,7 +13,7 @@
 class ThreeBodySim
 {
 public:
-	ThreeBodySim(Body& body1, Body& body2, Body& body3)
+	ThreeBodySim(Body& body1, Body& body2, Body& body3, Body& boundary)
 	{
 		b1 = body1;
 		b2 = body2;
@@ -121,6 +121,21 @@ public:
 		b3.S.pos = b3.S.pos + (b3.S.vel * dt * speed);
 	}
 
+	void updateTails()
+	{
+		b1.updateTail();
+		b2.updateTail();
+		b3.updateTail();
+	}
+
+	void updateCenter()
+	{
+		center = (b1.S.pos + b2.S.pos + b3.S.pos) / 3;
+	}
+
+
+	// ##################### RESOLVING CONTACT FUNCTIONS ##################### //
+
 	void resolveIfContact()
 	{
 		// All combinations of boundary and bodies
@@ -138,7 +153,8 @@ public:
 
 	bool inContact(Body& bodyA, Body& bodyB) 
 	{
-		if (findDist(bodyA.S.pos, bodyB.S.pos) <= (bodyA.r + bodyB.r)){
+		int dir = findSignf(bodyA.r * bodyB.r);
+		if (dir*findDist(bodyA.S.pos, bodyB.S.pos) <= dir*abs((bodyA.r + bodyB.r))){
 			return true;
 		}
 		else {return false;}
@@ -151,10 +167,68 @@ public:
 		// find the change in vel from rotation and add that vector to final vel. 
 		// What direction will that be? Do the cross product of the rotational axes??
 		//resolveRotationalCollision(bodyA, bodyB);
-
-		// I think this is leaving the position still inside sometimes??? Something probably going on here. 
 		bodyA.S.pos = bodyA.S.pos + (bodyA.S.vel * dtAfter * speed);
 		bodyB.S.pos = bodyB.S.pos + (bodyB.S.vel * dtAfter * speed);
+	}
+
+
+	float moveToPtOfContact(Body& bodyA, Body& bodyB)
+	{
+		// Binary search to find the point in space where contact was made for each body.
+		// Returns the dt left to move after the collision.
+		Eigen::Vector3f segVecA = bodyA.S.pos - bodyA.prevPos;
+		Eigen::Vector3f segVecB = bodyB.S.pos - bodyB.prevPos;
+		Eigen::Vector3f ptA, ptB;
+		int dir = findSignf(bodyA.r * bodyB.r);
+		float totalRad = abs(bodyA.r + bodyB.r);
+		float tolerance = 0.005f * (totalRad);
+		float criteria1 = -1 * dir * tolerance;
+		float criteria2 = 0.0f;
+		float critLow = criteria1 < criteria2 ? criteria1 : criteria2;
+		float critHigh = criteria1 > criteria2 ? criteria1 : criteria2;
+		float leftX = 0;
+		float rightX = 1;
+		float X, interferance;
+		int maxIters = 20;
+		int i;
+		for (i = 0; i < maxIters; i++)
+		{
+			X = (rightX + leftX) / 2;
+			ptA = bodyA.prevPos + (X * segVecA);
+			ptB = bodyB.prevPos + (X * segVecB);
+			interferance = (totalRad - findDist(ptA, ptB));
+			if (interferance > 0) {
+				rightX = X;
+			}
+			else { leftX = X; }
+			if (interferance <= critHigh && interferance > critLow) { break; }
+		}
+		// It could be the case that the binary search fails because the bodies collided too fast and are now moving
+		// away from each other. If so, move away until in a good position.  
+		if (i == maxIters - 1) {
+			moveUntilNoContact(bodyA, bodyB, dir);
+			return 0.0f;
+		}
+		bodyA.S.pos = ptA;
+		bodyB.S.pos = ptB;
+		return dt - (X * dt);
+	}
+
+	void moveUntilNoContact(Body& bodyA, Body& bodyB, int dir)
+	{
+		float totalRad = abs(bodyA.r + bodyB.r);
+		float stepSize = 0.1f * (totalRad);
+		Eigen::Vector3f ContactVecA = dir * findUnit(bodyB.S.pos - bodyA.S.pos);
+		Eigen::Vector3f ContactVecB = dir * findUnit(bodyA.S.pos - bodyB.S.pos);
+		Eigen::Vector3f ptA, ptB;
+		float interferance;
+		do {
+			ptA = bodyA.prevPos + (stepSize * -ContactVecA);
+			ptB = bodyB.prevPos + (stepSize * -ContactVecB);
+			interferance = dir * (totalRad - findDist(ptA, ptB));
+		} while (interferance > stepSize);
+		bodyA.S.pos = ptA;
+		bodyB.S.pos = ptB;
 	}
 
 	// Elastic collision with a coefficient of restitution. 
@@ -184,10 +258,8 @@ public:
 		double velB_bef = findMagVec(componentVelBefContactB) * (-1) * angleAcuteR(contactVecVelAngB);
 		double velA_aft = solveElasticCollision1D(bodyA.m, bodyB.m, velA_bef, velB_bef,coefRest);
 		double velB_aft = solveElasticCollision1D(bodyB.m, bodyA.m, velB_bef, velA_bef, coefRest);
-	
 		Eigen::Vector3f componentVelAftContactA = velA_aft * findUnit(ContactVecA);
 		Eigen::Vector3f componentVelAftContactB = velB_aft * findUnit(ContactVecA);
-
 		bodyA.S.vel = componentVelAftContactA + componentVelOrthoContactA;
 		bodyB.S.vel = componentVelAftContactB + componentVelOrthoContactB;
 	}
@@ -198,124 +270,19 @@ public:
 		// Inelastic collision. Finds the axis of rotation after the collision, and spin velocity. 
 		Eigen::Vector3f rotCollisionVelModA, rotCollisionVelModB;
 
+		Eigen::Vector3f ContactVecA = bodyB.S.pos - bodyA.S.pos;
+		Eigen::Vector3f ContactRotAxisA = findCrossProduct(bodyA.S.vel, ContactVecA);
+
+		Eigen::Vector3f ContactVecB = bodyA.S.pos - bodyB.S.pos;
+		Eigen::Vector3f ContactRotAxisB = findCrossProduct(bodyB.S.vel, ContactVecB);
+
 		// Remember to add the rotation component to cartesian velocity.
 		bodyA.S.vel += rotCollisionVelModA;
 		bodyB.S.vel += rotCollisionVelModB;	
 	}
 
-	void updateTails()
-	{
-		b1.updateTail();
-		b2.updateTail();
-		b3.updateTail();
-	}
 
-	float moveToPtOfContact(Body& bodyA, Body& bodyB)
-	{
-		// Binary search to find the point in space where contact was made for each body.
-		// Returns the dt left to simulate after the collision.
-		Eigen::Vector3f segVecA = bodyA.S.pos - bodyA.prevPos;
-		Eigen::Vector3f segVecB = bodyB.S.pos - bodyB.prevPos;
-		Eigen::Vector3f ptA, ptB;
-		int dir = findSignf(bodyA.r*bodyB.r);
-		float totalRad = abs(bodyA.r + bodyB.r);
-		float tolerance = 0.001f * (totalRad);
-		float criteria1 = -1 * dir * tolerance;
-		float criteria2 = 0.0f;
-		float critLow = criteria1 < criteria2 ? criteria1 : criteria2;
-		float critHigh = criteria1 > criteria2 ? criteria1 : criteria2;
-		float leftX = 0;
-		float rightX = 1;
-		float X, interferance;
-		int maxIters = 40;
-		int i; 
-		for (i = 0; i < maxIters; i++)
-		{
-			X = (rightX + leftX) / 2;
-			ptA = bodyA.prevPos + (X * segVecA);
-			ptB = bodyB.prevPos + (X * segVecB);
-			interferance = (totalRad - findDist(ptA, ptB));
-			if (interferance > 0) {
-				rightX = X;
-			}
-			else { leftX = X; }
-			if (interferance <= critHigh && interferance > critLow) { break; }
-		}
-		// It could be the case that the binary search fails because the bodies collided too fast and are now moving
-		// away from each other. If so, move away until in a good position.  
-		if (i == maxIters - 1) {
-			//moveUntilNoContact()
-			ptA = bodyA.prevPos;
-			ptB = bodyB.prevPos;
-			moveUntilNoContact(bodyA,bodyB,dir);
-			return 0.0f;
-		}
-		bodyA.S.pos = ptA;
-		bodyB.S.pos = ptB;
-		return dt - (X * dt);
-	}
-
-	void moveUntilNoContact(Body& bodyA, Body& bodyB,int dir)
-	{
-		float totalRad = abs(bodyA.r + bodyB.r);
-		float stepSize = 0.1f * (totalRad);
-		Eigen::Vector3f ContactVecA = dir * findUnit(bodyB.S.pos - bodyA.S.pos);
-		Eigen::Vector3f ContactVecB = dir * findUnit(bodyA.S.pos - bodyB.S.pos);
-		Eigen::Vector3f ptA,ptB;
-		float interferance;
-		do {
-			ptA = bodyA.prevPos + (stepSize * -ContactVecA);
-			ptB = bodyB.prevPos + (stepSize * -ContactVecB);
-			interferance = dir * (totalRad - findDist(ptA, ptB));
-		}
-		while (interferance > stepSize);
-		bodyA.S.pos = ptA;
-		bodyB.S.pos = ptB;
-	}
-
-
-
-	void moveToPtOfContact2(Body& bodyA, Body& bodyB)
-	{
-		int dir = findSignf(bodyA.r) * findSignf(bodyB.r);
-		float magTotalRad = abs(bodyA.r + bodyB.r);
-		float tolerance = 0.001f * (magTotalRad);
-		float criteria1 = -1 * dir * tolerance;
-		float criteria2 = 0.0f;
-		float critLow = criteria1 < criteria2 ? criteria1 : criteria2;
-		float critHigh = criteria1 > criteria2 ? criteria1 : criteria2;
-		// If the ratio is high, bodyA should move more, if the ratio is lower bodyB should move more. 
-		float totMagVel = findMagVec(bodyA.S.vel) + findMagVec(bodyB.S.vel);
-		float totalTrav = findMagVec(bodyA.S.pos - bodyA.prevPos) + findMagVec(bodyB.S.pos - bodyB.prevPos);
-		float propA = findMagVec(bodyA.S.pos - bodyA.prevPos) / totMagVel;
-		float propB = findMagVec(bodyB.S.pos - bodyB.prevPos) / totMagVel;
-		int maxIters = 10;
-		Eigen::Vector3f ContactVecA = dir * findUnit(bodyB.S.pos - bodyA.S.pos);
-		Eigen::Vector3f ContactVecB = dir * findUnit(bodyA.S.pos - bodyB.S.pos);
-		float eval;
-		float leftX = 0;
-		float rightX = .1;
-		Eigen::Vector3f ptA, ptB;
-		float X = (rightX + leftX) / 2;
-		for (int i = 0; i < maxIters; i++)
-		{
-			ptA = bodyA.prevPos + (X * propA * -ContactVecA);
-			ptB = bodyB.prevPos + (X * propB * -ContactVecB);
-			eval = (magTotalRad - findDist(ptA, ptB));
-			if (eval > 0) { rightX = X; }
-			else { leftX = X; }
-			if (eval <= critHigh && eval >= critLow) { break; }
-		}
-		bodyA.S.pos = bodyA.prevPos + (X * propA * -ContactVecA);
-		bodyB.S.pos = bodyB.prevPos + (X * propB * -ContactVecB);
-	}
-
-
-
-	void updateCenter()
-	{
-		center = (b1.S.pos + b2.S.pos + b3.S.pos) / 3;
-	}
+	// ##################### UTILS ##################### //
 
 	void updateTime()
 	{
@@ -324,12 +291,7 @@ public:
 		prevTime = curTime;
 	}
 
-	void initTime() {while (getCurTime() > 0.1) {};}
-
-	float getCurTime()
-	{
-		return ((float)glutGet(GLUT_ELAPSED_TIME)) / 1000.f;
-	}
+	float getCurTime() {return ((float)glutGet(GLUT_ELAPSED_TIME)) / 1000.f;}
 
 	Eigen::Vector3f numerator(Body a, Body b)
 	{
@@ -352,7 +314,7 @@ public:
 	Body* bList[3] = {&b1,&b2,&b3};
 	Eigen::Vector3f center;
 	float speed;
-	float coefRest = 0.9f;
+	float coefRest = 0.5f;
 	int bufferChangeCount;
 
 };
