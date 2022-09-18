@@ -154,19 +154,16 @@ public:
 
 	void drawBoundary(Eigen::Vector3f translation,float timeSinceContact)
 	{
-		//glDepthMask(GL_FALSE);
 		float visDuration = 0.5;
-		float minAlpha = 0.05;
+		float minAlpha = 0.02;
 		float maxAlpha = 0.15;
-		float alpha = maxAlpha * (visDuration - timeSinceContact) / visDuration;
+		float alpha = (((maxAlpha - minAlpha) * (visDuration - timeSinceContact)) / visDuration) + minAlpha;
 		if (timeSinceContact > visDuration) { alpha = minAlpha; }
 		Eigen::Vector3f delta = S.pos - translation;
 		Eigen::Vector3f scale = { 1, 1, 1 };
 		Eigen::Vector3f rotAxis = { 1, 0, 0 };
 		float ang = 0;
 		drawGlSeqTran(sphereList, scale, delta, rotAxis, ang, alpha, Colors::WHITE);
-		//glDepthMask(GL_TRUE);
-		//glDisable(GL_BLEND);
 	}
 
 	void drawLineTail(Eigen::Vector3f translation, float maxAlpha,float width)
