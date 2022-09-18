@@ -137,14 +137,10 @@ public:
 
 	void drawTran(Eigen::Vector3f translation, Tails tailOption)
 	{
-		//glDepthMask(GL_FALSE);
 		if (selected == true) { drawSelector(translation); }
-		if (bType == Bodies::BOUNDARY) { drawLineTail(translation, 1.0f, 1.5f);; }
-		else if (tailOption == Tails::LINES) { drawLineTail(translation, 1.0f, 1.5f); }
+		if (tailOption == Tails::LINES) { drawLineTail(translation, 1.0f, 1.5f); }
 		else if (tailOption == Tails::CYLINDERS) { drawCylinderTail(translation, 1.0f, 0.1f); }
 		else if (tailOption == Tails::SPHERES) { drawSphereTail(translation, 0.3f, 0.5f, false); }
-		//glDepthMask(GL_TRUE);
-		//glDisable(GL_BLEND);
 	}
 
 	void drawSelector(Eigen::Vector3f translation)
