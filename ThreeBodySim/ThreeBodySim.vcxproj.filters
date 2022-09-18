@@ -68,5 +68,8 @@
     <ClInclude Include="src\Shapes\cessnaPts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Shapes\cessna.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

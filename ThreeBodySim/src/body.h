@@ -160,7 +160,7 @@ public:
 	{
 		//glDepthMask(GL_FALSE);
 		float visDuration = 0.3;
-		float minAlpha = 0.05;
+		float minAlpha = 0.00;
 		float maxAlpha = 0.15;
 		float alpha = maxAlpha * (visDuration - timeSinceContact) / visDuration;
 		if (timeSinceContact > visDuration) { alpha = minAlpha; }

@@ -33,6 +33,7 @@
     <ClInclude Include="src\color.h" />
     <ClInclude Include="src\math_utils.h" />
     <ClInclude Include="src\options.h" />
+    <ClInclude Include="src\Shapes\cessna.h" />
     <ClInclude Include="src\Shapes\cessnaPts.h" />
     <ClInclude Include="src\Shapes\shapeutils.h" />
     <ClInclude Include="src\Shapes\shapes.h" />

@@ -23,6 +23,7 @@
 #include "color.h"
 #include "options.h"
 #include "Shapes/shapes.h"
+//#include "Shapes/cessna.h"
 #include "Shapes/cessnaPts.h"
 #include "body.h"
 #include "axis.h"
@@ -93,10 +94,7 @@ public:
 	{
 		glPushMatrix();
 		glPushMatrix();
-		glRotatef(-7., 0., 1., 0.);
-		glTranslatef(0., -1., 0.);
-		glRotatef(97., 0., 1., 0.);
-		glRotatef(-15., 0., 0., 1.);
+		glRotatef(90., 0., 1., 0.);
 		glCallList(cessnaList);
 		glPopMatrix();
 	}
@@ -268,11 +266,6 @@ Display()
 	glLoadIdentity();
 	// set the eye position, look-at position, and up-vector:
 	gluLookAt(0., 0., 21., 0., 0., 0., 0., 1., 0.);
-	// draw the axis before any global transformations.
-	if (axesOn == 1) {
-		pt3i axisTranslation = { -10, -10, 8 };
-		axis.draw(rot, axisTranslation);
-	}
 	// uniformly scale the scene:
 	if (scale < MINSCALE)
 		scale = MINSCALE;
@@ -281,6 +274,11 @@ Display()
 	glRotatef((GLfloat)rot.y, 0., 1., 0.);
 	glRotatef((GLfloat)rot.x, 1., 0., 0.);
 
+	// draw the axis before any global transformations.
+	if (axesOn == 1) {
+		pt3i axisTranslation = { 0, 5, 0 };
+		axis.draw(axisTranslation);
+	}
 	superCessna.draw();
 	// draw the bodies
 	sim.drawBodies((Views)whichView, (Tails)whichTail);
@@ -544,7 +542,7 @@ void
 DoResetMenu()
 {
 	activeButton = 0;
-	axesOn = 0;
+	axesOn = 1;
 	debugOn = 0;
 	orbitOn = 0;
 	scale = 1.0f;

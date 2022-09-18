@@ -30,12 +30,10 @@ public:
 		axisList = getAxesList(axisWidth);
 	}
 
-	void draw(pt2f rot, pt3i translation)
+	void draw(pt3i translation)
 	{
 		glPushMatrix();
 		glTranslatef((GLfloat)translation.x, translation.y, translation.z);
-		glRotatef((GLfloat)rot.y, 0., 1., 0.);
-		glRotatef((GLfloat)rot.x, 1., 0., 0.);
 		glColor3fv(&Colors[Colors::WHITE][0]);
 		glCallList(axisList);
 		glPopMatrix();
