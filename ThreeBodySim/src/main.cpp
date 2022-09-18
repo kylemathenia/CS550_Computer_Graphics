@@ -370,7 +370,7 @@ InitGraphics()
 	glutPassiveMotionFunc(MouseMotionCallback);
 	glutVisibilityFunc(VisibilityCallback);
 	if (FPS != 0) {
-		// Using the timer to make sure the tail lengths don't change a bunch depending on the refresh rate. 
+		// Use the timer to make sure the tail spacing is somewhat consistent. 
 		glutTimerFunc(1, AnimateAtFPS, 0);
 		glutIdleFunc(NULL);
 	}
