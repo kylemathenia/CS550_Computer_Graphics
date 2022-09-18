@@ -1,6 +1,5 @@
 #pragma once
 #include <stdio.h>
-#define _USE_MATH_DEFINES
 #include <math.h>
 #include "glew.h"
 #include <GL/gl.h>
@@ -8,6 +7,8 @@
 #include "../utils.h"
 #include "../color.h"
 
+#define PROPELLER_RADIUS	 1.0
+#define PROPELLER_WIDTH		 0.4
 
 void cessna(enum Colors c)
 {
@@ -33,7 +34,7 @@ void cessna(enum Colors c)
 		Cross(p01, p02, n);
 		Unit(n, n);
 		n[1] = fabs(n[1]);
-		glColor3f(Colors[c][0]* n[1], Colors[c][1]* n[1], Colors[c][2]* n[1]);
+		glColor3f(Colors[c][0] * n[1], Colors[c][1] * n[1], Colors[c][2] * n[1]);
 
 		glVertex3f(p0->x, p0->y, p0->z);
 		glVertex3f(p1->x, p1->y, p1->z);
@@ -52,31 +53,25 @@ getCessnaList(enum Colors c)
 	return obj_list;
 }
 
-class Cessna
+void blade()
 {
-public:
-	Cessna(enum Colors color)
-	{
-		c = color;
-	};
+	glBegin(GL_TRIANGLES);
+	glVertex2f(PROPELLER_RADIUS, PROPELLER_WIDTH / 2.);
+	glVertex2f(0., 0.);
+	glVertex2f(PROPELLER_RADIUS, -PROPELLER_WIDTH / 2.);
 
-	void initList()
-	{
-		cessnaList = getCessnaList(Colors::GREEN);
-	}
+	glVertex2f(-PROPELLER_RADIUS, -PROPELLER_WIDTH / 2.);
+	glVertex2f(0., 0.);
+	glVertex2f(-PROPELLER_RADIUS, PROPELLER_WIDTH / 2.);
+	glEnd();
+}
 
-	void draw()
-	{
-		glPushMatrix();
-		glPushMatrix();
-		glRotatef(-7., 0., 1., 0.);
-		glTranslatef(0., -1., 0.);
-		glRotatef(97., 0., 1., 0.);
-		glRotatef(-15., 0., 0., 1.);
-		glCallList(cessnaList);
-		glPopMatrix();
-	}
-
-	GLuint cessnaList;
-	enum Colors c;
-};
+GLuint
+getBladeList()
+{
+	GLuint obj_list = glGenLists(1);
+	glNewList(obj_list, GL_COMPILE);
+	blade();
+	glEndList();
+	return obj_list;
+}

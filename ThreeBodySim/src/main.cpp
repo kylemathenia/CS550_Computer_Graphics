@@ -23,86 +23,11 @@
 #include "color.h"
 #include "options.h"
 #include "Shapes/shapes.h"
-//#include "Shapes/cessna.h"
-#include "Shapes/cessnaPts.h"
+#include "Shapes/cessna.h"
+//#include "Shapes/cessnaPts.h"
 #include "body.h"
 #include "axis.h"
 #include "threebodysim.h"
-
-
-
-
-
-
-void cessna(enum Colors c)
-{
-	int i;
-	struct point* p0, * p1, * p2;
-	struct tri* tp;
-	float p01[3], p02[3], n[3];
-
-	glBegin(GL_TRIANGLES);
-	for (i = 0, tp = CESSNAtris; i < CESSNAntris; i++, tp++)
-	{
-		p0 = &CESSNApoints[tp->p0];
-		p1 = &CESSNApoints[tp->p1];
-		p2 = &CESSNApoints[tp->p2];
-
-		// fake "lighting" from above:
-		p01[0] = p1->x - p0->x;
-		p01[1] = p1->y - p0->y;
-		p01[2] = p1->z - p0->z;
-		p02[0] = p2->x - p0->x;
-		p02[1] = p2->y - p0->y;
-		p02[2] = p2->z - p0->z;
-		Cross(p01, p02, n);
-		Unit(n, n);
-		n[1] = fabs(n[1]);
-		glColor3f(Colors[c][0] * n[1], Colors[c][1] * n[1], Colors[c][2] * n[1]);
-
-		glVertex3f(p0->x, p0->y, p0->z);
-		glVertex3f(p1->x, p1->y, p1->z);
-		glVertex3f(p2->x, p2->y, p2->z);
-	}
-	glEnd();
-}
-
-GLuint
-getCessnaList(enum Colors c)
-{
-	GLuint obj_list = glGenLists(1);
-	glNewList(obj_list, GL_COMPILE);
-	cessna(c);
-	glEndList();
-	return obj_list;
-}
-
-class Cessna
-{
-public:
-	Cessna(enum Colors color)
-	{
-		c = color;
-	};
-
-	void initList()
-	{
-		cessnaList = getCessnaList(Colors::GREEN);
-	}
-
-	void draw()
-	{
-		glPushMatrix();
-		glPushMatrix();
-		glRotatef(90., 0., 1., 0.);
-		glCallList(cessnaList);
-		glPopMatrix();
-	}
-
-	GLuint cessnaList;
-	enum Colors c;
-};
-
 
 
 
@@ -119,11 +44,11 @@ const int FPS = 30;
 
 // Coming directly at you. +z
 state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(-1.0f, 0.0f, 5.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-Body b1(Bodies::B1, 0.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
+Body b1(Bodies::B1, 1.0f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
 state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 2.0f, 3.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-Body b2(Bodies::B2, 0.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
+Body b2(Bodies::B2, 1.0f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
 state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(1.0f, -2.0f, 1.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-Body b3(Bodies::B3, 0.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
+Body b3(Bodies::B3, 1.0f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
 
 
 ////// ##################### OBJECTS ##################### //////
@@ -242,6 +167,7 @@ void
 Animate()
 {
 	sim.step();
+	superCessna.step();
 	glutSetWindow(mainWindow);
 	glutPostRedisplay();
 }
@@ -264,15 +190,27 @@ Display()
 	// place the objects into the scene:
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	// set the eye position, look-at position, and up-vector:
-	gluLookAt(0., 0., 21., 0., 0., 0., 0., 1., 0.);
-	// uniformly scale the scene:
-	if (scale < MINSCALE)
-		scale = MINSCALE;
-	glScalef((GLfloat)scale, (GLfloat)scale * aspectRatio, (GLfloat)scale);
-	// rotate the scene:
-	glRotatef((GLfloat)rot.y, 0., 1., 0.);
-	glRotatef((GLfloat)rot.x, 1., 0., 0.);
+
+
+	if (whichView == Views::OUTSIDE)
+	{
+		// set the eye position, look-at position, and up-vector:
+		gluLookAt(0., 0., -30.0, 0., 0., 1., 0., 1., 0.);
+		// uniformly scale the scene:
+		if (scale < MINSCALE)
+			scale = MINSCALE;
+		glScalef((GLfloat)scale, (GLfloat)scale * aspectRatio, (GLfloat)scale);
+		// rotate the scene:
+		glRotatef((GLfloat)rot.y, 0., 1., 0.);
+		glRotatef((GLfloat)rot.x, 1., 0., 0.);
+	}
+	else
+	{
+		// set the eye position, look-at position, and up-vector:
+		gluLookAt(0., 1.2, 1.0, 0., 5.0, 10.0, 0., 1., 0.);
+		glScalef(scale, scale * aspectRatio, scale);
+	}
+
 
 	// draw the axis before any global transformations.
 	if (axesOn == 1) {
@@ -382,10 +320,8 @@ InitMenus()
 	glutAddMenuEntry("Off", 0);
 	glutAddMenuEntry("On", 1);
 	int viewmenu = glutCreateMenu(DoViewMenu);
-	glutAddMenuEntry("Center", (int)Views::CENTER);
-	glutAddMenuEntry("Body 1", (int)Views::BODY1);
-	glutAddMenuEntry("Body 2", (int)Views::BODY2);
-	glutAddMenuEntry("Body 3", (int)Views::BODY3);
+	glutAddMenuEntry("Center", (int)Views::OUTSIDE);
+	glutAddMenuEntry("Body 1", (int)Views::INSIDE);
 	int tailmenu = glutCreateMenu(DoTailMenu);
 	glutAddMenuEntry("Spheres", (int)Tails::SPHERES);
 	glutAddMenuEntry("Cylinders", (int)Tails::CYLINDERS);
@@ -547,7 +483,7 @@ DoResetMenu()
 	orbitOn = 0;
 	scale = 1.0f;
 	whichProjection = PERSP;
-	whichView = (int)Views::CENTER;
+	whichView = (int)Views::OUTSIDE;
 	whichTail = (int)Tails::LINES;
 	rot.x = rot.y = 0;
 	sim.reset();
@@ -636,7 +572,7 @@ DoViewKey()
 {
 	static int count = 0;
 	count++;
-	whichView = count % int(Views::MAX_NUM_VIEWS + 1);
+	whichView = count % int(Views::MAX_NUM_VIEWS+1);
 }
 
 void

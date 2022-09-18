@@ -15,11 +15,9 @@ enum ButtonVals
 
 enum Views
 {
-	CENTER,
-	BODY1,
-	BODY2,
-	BODY3,
-	MAX_NUM_VIEWS = BODY3
+	OUTSIDE,
+	INSIDE,
+	MAX_NUM_VIEWS = INSIDE
 };
 
 enum class Selections
