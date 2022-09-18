@@ -234,7 +234,9 @@ getSphereList(float radius, int slices, int stacks)
 {
 	GLuint obj_list = glGenLists(1);
 	glNewList(obj_list, GL_COMPILE);
+	glEnable(GL_TEXTURE_2D);
 	OsuSphere(radius, slices, stacks);
+	glDisable(GL_TEXTURE_2D);
 	glEndList();
 	return obj_list;
 }
@@ -244,7 +246,9 @@ getDistortedSphereList(float radius, int slices, int stacks,float curTime)
 {
 	GLuint obj_list = glGenLists(1);
 	glNewList(obj_list, GL_COMPILE);
+	glEnable(GL_TEXTURE_2D);
 	distortedOsuSphere(radius, slices, stacks,curTime);
+	glDisable(GL_TEXTURE_2D);
 	glEndList();
 	return obj_list;
 }

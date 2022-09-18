@@ -48,6 +48,12 @@ struct pt3f {
 	double z;
 };
 
+struct BtmStruct {
+	char* filename;
+	int width;
+	int height;
+};
+
 pt2i
 GetDesktopResolution();
 
@@ -56,7 +62,6 @@ ElapsedSeconds();
 
 void
 DoRasterString(float x, float y, float z, char* s);
-
 
 void
 DoStrokeString(float x, float y, float z, float ht, char* s);

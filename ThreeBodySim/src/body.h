@@ -27,7 +27,7 @@ public:
 
 	};
 
-	Body(Bodies bID, float rad,float mass, int tailLen, state init_state, enum Colors bc, enum Colors tc,int fps)
+	Body(Bodies bID, float rad,float mass, int tailLen, state init_state, enum Colors bc, enum Colors tc,int fps, BtmStruct btm)
 	{
 		bType = bID;
 		r_i = rad;
@@ -37,6 +37,7 @@ public:
 		S_i = init_state;
 		bcolor = bc;
 		tcolor = tc;
+		bitmap = btm;
 		selected = false;
 		// This just happens to often be a good spacing for the sphere tail most of the time. 
 		tailSpacing = fps / 5;
@@ -84,6 +85,18 @@ public:
 		sphereList = getSphereList(abs(r), 40, 40);
 		cylinderList = getConeList(1, 1, 1, 15, 15,false,false);
 		lineList = getLineList(1.5f);
+	}
+
+	void initTexture()
+	{
+		unsigned char* TextureArray0 = BmpToTexture(bitmap.filename, &bitmap.width, &bitmap.height);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		glGenTextures(1, &texture); // assign binding “handles”
+		glBindTexture(GL_TEXTURE_2D, texture); // make the Tex0 texture current and set its parametersglTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, 3, bitmap.width, bitmap.height, 0, GL_RGB, GL_UNSIGNED_BYTE, TextureArray0);
 	}
 
 	void delLists()
@@ -262,7 +275,8 @@ public:
 	long tailLen_i, tailLen;
 	state S_i,S;
 	Eigen::Vector3f* tail;
-	GLuint sphereList, cylinderList, lineList;
+	GLuint sphereList, cylinderList, lineList,texture;
+	BtmStruct bitmap;
 	enum Colors bcolor;
 	enum Colors tcolor;
 	bool selected;

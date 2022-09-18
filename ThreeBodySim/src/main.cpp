@@ -32,6 +32,10 @@
 const int TAIL_LEN = 700;
 const int FPS = 30;
 
+BtmStruct btm1 = { "file1.btm",80,80 };
+BtmStruct btm2 = { "file2.btm",80,80 };
+BtmStruct btm3 = { "file3.btm",80,80 };
+
 ////// ##################### INITIAL CONDITIONS ##################### //////
 
 ///*Edit here*/
