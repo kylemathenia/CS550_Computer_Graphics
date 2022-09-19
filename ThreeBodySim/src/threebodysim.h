@@ -55,9 +55,19 @@ public:
 		// since we are using glScalef( ), be sure normals get unitized:
 		glEnable(GL_NORMALIZE);
 
+
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, b1.texture);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		b1.drawObliq(translation);
+		glBindTexture(GL_TEXTURE_2D, b2.texture);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		b2.drawObliq(translation);
+		glBindTexture(GL_TEXTURE_2D, b3.texture);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		b3.drawObliq(translation);
+		glDisable(GL_TEXTURE_2D);
+
 
 		glDepthMask(GL_FALSE);
 		b1.drawTran(translation, tailOption);
@@ -74,6 +84,13 @@ public:
 		b2.initLists();
 		b3.initLists();
 		boundary.initLists();
+	}
+
+	void initTextures()
+	{
+		b1.initTexture();
+		b2.initTexture();
+		b3.initTexture();
 	}
 
 	void changeSpeed(float multiplier)

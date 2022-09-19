@@ -27,7 +27,7 @@ public:
 
 	};
 
-	Body(Bodies bID, float rad,float mass, int tailLen, state init_state, enum Colors bc, enum Colors tc,int fps, BtmStruct btm)
+	Body(Bodies bID, float rad,float mass, int tailLen, state init_state, enum Colors bc, enum Colors tc,int fps)
 	{
 		bType = bID;
 		r_i = rad;
@@ -37,7 +37,6 @@ public:
 		S_i = init_state;
 		bcolor = bc;
 		tcolor = tc;
-		bitmap = btm;
 		selected = false;
 		// This just happens to often be a good spacing for the sphere tail most of the time. 
 		tailSpacing = fps / 5;
@@ -89,14 +88,17 @@ public:
 
 	void initTexture()
 	{
-		unsigned char* TextureArray0 = BmpToTexture(bitmap.filename, &bitmap.width, &bitmap.height);
+		//unsigned char* TextureArray = BmpToTexture(bitmap.filename, &bitmap.width, &bitmap.height);
+		unsigned char* TextureArray = BmpToTexture((char*)"C:\\dev\\CS550_Computer_Graphics\\ThreeBodySim\\textures\\worldtex.bmp", &texW, &texH);
+
+
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		glGenTextures(1, &texture); // assign binding “handles”
 		glBindTexture(GL_TEXTURE_2D, texture); // make the Tex0 texture current and set its parametersglTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexImage2D(GL_TEXTURE_2D, 0, 3, bitmap.width, bitmap.height, 0, GL_RGB, GL_UNSIGNED_BYTE, TextureArray0);
+		glTexImage2D(GL_TEXTURE_2D, 0, 3, texW, texH, 0, GL_RGB, GL_UNSIGNED_BYTE, TextureArray);
 	}
 
 	void delLists()
@@ -287,4 +289,5 @@ public:
 	long long tailUpdateCount;
 	float selectorScale = 1.1f;
 	float bodyMinRad = 0.1f;
+	int texW, texH;
 };

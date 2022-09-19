@@ -32,9 +32,6 @@
 const int TAIL_LEN = 700;
 const int FPS = 30;
 
-BtmStruct btm1 = { "file1.btm",80,80 };
-BtmStruct btm2 = { "file2.btm",80,80 };
-BtmStruct btm3 = { "file3.btm",80,80 };
 
 ////// ##################### INITIAL CONDITIONS ##################### //////
 
@@ -395,6 +392,21 @@ InitGraphics()
 	fprintf(stderr, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 #endif
 	glutFullScreen();
+
+
+	//char *filename1 = getFullPath("\\textures\\worldtex.bmp");
+	std::string cwd = get_current_dir();
+	char* filename1 = new char[cwd.length() + 1];
+	strcpy(filename1, cwd.c_str());
+	strcat(filename1, "\\textures\\worldtex.bmp");
+
+	BtmStruct btm1 = { filename1,1024,512 };
+	BtmStruct btm2 = { filename1,1024,512 };
+	BtmStruct btm3 = { filename1,1024,512 };
+	sim.b1.bitmap = btm1;
+	sim.b1.bitmap = btm2;
+	sim.b1.bitmap = btm3;
+	sim.initTextures();
 }
 
 

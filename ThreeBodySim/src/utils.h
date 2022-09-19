@@ -4,6 +4,9 @@
 #include <ctype.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <direct.h>
+#define GetCurrentDir _getcwd
+#include <iostream>
 
 unsigned char*
 BmpToTexture(char* filename, int* width, int* height);
@@ -65,3 +68,7 @@ DoRasterString(float x, float y, float z, char* s);
 
 void
 DoStrokeString(float x, float y, float z, float ht, char* s);
+
+std::string get_current_dir();
+
+char* getFullPath(const char* relPath);

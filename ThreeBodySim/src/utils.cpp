@@ -1,6 +1,9 @@
 #pragma once
+#include <direct.h>
+#define GetCurrentDir _getcwd
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
 #include <ctype.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -407,4 +410,21 @@ DoStrokeString(float x, float y, float z, float ht, char* s)
 		glutStrokeCharacter(GLUT_STROKE_ROMAN, c);
 	}
 	glPopMatrix();
+}
+
+
+std::string get_current_dir() {
+	char buff[FILENAME_MAX]; //create string buffer to hold path
+	GetCurrentDir(buff, FILENAME_MAX);
+	std::string current_working_dir(buff);
+	return current_working_dir;
+}
+
+char* getFullPath(const char* relPath)
+{
+	std::string cwd = get_current_dir();
+	char* path = new char[cwd.length() + 1];
+	strcpy(path, cwd.c_str());
+	strcat(path, relPath);
+	return path;
 }
