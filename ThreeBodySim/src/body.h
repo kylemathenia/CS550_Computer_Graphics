@@ -82,6 +82,7 @@ public:
 	void initLists()
 	{
 		sphereList = getSphereList(abs(r), 40, 40);
+		distortedSphereList = getDistortedSphereList(abs(r), 40, 40, (float)glutGet(GLUT_ELAPSED_TIME) / 1000.f);
 		cylinderList = getConeList(1, 1, 1, 15, 15,false,false);
 		lineList = getLineList(1.5f);
 	}
@@ -89,7 +90,8 @@ public:
 	void initTexture()
 	{
 		//unsigned char* TextureArray = BmpToTexture(bitmap.filename, &bitmap.width, &bitmap.height);
-		unsigned char* TextureArray = BmpToTexture((char*)"C:\\dev\\CS550_Computer_Graphics\\ThreeBodySim\\textures\\worldtex.bmp", &texW, &texH);
+		//unsigned char* TextureArray = BmpToTexture((char*)"C:\\dev\\CS550_Computer_Graphics\\ThreeBodySim\\textures\\worldtex.bmp", &texW, &texH);
+		unsigned char* TextureArray = BmpToTexture(textPath, &texW, &texH);
 
 
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -143,11 +145,18 @@ public:
 
 	void drawObliq(Eigen::Vector3f translation)
 	{
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		Eigen::Vector3f delta = S.pos - translation;
 		Eigen::Vector3f scale = { 1, 1, 1 };
 		Eigen::Vector3f rotAxis = { 1, 0, 0 };
 		float ang = 0;
-		drawGlSeqOpaq(sphereList, scale, delta, rotAxis, ang, bcolor);
+		if (distortion == true) {
+			drawGlSeqOpaq(distortedSphereList, scale, delta, rotAxis, ang, bcolor);
+		}
+		else {
+			drawGlSeqOpaq(sphereList, scale, delta, rotAxis, ang, bcolor);
+		}
 	}
 
 	void drawTran(Eigen::Vector3f translation, Tails tailOption)
@@ -277,7 +286,7 @@ public:
 	long tailLen_i, tailLen;
 	state S_i,S;
 	Eigen::Vector3f* tail;
-	GLuint sphereList, cylinderList, lineList,texture;
+	GLuint sphereList, cylinderList, lineList, texture, distortedSphereList;
 	BtmStruct bitmap;
 	enum Colors bcolor;
 	enum Colors tcolor;
@@ -290,4 +299,6 @@ public:
 	float selectorScale = 1.1f;
 	float bodyMinRad = 0.1f;
 	int texW, texH;
+	char* textPath;
+	bool distortion = false;
 };

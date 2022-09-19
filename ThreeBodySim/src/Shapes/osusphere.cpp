@@ -145,7 +145,7 @@ distortedOsuSphere(float radius, int slices, int stacks,float curTime)
 		//https://www.desmos.com/calculator/yp8ibp3i91
 
 		float timeMod = -1.5 * cos(curTime / 2) + 2.5;
-		float scalingFactor = 1 / (cos(((distFromEq * 2) - 0.01) / timeMod));
+		float scalingFactor = -1 / (cos(((distFromEq * 2) - 0.01) / timeMod));
 		float xz = cosf(lat);
 		float  y = sinf(lat);
 		for (int ilng = 0; ilng < NumLngs; ilng++)				// ilng=0, lng=-M_PI and
