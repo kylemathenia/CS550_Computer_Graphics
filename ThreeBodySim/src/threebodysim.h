@@ -49,6 +49,7 @@ public:
 	{
 		Eigen::Vector3f translation;
 		if (view == Views::CENTER) { translation = center; }
+		else if (view == Views::AVE) { translation = boundary.S.pos; }
 		else if (view == Views::BODY1) { translation = b1.S.pos; }
 		else if (view == Views::BODY2) { translation = b2.S.pos; }
 		else { translation = b3.S.pos; }
