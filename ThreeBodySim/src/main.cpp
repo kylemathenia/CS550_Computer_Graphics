@@ -33,7 +33,7 @@
 
 
 /* Reduce tail length or frames per second (FPS) if poor performance. */
-const int TAIL_LEN = 20;
+const int TAIL_LEN = 200;
 const int FPS = 60;
 bool useIdle = false;
 
