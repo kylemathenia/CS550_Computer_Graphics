@@ -19,7 +19,8 @@ enum Views
 	BODY1,
 	BODY2,
 	BODY3,
-	MAX_NUM_VIEWS = BODY3
+	AVE,
+	MAX_NUM_VIEWS = AVE
 };
 
 enum class Selections
