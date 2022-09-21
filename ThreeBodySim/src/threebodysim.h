@@ -115,18 +115,19 @@ public:
 
 	void updateBodies()
 	{
+
 		b1.S.vel = b1.S.vel + (b1.S.acc * dt * speed);
-		b2.S.vel = b2.S.vel + (b2.S.acc * dt * speed);
-		b3.S.vel = b3.S.vel + (b3.S.acc * dt * speed);
+		//b2.S.vel = b2.S.vel + (b2.S.acc * dt * speed);
+		//b3.S.vel = b3.S.vel + (b3.S.acc * dt * speed);
 
 		boundary.S.pos = Eigen::Vector3f{ 0,0,0 };
 		timeSinceBoundContact += dt;
 		b1.prevPos = b1.S.pos;
 		b1.S.pos = b1.S.pos + (b1.S.vel * dt * speed);
 		b2.prevPos = b2.S.pos;
-		b2.S.pos = b2.S.pos + (b2.S.vel * dt * speed);
-		b3.prevPos = b3.S.pos;
-		b3.S.pos = b3.S.pos + (b3.S.vel * dt * speed);
+		//b2.S.pos = b2.S.pos + (b2.S.vel * dt * speed);
+		//b3.prevPos = b3.S.pos;
+		//b3.S.pos = b3.S.pos + (b3.S.vel * dt * speed);
 	}
 
 	void updateTails()
