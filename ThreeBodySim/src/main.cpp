@@ -570,7 +570,7 @@ DoResetMenu()
 	axesOn = 0;
 	debugOn = 0;
 	orbitOn = 0;
-	scale = 1.0f;
+	scale = 0.5f;
 	whichProjection = PERSP;
 	whichView = (int)Views::CENTER;
 	whichTail = (int)Tails::LINES;
