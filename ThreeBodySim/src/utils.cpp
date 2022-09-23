@@ -434,8 +434,6 @@ char* getFullPath(const char* relPath)
 
 // Assignment 4 helper functions.
 
-float White[] = { 1.,1.,1.,1. };
-
 float*
 Array3(float a, float b, float c)
 {
@@ -458,19 +456,21 @@ MulArray3(float factor, float array0[3])
 	return array;
 }
 
+float lightingWhite[] = { 1.,1.,1.,1. };
+
 void
 SetMaterial(float r, float g, float b, float shininess)
 {
 	glMaterialfv(GL_BACK, GL_EMISSION, Array3(0., 0., 0.));
-	glMaterialfv(GL_BACK, GL_AMBIENT, MulArray3(0.4f, White));
-	glMaterialfv(GL_BACK, GL_DIFFUSE, MulArray3(1., White));
+	glMaterialfv(GL_BACK, GL_AMBIENT, MulArray3(0.4f, lightingWhite));
+	glMaterialfv(GL_BACK, GL_DIFFUSE, MulArray3(1., lightingWhite));
 	glMaterialfv(GL_BACK, GL_SPECULAR, Array3(0., 0., 0.));
 	glMaterialf(GL_BACK, GL_SHININESS, 2.0f);
 
 	glMaterialfv(GL_FRONT, GL_EMISSION, Array3(0., 0., 0.));
 	glMaterialfv(GL_FRONT, GL_AMBIENT, Array3(r, g, b));
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, Array3(r, g, b));
-	glMaterialfv(GL_FRONT, GL_SPECULAR, MulArray3(0.8f, White));
+	glMaterialfv(GL_FRONT, GL_SPECULAR, MulArray3(0.8f, lightingWhite));
 	glMaterialf(GL_FRONT, GL_SHININESS, shininess);
 }
 
