@@ -6,6 +6,10 @@
 #include <iostream>
 #define _USE_MATH_DEFINES
 #include <math.h>
+
+#include <chrono>
+#include <thread>
+
 #ifdef WIN32
 #include <windows.h>
 #pragma warning(disable:4996)
@@ -29,8 +33,10 @@
 
 
 /* Reduce tail length or frames per second (FPS) if poor performance. */
-const int TAIL_LEN = 700;
-const int FPS = 30;
+const int TAIL_LEN = 200;
+const int FPS = 60;
+bool useIdle = false;
+
 
 ////// ##################### INITIAL CONDITIONS ##################### //////
 
@@ -199,6 +205,7 @@ pt2f	rot;					// rotation angles in degrees
 pt2i	windowSize;				// pixels size of current glut window
 float	aspectRatio;			// aspect ratio of the glut window
 int		activeButton;			// current button that is down
+int		distort;
 
 
 ////// ##################### FUNCTION PROTOTYPES ##################### //////
@@ -236,6 +243,7 @@ void	DoTailKey();
 void	DoProjectionKey();
 void	DoOrbitKey();
 void	DoScrollWheel(int upOrDown);
+void	DoDistortMenu(int id);
 
 
 ////// ##################### MAIN PROGRAM ##################### //////
@@ -369,15 +377,15 @@ InitGraphics()
 	glutMotionFunc(MouseMotionCallback);
 	glutPassiveMotionFunc(MouseMotionCallback);
 	glutVisibilityFunc(VisibilityCallback);
-	if (FPS != 0) {
-		// Using the timer to make sure the tail lengths don't change a bunch depending on the refresh rate. 
-		glutTimerFunc(1, AnimateAtFPS, 0);
-		glutIdleFunc(NULL);
-	}
-	else {
+	if (useIdle == true) {
 		// Animate as fast as possible all the time.
 		glutTimerFunc(-1, NULL, 0);
 		glutIdleFunc(Animate);
+	}
+	else {
+		// Use the timer to make sure the tail spacing is somewhat consistent. 
+		glutTimerFunc(1, AnimateAtFPS, 0);
+		glutIdleFunc(NULL);
 	}
 	// init glew (a window must be open to do this):
 #ifdef WIN32
@@ -391,6 +399,43 @@ InitGraphics()
 	fprintf(stderr, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 #endif
 	glutFullScreen();
+
+
+	unsigned char* textarr1 = BmpToTexture((char*)"C:\\dev\\CS550_Computer_Graphics\\ThreeBodySim\\textures\\worldtex.bmp", &sim.b1.texW, &sim.b1.texH);
+	//unsigned char* textarr2 = BmpToTexture((char*)"C:\\dev\\CS550_Computer_Graphics\\ThreeBodySim\\textures\\worldtex.bmp", &sim.b2.texW, &sim.b2.texH);
+	//unsigned char* textarr3 = BmpToTexture((char*)"C:\\dev\\CS550_Computer_Graphics\\ThreeBodySim\\textures\\worldtex.bmp", &sim.b3.texW, &sim.b3.texH);
+	//unsigned char* textarrBound = BmpToTexture((char*)"C:\\dev\\CS550_Computer_Graphics\\ThreeBodySim\\textures\\Starsinthesky11.bmp", &sim.boundary.texW, &sim.boundary.texH);
+	//
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	glGenTextures(1, &sim.b1.texture); // assign binding “handles”
+	//glGenTextures(1, &sim.b2.texture); // assign binding “handles”
+	//glGenTextures(1, &sim.b3.texture); // assign binding “handles”
+	//glGenTextures(1, &sim.boundary.texture); // assign binding “handles”
+
+	glBindTexture(GL_TEXTURE_2D, sim.b1.texture); // make the Tex0 texture current and set its parametersglTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, sim.b1.texW, sim.b1.texH, 0, GL_RGB, GL_UNSIGNED_BYTE, textarr1);
+
+	//glBindTexture(GL_TEXTURE_2D, sim.b2.texture); // make the Tex0 texture current and set its parametersglTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	//glTexImage2D(GL_TEXTURE_2D, 0, 3, sim.b2.texW, sim.b2.texH, 0, GL_RGB, GL_UNSIGNED_BYTE, textarrBound);
+
+	//glBindTexture(GL_TEXTURE_2D, sim.b3.texture); // make the Tex0 texture current and set its parametersglTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	//glTexImage2D(GL_TEXTURE_2D, 0, 3, sim.b3.texW, sim.b3.texH, 0, GL_RGB, GL_UNSIGNED_BYTE, textarrBound);
+
+	//glBindTexture(GL_TEXTURE_2D, sim.boundary.texture); // make the Tex0 texture current and set its parametersglTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	//glTexImage2D(GL_TEXTURE_2D, 0, 3, sim.boundary.texW, sim.boundary.texH, 0, GL_RGB, GL_UNSIGNED_BYTE, textarrBound);
 }
 
 
@@ -407,6 +452,9 @@ InitMenus()
 	int orbitmenu = glutCreateMenu(DoOrbitMenu);
 	glutAddMenuEntry("Off", 0);
 	glutAddMenuEntry("On", 1);
+	int distortmenu = glutCreateMenu(DoDistortMenu);
+	glutAddMenuEntry("Off", 0);
+	glutAddMenuEntry("On", 1);
 	int viewmenu = glutCreateMenu(DoViewMenu);
 	glutAddMenuEntry("Center", (int)Views::CENTER);
 	glutAddMenuEntry("Body 1", (int)Views::BODY1);
@@ -421,6 +469,7 @@ InitMenus()
 	glutAddMenuEntry("Orthographic", ORTHO);
 	glutAddMenuEntry("Perspective", PERSP);
 	int mainmenu = glutCreateMenu(DoMainMenu);
+	glutAddSubMenu("Distortion", distortmenu);
 	glutAddSubMenu("View (space)", viewmenu);
 	glutAddSubMenu("Tail (t)", tailmenu);
 	glutAddSubMenu("Orbit (o)", orbitmenu);
@@ -618,6 +667,15 @@ void
 DoViewMenu(int id)
 {
 	whichView = id;
+	glutSetWindow(mainWindow);
+	glutPostRedisplay();
+}
+
+void
+DoDistortMenu(int id)
+{
+	if (id == 0) {sim.b1.distortion = false;}
+	else { sim.b1.distortion = true; }
 	glutSetWindow(mainWindow);
 	glutPostRedisplay();
 }

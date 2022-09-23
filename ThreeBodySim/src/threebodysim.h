@@ -40,9 +40,15 @@ public:
 		findAccels();
 		updateTime();
 		updateBodies();
+		distortTex();
 		resolveIfContact();
 		updateCenter();
 		updateTails();
+	}
+
+	void distortTex()
+	{
+		b1.initLists();
 	}
 
 	void drawBodies(Views view,Tails tailOption)
@@ -56,9 +62,17 @@ public:
 		// since we are using glScalef( ), be sure normals get unitized:
 		glEnable(GL_NORMALIZE);
 
+
+		glEnable(GL_TEXTURE_2D);
 		b1.drawObliq(translation);
+		//glBindTexture(GL_TEXTURE_2D, b2.texture);
+		//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		b2.drawObliq(translation);
+		//glBindTexture(GL_TEXTURE_2D, b3.texture);
+		//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		b3.drawObliq(translation);
+		glDisable(GL_TEXTURE_2D);
+
 
 		glDepthMask(GL_FALSE);
 		b1.drawTran(translation, tailOption);
@@ -75,6 +89,42 @@ public:
 		b2.initLists();
 		b3.initLists();
 		boundary.initLists();
+	}
+
+	void initTextures()
+	{
+		unsigned char* TextureArray1 = BmpToTexture(getFullPath("\\textures\\worldtex.bmp"), &b1.texW, &b1.texH);
+		unsigned char* TextureArray2 = BmpToTexture(getFullPath("\\textures\\worldtex.bmp"), &b1.texW, &b1.texH);
+		//unsigned char* TextureArray = BmpToTexture((char *)"C:\\dev\\CS550_Computer_Graphics\\ThreeBodySim\\textures\\worldtex.bmp", &texW, &texH);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+		glGenTextures(1, &b1.texture); // assign binding �handles�
+		glGenTextures(1, &b2.texture); // assign binding �handles�
+
+		glBindTexture(GL_TEXTURE_2D, b1.texture); // make the Tex0 texture current and set its parametersglTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, 3, b1.texW, b1.texH, 0, GL_RGB, GL_UNSIGNED_BYTE, TextureArray1);
+
+		glBindTexture(GL_TEXTURE_2D, b2.texture); // make the Tex0 texture current and set its parametersglTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, 3, b2.texW, b2.texH, 0, GL_RGB, GL_UNSIGNED_BYTE, TextureArray1);
+
+
+		glBindTexture(GL_TEXTURE_2D, b1.texture); // make the Tex0 texture current and set its parametersglTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, 3, b1.texW, b1.texH, 0, GL_RGB, GL_UNSIGNED_BYTE, TextureArray1);
+
+		glBindTexture(GL_TEXTURE_2D, b2.texture); // make the Tex0 texture current and set its parametersglTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, 3, b2.texW, b2.texH, 0, GL_RGB, GL_UNSIGNED_BYTE, TextureArray1);
 	}
 
 	void changeSpeed(float multiplier)
@@ -125,7 +175,7 @@ public:
 		timeSinceBoundContact += dt;
 		b1.prevPos = b1.S.pos;
 		b1.S.pos = b1.S.pos + (b1.S.vel * dt * speed);
-		b2.prevPos = b2.S.pos;
+		//b2.prevPos = b2.S.pos;
 		//b2.S.pos = b2.S.pos + (b2.S.vel * dt * speed);
 		//b3.prevPos = b3.S.pos;
 		//b3.S.pos = b3.S.pos + (b3.S.vel * dt * speed);
@@ -299,7 +349,7 @@ public:
 
 	void updateTime()
 	{
-		float curTime = getCurTime();
+		curTime = getCurTime();
 		dt = (curTime - prevTime);
 		prevTime = curTime;
 	}
@@ -326,7 +376,7 @@ public:
 	Body b1, b2, b3,boundary;
 	Body* bList[3] = {&b1,&b2,&b3};
 	Eigen::Vector3f center;
-	float speed;
+	float speed, curTime;
 	float coefRest = 0.5f;
 	int bufferChangeCount;
 	float timeSinceBoundContact = 100000;
