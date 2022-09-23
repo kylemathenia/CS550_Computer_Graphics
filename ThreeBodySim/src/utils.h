@@ -72,3 +72,19 @@ DoStrokeString(float x, float y, float z, float ht, char* s);
 std::string get_current_dir();
 
 char* getFullPath(const char* relPath);
+
+
+// Assignment 4 helper functions.
+
+float White[] = { 1.,1.,1.,1. };
+
+float* Array3(float a, float b, float c);
+
+float* MulArray3(float factor, float array0[3]);
+
+void SetMaterial(float r, float g, float b, float shininess);
+
+void SetPointLight(int ilight, float x, float y, float z, float r, float g, float b);
+
+void SetSpotLight(int ilight, float x, float y, float z, float xdir, float ydir, float zdir, float r, float g, float b);
+
