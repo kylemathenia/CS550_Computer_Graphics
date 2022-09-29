@@ -12,3 +12,5 @@
 - 4 different views.
 - 3 different tail visualizations.
 - Lighting and textures will be implimented in the future.  
+
+My starting point was the sample code on the sample branch. 
