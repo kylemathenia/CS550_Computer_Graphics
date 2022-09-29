@@ -76,8 +76,6 @@ char* getFullPath(const char* relPath);
 
 // Assignment 4 helper functions.
 
-float White[] = { 1.,1.,1.,1. };
-
 float* Array3(float a, float b, float c);
 
 float* MulArray3(float factor, float array0[3]);

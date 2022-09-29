@@ -206,6 +206,7 @@ pt2i	windowSize;				// pixels size of current glut window
 float	aspectRatio;			// aspect ratio of the glut window
 int		activeButton;			// current button that is down
 int		distort;
+GLuint	testSphereList;
 
 
 ////// ##################### FUNCTION PROTOTYPES ##################### //////
@@ -315,11 +316,37 @@ Display()
 	glRotatef((GLfloat)rot.y, 0., 1., 0.);
 	glRotatef((GLfloat)rot.x, 1., 0., 0.);
 	// draw the bodies
+	
+
+
+	float lightingWhite[] = { 1.,1.,1.,1. };
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.2, lightingWhite));
+	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+	//glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightingWhite);
+	//glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
+	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.);
+	//glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.);
+	glLightfv(GL_LIGHT0, GL_POSITION, Array3(10,0,0));
+	glEnable(GL_NORMALIZE);
+
+	//glCallList(testSphereList);
 	sim.drawBodies((Views)whichView, (Tails)whichTail);
+
+	glDisable(GL_LIGHTING);
 	// finish
 	glutSwapBuffers();
 	glFlush();
   }
+
+
+
+
+
+
+
 
 
 
@@ -402,40 +429,13 @@ InitGraphics()
 
 
 	unsigned char* textarr1 = BmpToTexture((char*)"C:\\dev\\CS550_Computer_Graphics\\ThreeBodySim\\textures\\worldtex.bmp", &sim.b1.texW, &sim.b1.texH);
-	//unsigned char* textarr2 = BmpToTexture((char*)"C:\\dev\\CS550_Computer_Graphics\\ThreeBodySim\\textures\\worldtex.bmp", &sim.b2.texW, &sim.b2.texH);
-	//unsigned char* textarr3 = BmpToTexture((char*)"C:\\dev\\CS550_Computer_Graphics\\ThreeBodySim\\textures\\worldtex.bmp", &sim.b3.texW, &sim.b3.texH);
-	//unsigned char* textarrBound = BmpToTexture((char*)"C:\\dev\\CS550_Computer_Graphics\\ThreeBodySim\\textures\\Starsinthesky11.bmp", &sim.boundary.texW, &sim.boundary.texH);
-	//
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
 	glGenTextures(1, &sim.b1.texture); // assign binding “handles”
-	//glGenTextures(1, &sim.b2.texture); // assign binding “handles”
-	//glGenTextures(1, &sim.b3.texture); // assign binding “handles”
-	//glGenTextures(1, &sim.boundary.texture); // assign binding “handles”
-
 	glBindTexture(GL_TEXTURE_2D, sim.b1.texture); // make the Tex0 texture current and set its parametersglTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, sim.b1.texW, sim.b1.texH, 0, GL_RGB, GL_UNSIGNED_BYTE, textarr1);
-
-	//glBindTexture(GL_TEXTURE_2D, sim.b2.texture); // make the Tex0 texture current and set its parametersglTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	//glTexImage2D(GL_TEXTURE_2D, 0, 3, sim.b2.texW, sim.b2.texH, 0, GL_RGB, GL_UNSIGNED_BYTE, textarrBound);
-
-	//glBindTexture(GL_TEXTURE_2D, sim.b3.texture); // make the Tex0 texture current and set its parametersglTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	//glTexImage2D(GL_TEXTURE_2D, 0, 3, sim.b3.texW, sim.b3.texH, 0, GL_RGB, GL_UNSIGNED_BYTE, textarrBound);
-
-	//glBindTexture(GL_TEXTURE_2D, sim.boundary.texture); // make the Tex0 texture current and set its parametersglTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	//glTexImage2D(GL_TEXTURE_2D, 0, 3, sim.boundary.texW, sim.boundary.texH, 0, GL_RGB, GL_UNSIGNED_BYTE, textarrBound);
 }
 
 
@@ -488,6 +488,7 @@ InitLists()
 	glutSetWindow(mainWindow);
 	sim.initLists();
 	axis.initList();
+	testSphereList = getSphereList(3., 30, 30);
 }
 
 

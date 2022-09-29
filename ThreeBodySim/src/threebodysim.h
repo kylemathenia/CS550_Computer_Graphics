@@ -64,23 +64,30 @@ public:
 
 
 		glEnable(GL_TEXTURE_2D);
+
+		glShadeModel(GL_SMOOTH);
+		//SetMaterial(0, 1, 1, 0.8f);
 		b1.drawObliq(translation);
 		//glBindTexture(GL_TEXTURE_2D, b2.texture);
 		//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		glShadeModel(GL_SMOOTH);
+		//SetMaterial(0, 1, 1, 0.8f);
 		b2.drawObliq(translation);
 		//glBindTexture(GL_TEXTURE_2D, b3.texture);
 		//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		glShadeModel(GL_SMOOTH);
+		//SetMaterial(0, 1, 1, 0.8f);
 		b3.drawObliq(translation);
 		glDisable(GL_TEXTURE_2D);
 
 
-		glDepthMask(GL_FALSE);
-		b1.drawTran(translation, tailOption);
-		b2.drawTran(translation, tailOption);
-		b3.drawTran(translation, tailOption);
-		boundary.drawBoundary(translation, timeSinceBoundContact);
-		glDepthMask(GL_TRUE);
-		glDisable(GL_BLEND);
+		//glDepthMask(GL_FALSE);
+		//b1.drawTran(translation, tailOption);
+		//b2.drawTran(translation, tailOption);
+		//b3.drawTran(translation, tailOption);
+		//boundary.drawBoundary(translation, timeSinceBoundContact);
+		//glDepthMask(GL_TRUE);
+		//glDisable(GL_BLEND);
 	}
 
 	void initLists()
