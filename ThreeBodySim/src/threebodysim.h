@@ -229,7 +229,7 @@ public:
 	void moveUntilNoContact(Body& bodyA, Body& bodyB, int dir)
 	{
 		float totalRad = abs(bodyA.r + bodyB.r);
-		float stepSize = 0.5f * (totalRad);
+		float stepSize = 0.05f * (totalRad);
 		Eigen::Vector3f ContactVecA = dir * findUnit(bodyB.S.pos - bodyA.S.pos);
 		Eigen::Vector3f ContactVecB = dir * findUnit(bodyA.S.pos - bodyB.S.pos);
 		Eigen::Vector3f ptA, ptB;
