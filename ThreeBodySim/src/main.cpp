@@ -206,6 +206,7 @@ pt2i	windowSize;				// pixels size of current glut window
 float	aspectRatio;			// aspect ratio of the glut window
 int		activeButton;			// current button that is down
 int		distort;
+bool	seeTexture;
 
 
 ////// ##################### FUNCTION PROTOTYPES ##################### //////
@@ -243,7 +244,7 @@ void	DoTailKey();
 void	DoProjectionKey();
 void	DoOrbitKey();
 void	DoScrollWheel(int upOrDown);
-void	DoDistortMenu(int id);
+void	DoTextureMenu(int id);
 
 
 ////// ##################### MAIN PROGRAM ##################### //////
@@ -315,7 +316,7 @@ Display()
 	glRotatef((GLfloat)rot.y, 0., 1., 0.);
 	glRotatef((GLfloat)rot.x, 1., 0., 0.);
 	// draw the bodies
-	sim.drawBodies((Views)whichView, (Tails)whichTail);
+	sim.drawBodies((Views)whichView, (Tails)whichTail, seeTexture);
 	// finish
 	glutSwapBuffers();
 	glFlush();
@@ -452,9 +453,10 @@ InitMenus()
 	int orbitmenu = glutCreateMenu(DoOrbitMenu);
 	glutAddMenuEntry("Off", 0);
 	glutAddMenuEntry("On", 1);
-	int distortmenu = glutCreateMenu(DoDistortMenu);
+	int texturemenu = glutCreateMenu(DoTextureMenu);
 	glutAddMenuEntry("Off", 0);
 	glutAddMenuEntry("On", 1);
+	glutAddMenuEntry("Distort", 2);
 	int viewmenu = glutCreateMenu(DoViewMenu);
 	glutAddMenuEntry("Center", (int)Views::CENTER);
 	glutAddMenuEntry("Body 1", (int)Views::BODY1);
@@ -469,7 +471,7 @@ InitMenus()
 	glutAddMenuEntry("Orthographic", ORTHO);
 	glutAddMenuEntry("Perspective", PERSP);
 	int mainmenu = glutCreateMenu(DoMainMenu);
-	glutAddSubMenu("Distortion", distortmenu);
+	glutAddSubMenu("Texture", texturemenu);
 	glutAddSubMenu("View (space)", viewmenu);
 	glutAddSubMenu("Tail (t)", tailmenu);
 	glutAddSubMenu("Orbit (o)", orbitmenu);
@@ -624,6 +626,7 @@ DoResetMenu()
 	whichView = (int)Views::CENTER;
 	whichTail = (int)Tails::LINES;
 	rot.x = rot.y = 0;
+	seeTexture = true;
 	sim.reset();
 }
 
@@ -672,10 +675,20 @@ DoViewMenu(int id)
 }
 
 void
-DoDistortMenu(int id)
+DoTextureMenu(int id)
 {
-	if (id == 0) {sim.b1.distortion = false;}
-	else { sim.b1.distortion = true; }
+	if (id == 0) {
+		sim.b1.distortion = false;
+		seeTexture = false;
+	}
+	else if (id == 1) {
+		sim.b1.distortion = false;
+		seeTexture = true;
+	}
+	else {
+		sim.b1.distortion = true;
+		seeTexture = true;
+	}
 	glutSetWindow(mainWindow);
 	glutPostRedisplay();
 }

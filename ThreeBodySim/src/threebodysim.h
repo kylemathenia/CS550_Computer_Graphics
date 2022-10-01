@@ -51,7 +51,7 @@ public:
 		b1.initLists();
 	}
 
-	void drawBodies(Views view,Tails tailOption)
+	void drawBodies(Views view,Tails tailOption, bool seeTexture)
 	{
 		Eigen::Vector3f translation;
 		if (view == Views::CENTER) { translation = center; }
@@ -61,15 +61,15 @@ public:
 		// since we are using glScalef( ), be sure normals get unitized:
 		glEnable(GL_NORMALIZE);
 
-
-		glEnable(GL_TEXTURE_2D);
-		b1.drawObliq(translation);
+		if (seeTexture == true) {glEnable(GL_TEXTURE_2D);}
+		else { glDisable(GL_TEXTURE_2D);}
+		b1.drawObliq(translation, seeTexture);
 		//glBindTexture(GL_TEXTURE_2D, b2.texture);
 		//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-		b2.drawObliq(translation);
+		b2.drawObliq(translation, seeTexture);
 		//glBindTexture(GL_TEXTURE_2D, b3.texture);
 		//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-		b3.drawObliq(translation);
+		b3.drawObliq(translation, seeTexture);
 		glDisable(GL_TEXTURE_2D);
 
 

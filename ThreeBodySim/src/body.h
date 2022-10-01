@@ -143,10 +143,13 @@ public:
 
 	// ##################### RENDER FUNCTIONS ##################### //
 
-	void drawObliq(Eigen::Vector3f translation)
+	void drawObliq(Eigen::Vector3f translation,bool seeTexture)
 	{
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		if (seeTexture == true) { 
+			glBindTexture(GL_TEXTURE_2D, texture);
+			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		}
+
 		Eigen::Vector3f delta = S.pos - translation;
 		Eigen::Vector3f scale = { 1, 1, 1 };
 		Eigen::Vector3f rotAxis = { 1, 0, 0 };
