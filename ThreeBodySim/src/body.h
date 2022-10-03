@@ -8,6 +8,8 @@
 #include "Eigen/Dense"
 #include "math_utils.h"
 
+//TODO tutorial: https://www.3dgep.com/texturing-and-lighting-in-opengl/
+
 struct state {
 	Eigen::Vector3f pos;
 	Eigen::Vector3f vel;
@@ -146,6 +148,7 @@ public:
 	void drawObliq(Eigen::Vector3f translation)
 	{
 		glBindTexture(GL_TEXTURE_2D, texture);
+		//TODO consider using glBindTexture(GL_TEXTURE_2D, 0); when not using a texture.
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		Eigen::Vector3f delta = S.pos - translation;
 		Eigen::Vector3f scale = { 1, 1, 1 };
