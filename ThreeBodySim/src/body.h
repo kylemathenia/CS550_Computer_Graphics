@@ -146,7 +146,7 @@ public:
 	void drawObliq(Eigen::Vector3f translation)
 	{
 		glBindTexture(GL_TEXTURE_2D, texture);
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		Eigen::Vector3f delta = S.pos - translation;
 		Eigen::Vector3f scale = { 1, 1, 1 };
 		Eigen::Vector3f rotAxis = { 1, 0, 0 };

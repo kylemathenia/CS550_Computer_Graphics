@@ -62,7 +62,6 @@ public:
 		// since we are using glScalef( ), be sure normals get unitized:
 		glEnable(GL_NORMALIZE);
 
-
 		glEnable(GL_TEXTURE_2D);
 
 		glShadeModel(GL_SMOOTH);
