@@ -29,7 +29,7 @@ char* ColorNames[] =
 
 // the color definitions:
 // this order must match the menu order
-const GLfloat Colors[][3] =
+const GLfloat ColorsArr[][3] =
 {
 	{ 1., 0., 0. },		// red
 	{ 1., 1., 0. },		// yellow

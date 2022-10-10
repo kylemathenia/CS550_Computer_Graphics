@@ -307,21 +307,6 @@ Display()
 	glRotatef((GLfloat)rot.y, 0., 1., 0.);
 	glRotatef((GLfloat)rot.x, 1., 0., 0.);
 
-
-	float lightingWhite[] = { 1.,1.,1.,1. };
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.2, lightingWhite));
-	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-	//glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightingWhite);
-	//glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
-	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.);
-	//glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.);
-	glLightfv(GL_LIGHT0, GL_POSITION, Array3(10, 0, 0));
-	glEnable(GL_NORMALIZE);
-
-
 	// draw the bodies
 	sim.drawBodies((Views)whichView, (Tails)whichTail);
 	// finish

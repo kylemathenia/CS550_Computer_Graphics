@@ -47,14 +47,15 @@ public:
 
 	void drawBodies(Views view,Tails tailOption)
 	{
+		glEnable(GL_NORMALIZE);
 		Eigen::Vector3f translation;
 		if (view == Views::CENTER) { translation = center; }
 		else if (view == Views::AVE) { translation = boundary.S.pos; }
 		else if (view == Views::BODY1) { translation = b1.S.pos; }
 		else if (view == Views::BODY2) { translation = b2.S.pos; }
 		else { translation = b3.S.pos; }
-		// since we are using glScalef( ), be sure normals get unitized:
-		glEnable(GL_NORMALIZE);
+
+		enableLighting();
 
 		b1.drawObliq(translation);
 		b2.drawObliq(translation);
@@ -64,9 +65,36 @@ public:
 		b1.drawTran(translation, tailOption);
 		b2.drawTran(translation, tailOption);
 		b3.drawTran(translation, tailOption);
+		disableLighting();
 		boundary.drawBoundary(translation, timeSinceBoundContact);
 		glDepthMask(GL_TRUE);
 		glDisable(GL_BLEND);
+	}
+
+	void enableLighting()
+	{
+		static float lightingWhite[] = { 1.,1.,1.,1. };
+		glEnable(GL_LIGHTING);
+		glEnable(GL_LIGHT0);
+		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.2, lightingWhite));
+		glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+		//glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
+		glLightfv(GL_LIGHT0, GL_DIFFUSE, lightingWhite);
+		//glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
+		glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.);
+		//glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.);
+		glLightfv(GL_LIGHT0, GL_POSITION, Array3(10, 0, 0));
+
+		glEnable(GL_NORMALIZE);
+		glShadeModel(GL_SMOOTH);
+
+		SetMaterial(ColorsArr[b1.bcolor][0], ColorsArr[b1.bcolor][1], ColorsArr[b1.bcolor][2], 100.f);
+	}
+
+	void disableLighting()
+	{
+		glDisable(GL_LIGHTING);
+		glDisable(GL_LIGHT0);
 	}
 
 	void initLists()

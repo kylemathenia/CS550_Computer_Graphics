@@ -233,7 +233,7 @@ public:
 	{
 		glPushMatrix();
 		glEnable(GL_DEPTH_TEST);
-		glColor3f(Colors[c][0], Colors[c][1], Colors[c][2]);
+		glColor3f(ColorsArr[c][0], ColorsArr[c][1], ColorsArr[c][2]);
 		drawGlSeq(list, scale, d, rotAxis, ang);
 	}
 
@@ -242,7 +242,7 @@ public:
 		glPushMatrix();
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-		glColor4f(Colors[c][0], Colors[c][1], Colors[c][2], alpha);
+		glColor4f(ColorsArr[c][0], ColorsArr[c][1], ColorsArr[c][2], alpha);
 		drawGlSeq(list, scale, d, rotAxis, ang);
 	}
 
