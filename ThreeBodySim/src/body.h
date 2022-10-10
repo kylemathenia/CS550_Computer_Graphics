@@ -97,7 +97,7 @@ public:
 
 
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-		glGenTextures(1, &texture); // assign binding “handles”
+		glGenTextures(1, &texture); // assign binding ï¿½handlesï¿½
 		glBindTexture(GL_TEXTURE_2D, texture); // make the Tex0 texture current and set its parametersglTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -148,8 +148,7 @@ public:
 	void drawObliq(Eigen::Vector3f translation)
 	{
 		glBindTexture(GL_TEXTURE_2D, texture);
-		//TODO consider using glBindTexture(GL_TEXTURE_2D, 0); when not using a texture.
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		Eigen::Vector3f delta = S.pos - translation;
 		Eigen::Vector3f scale = { 1, 1, 1 };
 		Eigen::Vector3f rotAxis = { 1, 0, 0 };
