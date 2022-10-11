@@ -39,7 +39,7 @@ public:
 		tcolor = tc;
 		selected = false;
 		// This just happens to often be a good spacing for the sphere tail most of the time. 
-		tailSpacing = fps / 5;
+		tailSpacing = fps / 4;
 		tailUpdateCount = -tailSpacing;
 		lineVec = Eigen::Vector3f(0.0f, 1.0f, 0.0f);
 		hardReset();
@@ -150,7 +150,7 @@ public:
 		if (selected == true) { drawSelector(translation); }
 		if (tailOption == Tails::LINES) { drawLineTail(translation, 1.0f, 1.5f); }
 		else if (tailOption == Tails::CYLINDERS) { drawCylinderTail(translation, 1.0f, 0.1f); }
-		else if (tailOption == Tails::SPHERES) { drawSphereTail(translation, 0.3f, 0.5f, false); }
+		else if (tailOption == Tails::SPHERES) { drawSphereTail(translation, 0.3f, 0.3f, false); }
 	}
 
 	void drawSelector(Eigen::Vector3f translation)

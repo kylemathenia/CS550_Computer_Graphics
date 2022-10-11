@@ -56,6 +56,7 @@ public:
 		else { translation = b3.S.pos; }
 
 		enableLighting();
+
 		b1.setMaterial();
 		b1.drawOpeq(translation);
 		b2.setMaterial();
@@ -79,7 +80,7 @@ public:
 		static float lightingWhite[] = { 1.,1.,1.,1. };
 		glEnable(GL_LIGHTING);
 		glEnable(GL_LIGHT0);
-		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.7, lightingWhite));
+		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.5, lightingWhite));
 		glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 		glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.);
 		glLightfv(GL_LIGHT0, GL_POSITION, Array3(1000, 1000, 500));
