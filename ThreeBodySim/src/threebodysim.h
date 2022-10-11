@@ -56,16 +56,19 @@ public:
 		else { translation = b3.S.pos; }
 
 		enableLighting();
+		b1.setMaterial();
+		b1.drawOpeq(translation);
+		b2.setMaterial();
+		b2.drawOpeq(translation);
+		b3.setMaterial();
+		b3.drawOpeq(translation);
 
-		b1.drawObliq(translation);
-		b2.drawObliq(translation);
-		b3.drawObliq(translation);
+		disableLighting();
 
 		glDepthMask(GL_FALSE);
 		b1.drawTran(translation, tailOption);
 		b2.drawTran(translation, tailOption);
 		b3.drawTran(translation, tailOption);
-		disableLighting();
 		boundary.drawBoundary(translation, timeSinceBoundContact);
 		glDepthMask(GL_TRUE);
 		glDisable(GL_BLEND);
@@ -76,19 +79,12 @@ public:
 		static float lightingWhite[] = { 1.,1.,1.,1. };
 		glEnable(GL_LIGHTING);
 		glEnable(GL_LIGHT0);
-		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.2, lightingWhite));
+		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.7, lightingWhite));
 		glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-		//glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
-		glLightfv(GL_LIGHT0, GL_DIFFUSE, lightingWhite);
-		//glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
-		glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.);
-		//glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.);
-		glLightfv(GL_LIGHT0, GL_POSITION, Array3(10, 0, 0));
-
+		glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.);
+		glLightfv(GL_LIGHT0, GL_POSITION, Array3(1000, 1000, 500));
 		glEnable(GL_NORMALIZE);
 		glShadeModel(GL_SMOOTH);
-
-		SetMaterial(ColorsArr[b1.bcolor][0], ColorsArr[b1.bcolor][1], ColorsArr[b1.bcolor][2], 100.f);
 	}
 
 	void disableLighting()

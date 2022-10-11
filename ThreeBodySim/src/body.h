@@ -126,7 +126,17 @@ public:
 
 	// ##################### RENDER FUNCTIONS ##################### //
 
-	void drawObliq(Eigen::Vector3f translation)
+	void setMaterial()
+	{
+		static float lightingWhite[] = { 1.,1.,1.,1. };
+		glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, Array3(0., 0., 0.));
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Array3(ColorsArr[bcolor][0], ColorsArr[bcolor][1], ColorsArr[bcolor][2]));
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Array3(ColorsArr[bcolor][0], ColorsArr[bcolor][1], ColorsArr[bcolor][2]));
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, MulArray3(0.4f, lightingWhite));
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 20.f);
+	}
+
+	void drawOpeq(Eigen::Vector3f translation)
 	{
 		Eigen::Vector3f delta = S.pos - translation;
 		Eigen::Vector3f scale = { 1, 1, 1 };
