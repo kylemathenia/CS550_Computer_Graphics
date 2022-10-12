@@ -9,6 +9,8 @@
 #include "options.h"
 #include "math_utils.h"
 
+//TODO: Add a skybox - https://learnopengl.com/Advanced-OpenGL/Cubemaps
+
 
 class ThreeBodySim
 {
