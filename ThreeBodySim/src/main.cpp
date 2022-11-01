@@ -301,6 +301,36 @@ Display()
 	// place the objects into the scene:
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+
+
+	//float lightingWhite[] = { 1.,1.,1.,1. };
+	//glEnable(GL_LIGHTING);
+	////glPushMatrix();
+	//glEnable(GL_LIGHT0);
+	//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.2, lightingWhite));
+	//glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+	////glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
+	//glLightfv(GL_LIGHT0, GL_DIFFUSE, lightingWhite);
+	////glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
+	//glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.);
+	////glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.);
+	//glLightfv(GL_LIGHT0, GL_POSITION, Array3(10, 0, 0));
+	////glPopMatrix();
+	////glDisable(GL_LIGHT0);
+	////glPushMatrix();
+	//glEnable(GL_LIGHT1);
+	//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.2, lightingWhite));
+	//glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+	////glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
+	//glLightfv(GL_LIGHT1, GL_DIFFUSE, lightingWhite);
+	////glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
+	//glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.);
+	////glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.);
+	//glLightfv(GL_LIGHT1, GL_POSITION, Array3(-10, 0, 0));
+	////glPopMatrix();
+
+
+
 	// set the eye position, look-at position, and up-vector:
 	gluLookAt(0., 0., 21., 0., 0., 0., 0., 1., 0.);
 	// draw the axis before any global transformations.
@@ -308,6 +338,40 @@ Display()
 		pt3i axisTranslation = { -10, -10, 8 };
 		axis.draw(rot, axisTranslation);
 	}
+
+
+
+	float lightingWhite[] = { 1.,1.,1.,1. };
+	glEnable(GL_LIGHTING);
+	//glPushMatrix();
+	glEnable(GL_LIGHT0);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.2, lightingWhite));
+	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+	//glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightingWhite);
+	//glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
+	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.);
+	//glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.);
+	glLightfv(GL_LIGHT0, GL_POSITION, Array3(10, 0, 0));
+	//glPopMatrix();
+	//glDisable(GL_LIGHT0);
+	//glPushMatrix();
+	glEnable(GL_LIGHT1);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.2, lightingWhite));
+	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+	//glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, lightingWhite);
+	//glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
+	glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.);
+	//glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.);
+	glLightfv(GL_LIGHT1, GL_POSITION, Array3(-10, 0, 0));
+	//glPopMatrix();
+	glEnable(GL_NORMALIZE);
+
+
+
+
+
 	// uniformly scale the scene:
 	if (scale < MINSCALE)
 		scale = MINSCALE;
@@ -318,24 +382,37 @@ Display()
 	// draw the bodies
 	
 
-
-	float lightingWhite[] = { 1.,1.,1.,1. };
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.2, lightingWhite));
-	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-	//glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightingWhite);
-	//glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
-	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.);
-	//glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.);
-	glLightfv(GL_LIGHT0, GL_POSITION, Array3(10,0,0));
-	glEnable(GL_NORMALIZE);
+	//float lightingWhite[] = { 1.,1.,1.,1. };
+	//glEnable(GL_LIGHTING);
+	//glPushMatrix();
+	//glEnable(GL_LIGHT0);
+	//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.2, lightingWhite));
+	//glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+	////glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
+	//glLightfv(GL_LIGHT0, GL_DIFFUSE, lightingWhite);
+	////glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
+	//glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.);
+	////glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.);
+	//glLightfv(GL_LIGHT0, GL_POSITION, Array3(10, 0, 0));
+	//glPopMatrix();
+	////glDisable(GL_LIGHT0);
+	//glPushMatrix();
+	//glEnable(GL_LIGHT1);
+	//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.2, lightingWhite));
+	//glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+	////glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
+	//glLightfv(GL_LIGHT1, GL_DIFFUSE, lightingWhite);
+	////glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
+	//glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.);
+	////glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.);
+	//glLightfv(GL_LIGHT1, GL_POSITION, Array3(-10, 0, 0));
+	//glPopMatrix();
+	//glEnable(GL_NORMALIZE);
 
 	//glCallList(testSphereList);
 	sim.drawBodies((Views)whichView, (Tails)whichTail);
 
-	glDisable(GL_LIGHTING);
+	//glDisable(GL_LIGHTING);
 	// finish
 	glutSwapBuffers();
 	glFlush();
@@ -436,6 +513,30 @@ InitGraphics()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, sim.b1.texW, sim.b1.texH, 0, GL_RGB, GL_UNSIGNED_BYTE, textarr1);
+
+	//float lightingWhite[] = { 1.,1.,1.,1. };
+	//glPushMatrix();
+	//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.2, lightingWhite));
+	//glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+	////glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
+	//glLightfv(GL_LIGHT0, GL_DIFFUSE, lightingWhite);
+	////glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
+	//glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.);
+	////glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.);
+	//glLightfv(GL_LIGHT0, GL_POSITION, Array3(10, 0, 0));
+	//glPopMatrix();
+	////glDisable(GL_LIGHT0);
+
+	//glPushMatrix();
+	//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.2, lightingWhite));
+	//glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+	////glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
+	//glLightfv(GL_LIGHT1, GL_DIFFUSE, lightingWhite);
+	////glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
+	//glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.);
+	////glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.);
+	//glLightfv(GL_LIGHT1, GL_POSITION, Array3(-10, 0, 0));
+	//glPopMatrix();
 }
 
 

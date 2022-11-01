@@ -40,15 +40,9 @@ public:
 		findAccels();
 		updateTime();
 		updateBodies();
-		distortTex();
 		resolveIfContact();
 		updateCenter();
 		updateTails();
-	}
-
-	void distortTex()
-	{
-		b1.initLists();
 	}
 
 	void drawBodies(Views view,Tails tailOption)
@@ -74,7 +68,7 @@ public:
 		b2.drawObliq(translation);
 		//glBindTexture(GL_TEXTURE_2D, b3.texture);
 		//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-		glShadeModel(GL_SMOOTH);
+		glShadeModel(GL_FLAT);
 		//SetMaterial(0, 1, 1, 0.8f);
 		b3.drawObliq(translation);
 		glDisable(GL_TEXTURE_2D);
