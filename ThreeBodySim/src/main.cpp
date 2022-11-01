@@ -27,146 +27,12 @@
 #include "color.h"
 #include "options.h"
 #include "Shapes/shapes.h"
-#include "body.h"
-#include "axis.h"
-#include "threebodysim.h"
 
 
 /* Reduce tail length or frames per second (FPS) if poor performance. */
 const int TAIL_LEN = 200;
 const int FPS = 60;
 bool useIdle = false;
-
-
-////// ##################### INITIAL CONDITIONS ##################### //////
-
-///*Edit here*/
-//// Body 1
-//Eigen::Vector3f b1Pos0 = { -10.0f, 10.0f, -12.0f };
-//Eigen::Vector3f b1Vel0 = { -10.0f, 10.0f, -12.0f };
-//float b1Rad = 0.5f;
-//float b1Mass = 30.0f;
-//// Body 2
-//Eigen::Vector3f b2Pos0 = { -10.0f, 10.0f, -12.0f };
-//Eigen::Vector3f b2Vel0 = { -10.0f, 10.0f, -12.0f };
-//float b2Rad = 0.5f;
-//float b2Mass = 30.0f;
-//// Body 3
-//Eigen::Vector3f b3Pos0 = { -10.0f, 10.0f, -12.0f };
-//Eigen::Vector3f b3Vel0 = { -10.0f, 10.0f, -12.0f };
-//float b3Rad = 0.5f;
-//float b3Mass = 30.0f;
-///*Stop edit here*/
-//
-//state b1InitState = { b1Pos0,b1Vel0 ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//state b2InitState = { b2Pos0,b2Vel0 ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//state b3InitState = { b3Pos0,b3Vel0 ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b1(0, b1Rad, b1Mass, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
-//Body b2(1, b2Rad, b2Mass, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
-//Body b3(2, b3Rad, b3Mass, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
-
-
-
-////// ##################### Pre-Selected Initial Conditions ##################### //////
-
-/* Uncomment below for interesting initial conditions.*/
-
-// //// Nice.
-//state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -11.0f) ,Eigen::Vector3f(-3.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b1(0, 0.5f, 10.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
-//state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b2(1, 0.5f, 20.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
-//state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(3.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b3(2, 0.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
-////
-//// // Interesting perfectly balanced conditions. Symmetrical.
-//state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(-3.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b1(0, 0.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
-//state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b2(1, 0.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
-//state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(3.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b3(2, 0.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
-////
-////// Different interesting perfectly balanced conditions. Non-symmetrical! Amazing how the center of mass stays constant. Beautiful
-//state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(-1.0f, 0.0f, 2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b1(0, 0.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
-//state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 2.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b2(1, 0.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
-//state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(1.0f, -2.0f, -2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b3(2, 0.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
-////
-//// Coming directly at you. 
-//state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(-1.0f, 0.0f, 5.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b1(0, 0.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
-//state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 2.0f, 3.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b2(1, 0.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
-//state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(1.0f, -2.0f, 1.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b3(2, 0.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
-////
-//// // Going directly away.
-//state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(1.0f, 0.0f, -5.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b1(0, 0.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
-//state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, -2.0f, -3.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b2(1, 0.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
-//state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(-1.0f, 2.0f, -1.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b3(2, 0.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
-////
-////// Going directly right.
-//state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(1.0f, 0.0f, 2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b1(0, 0.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
-//state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(2.0f, 2.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b2(1, 0.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
-//state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(3.0f, -2.0f, -2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b3(2, 0.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
-////
-////// Different interesting perfectly balanced conditions. 
-//state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(-3.0f, 2.0f, 2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b1(0, 0.5f, 30.0f, 1000, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
-//state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b2(1, 0.5f, 30.0f, 1000, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
-//state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(3.0f, -2.0f, -2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b3(2, 0.5f, 30.0f, 1000, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
-// ////
-////// Good size to show collisions.
-//state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(1.0f, 0.0f, 2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b1(0, 2.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
-//state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(2.0f, 2.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b2(1, 2.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
-//state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(3.0f, -2.0f, -2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b3(2, 2.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
-//////
-////
-////// Test collision. Stationary center.
-state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(-1.0f, 0.0f, 2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-Body b1(Bodies::B1, 2.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
-state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 2.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-Body b2(Bodies::B2, 2.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
-state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(1.0f, -2.0f, -2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-Body b3(Bodies::B3, 2.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
-////
-// //////// Test collision. Moving center.
-//state b1InitState = { Eigen::Vector3f(-10.0f, 10.0f, -12.0f) ,Eigen::Vector3f(-1.0f, 0.0f, 4.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b1(Bodies::B1, 2.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
-//state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 2.0f, 2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b2(Bodies::B2, 2.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
-//state b3InitState = { Eigen::Vector3f(10.0f, 10.0f, 12.0f) ,Eigen::Vector3f(1.0f, -2.0f, 2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b3(Bodies::B3, 2.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
-//////
-////// Test collision. Linear.
-//state b1InitState = { Eigen::Vector3f(-1000.0f, 1000.0f, -1200.0f) ,Eigen::Vector3f(-1.0f, 0.0f, 2.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b1(Bodies::B1, 2.5f, 30.0f, TAIL_LEN, b1InitState, Colors::BLUE, Colors::WHITE, FPS);
-//state b2InitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b2(Bodies::B2, 2.5f, 30.0f, TAIL_LEN, b2InitState, Colors::CYAN, Colors::GREEN, FPS);
-//state b3InitState = { Eigen::Vector3f(30.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-//Body b3(Bodies::B3, 2.5f, 30.0f, TAIL_LEN, b3InitState, Colors::RED, Colors::MAGENTA, FPS);
-//////
-
-
-////// ##################### OBJECTS ##################### //////
-state boundaryInitState = { Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) ,Eigen::Vector3f(0.0f, 0.0f, 0.0f) };
-Body boundary(Bodies::BOUNDARY, -70.0f, 3000000.0f, TAIL_LEN, boundaryInitState, Colors::WHITE, Colors::WHITE, FPS);
-ThreeBodySim sim(b1, b2, b3, boundary);
-Axis axis(3);
 
 
 ////// ##################### CONSTANT GLOBALS ##################### //////
@@ -210,6 +76,10 @@ GLuint	SphereList1;
 int		Light0On;
 int		Light1On;
 int		Light2On;
+int		Frozen;
+float	curTime;
+GLuint	texInt;
+int		texW, texH;
 
 
 ////// ##################### FUNCTION PROTOTYPES ##################### //////
@@ -248,6 +118,10 @@ void	DoProjectionKey();
 void	DoOrbitKey();
 void	DoScrollWheel(int upOrDown);
 void	DoDistortMenu(int id);
+void	DoLight0Key();
+void	DoLight1Key();
+void	DoLight2Key();
+void	DoFreezeKey();
 
 
 ////// ##################### MAIN PROGRAM ##################### //////
@@ -281,7 +155,6 @@ main( int argc, char *argv[ ] )
 void
 Animate()
 {
-	sim.step();
 	glutSetWindow(mainWindow);
 	glutPostRedisplay();
 }
@@ -290,8 +163,6 @@ Animate()
 void
 AnimateAtFPS(int)
 {
-	// The actual frame period is not always constant. Need to adjust with dt/frame_time ratio, otherwise jerky orbiting. 
-	if (orbitOn == 1) { rot.y += -ORBIT_SPEED * (sim.dt / FRAME_PERIOD); }
 	Animate();
 	glutTimerFunc(1000 / FPS, AnimateAtFPS, 0);
 }
@@ -308,10 +179,6 @@ Display()
 	// set the eye position, look-at position, and up-vector:
 	gluLookAt(0., 0., 21., 0., 0., 0., 0., 1., 0.);
 	// draw the axis before any global transformations.
-	if (axesOn == 1) {
-		pt3i axisTranslation = { -10, -10, 8 };
-		axis.draw(rot, axisTranslation);
-	}
 
 	// uniformly scale the scene:
 	if (scale < MINSCALE)
@@ -322,6 +189,15 @@ Display()
 	glRotatef((GLfloat)rot.x, 1., 0., 0.);
 
 
+
+	Light0On;
+	Light1On;
+	Light2On;
+	Frozen;
+
+	//if (Light0On == 1) { showLight0; }
+	//if (Light0On == 1) { showLight0; }
+	//if (Light0On == 1) { showLight0; }
 
 	float lightingWhite[] = { 1.,1.,1.,1. };
 	glEnable(GL_LIGHTING);
@@ -359,7 +235,7 @@ Display()
 
 	glPushMatrix();
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, sim.b3.texture);
+	glBindTexture(GL_TEXTURE_2D, texInt);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_DEPTH_TEST);
@@ -373,7 +249,7 @@ Display()
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_DEPTH_TEST);
 	glColor3f(Colors[Colors::CYAN][0], Colors[Colors::CYAN][1], Colors[Colors::CYAN][2]);
-	glTranslatef(10*sin(sim.curTime), 10 * cos(sim.curTime), 10 * sin(0.5f*sim.curTime));
+	glTranslatef(10*sin(curTime), 10 * cos(curTime), 10 * sin(0.5f* curTime));
 	glCallList(SphereList1);
 	glPopMatrix();
 
@@ -417,6 +293,8 @@ DisplaySetup()
 		glOrtho(-3., 3., -3., 3., 0.1, 10000.);
 	else
 		gluPerspective(90, 1., 0.1, 10000.);
+
+	if (Frozen == 0) { curTime = ((float)glutGet(GLUT_ELAPSED_TIME)) / 1000.f;}
 }
 
 
@@ -471,14 +349,14 @@ InitGraphics()
 	glutFullScreen();
 
 
-	unsigned char* textarr1 = BmpToTexture((char*)"C:\\dev\\CS550_Computer_Graphics\\ThreeBodySim\\textures\\worldtex.bmp", &sim.b3.texW, &sim.b3.texH);
+	unsigned char* textarr1 = BmpToTexture((char*)"C:\\dev\\CS550_Computer_Graphics\\ThreeBodySim\\textures\\worldtex.bmp", &texW, &texH);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glGenTextures(1, &sim.b3.texture); // assign binding “handles”
-	glBindTexture(GL_TEXTURE_2D, sim.b3.texture); // make the Tex0 texture current and set its parametersglTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+	glGenTextures(1, &texInt); // assign binding “handles”
+	glBindTexture(GL_TEXTURE_2D, texInt); // make the Tex0 texture current and set its parametersglTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, sim.b3.texW, sim.b3.texH, 0, GL_RGB, GL_UNSIGNED_BYTE, textarr1);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, texW, texH, 0, GL_RGB, GL_UNSIGNED_BYTE, textarr1);
 }
 
 
@@ -512,10 +390,8 @@ InitMenus()
 	glutAddMenuEntry("Orthographic", ORTHO);
 	glutAddMenuEntry("Perspective", PERSP);
 	int mainmenu = glutCreateMenu(DoMainMenu);
-	glutAddSubMenu("Distortion", distortmenu);
 	glutAddSubMenu("View (space)", viewmenu);
 	glutAddSubMenu("Tail (t)", tailmenu);
-	glutAddSubMenu("Orbit (o)", orbitmenu);
 	glutAddSubMenu("Projection (p)", projmenu);
 	glutAddMenuEntry("Soft Reset (r)", SOFT_RESET);
 	glutAddMenuEntry("Reset (R)", RESET);
@@ -529,8 +405,6 @@ void
 InitLists()
 {
 	glutSetWindow(mainWindow);
-	sim.initLists();
-	axis.initList();
 	SphereList1 = getSphereList(3., 30, 30);
 }
 
@@ -550,12 +424,10 @@ KeyCallback(unsigned char c, int x, int y)
 	else if (c == 'n') { glutReshapeWindow(SCREEN.x, SCREEN.y); }
 	else if (c == 'r'){ DoSoftResetMenu(); }
 	else if (c == 'R') { DoResetMenu(); }
-	else if (c == 'd') { sim.changeSpeed(0.5f); }
-	else if (c == 'e') { sim.changeSpeed(2.0f); }
-	else if (c == 's') { sim.changeSelected(-1); }
-	else if (c == 'f') { sim.changeSelected(1); }
-	else if (c == 'g') { sim.changeSize(1.0526316f); }
-	else if (c == 'a') { sim.changeSize(0.95f); }
+	else if (c == '0') { DoLight0Key(); }
+	else if (c == '1') { DoLight1Key(); }
+	else if (c == '2') { DoLight2Key(); }
+	else if (c == 'f') { DoFreezeKey(); }
 	else if (c == 'q' || c == EventEnums::ESCAPE) { DoMainMenu(QUIT); }
 	else { fprintf(stderr, "Don't know what to do with keyboard hit: '%c' (0x%0x)\n", c, c); }
 
@@ -663,12 +535,15 @@ DoResetMenu()
 	axesOn = 0;
 	debugOn = 0;
 	orbitOn = 0;
+	Light0On = 1;
+	Light1On = 1;
+	Light2On = 1;
+	Frozen = 0;
 	scale = 0.5f;
 	whichProjection = PERSP;
 	whichView = (int)Views::CENTER;
 	whichTail = (int)Tails::LINES;
 	rot.x = rot.y = 0;
-	sim.reset();
 }
 
 void
@@ -718,8 +593,8 @@ DoViewMenu(int id)
 void
 DoDistortMenu(int id)
 {
-	if (id == 0) {sim.b1.distortion = false;}
-	else { sim.b1.distortion = true; }
+	//if (id == 0) {sim.b1.distortion = false;}
+	//else { sim.b1.distortion = true; }
 	glutSetWindow(mainWindow);
 	glutPostRedisplay();
 }
@@ -743,7 +618,7 @@ DoProjectMenu( int id )
 void
 DoSoftResetMenu()
 {
-	sim.reset();
+	//sim.reset();
 }
 
 void
@@ -795,4 +670,32 @@ DoScrollWheel(int upOrDown)
 	// keep object from turning inside-out or disappearing:
 	if (scale < MINSCALE)
 		scale = MINSCALE;
+}
+
+void
+DoFreezeKey()
+{
+	if (Frozen == 0) { Frozen = 1; }
+	else { Frozen = 0; }
+}
+
+void
+DoLight0Key()
+{
+	if (Light0On == 0) { Light0On = 1; }
+	else { Light0On = 0; }
+}
+
+void
+DoLight1Key()
+{
+	if (Light1On == 0) { Light1On = 1; }
+	else { Light1On = 0; }
+}
+
+void
+DoLight2Key()
+{
+	if (Light2On == 0) { Light2On = 1; }
+	else { Light2On = 0; }
 }
