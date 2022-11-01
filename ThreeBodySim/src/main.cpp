@@ -303,6 +303,13 @@ Display()
 	glLoadIdentity();
 
 
+	Eigen::Vector3f translation;
+	if (whichView == Views::CENTER) { translation = sim.center; }
+	else if (whichView == Views::AVE) { translation = boundary.S.pos; }
+	else if (whichView == Views::BODY1) { translation = b1.S.pos; }
+	else if (whichView == Views::BODY2) { translation = b2.S.pos; }
+	else { translation = b3.S.pos; }
+
 	//float lightingWhite[] = { 1.,1.,1.,1. };
 	//glEnable(GL_LIGHTING);
 	////glPushMatrix();
