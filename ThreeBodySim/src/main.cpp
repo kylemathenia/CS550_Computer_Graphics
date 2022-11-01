@@ -81,6 +81,10 @@ float	curTime;
 GLuint	texInt;
 int		texW, texH;
 
+float Light0Pos[] = { 20., 0., 0. };
+float Light1Pos[] = { 0., 20., 0. };
+float Light2Pos[] = { 0., -20., 20. };
+
 
 ////// ##################### FUNCTION PROTOTYPES ##################### //////
 // main functions
@@ -122,6 +126,15 @@ void	DoLight0Key();
 void	DoLight1Key();
 void	DoLight2Key();
 void	DoFreezeKey();
+void	showLight0();
+void	showLight1();
+void	showLight2();
+void	drawSphere0();
+void	drawSphere1();
+void	drawSphere2();
+void	showLight0Sphere();
+void	showLight1Sphere();
+void	showLight2Sphere();
 
 
 ////// ##################### MAIN PROGRAM ##################### //////
@@ -189,51 +202,136 @@ Display()
 	glRotatef((GLfloat)rot.x, 1., 0., 0.);
 
 
+	if (Light0On == 1) { showLight0Sphere(); }
+	if (Light1On == 1) { showLight1Sphere(); }
+	if (Light2On == 1) { showLight2Sphere(); }
 
-	Light0On;
-	Light1On;
-	Light2On;
-	Frozen;
-
-	//if (Light0On == 1) { showLight0; }
-	//if (Light0On == 1) { showLight0; }
-	//if (Light0On == 1) { showLight0; }
-
-	float lightingWhite[] = { 1.,1.,1.,1. };
 	glEnable(GL_LIGHTING);
-	//glPushMatrix();
-	glEnable(GL_LIGHT0);
+	float	lightingWhite[] = { 1.,1.,1.,1. };
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.2, lightingWhite));
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-	//glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightingWhite);
-	//glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
-	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.);
-	//glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.);
-	glLightfv(GL_LIGHT0, GL_POSITION, Array3(10, 0, 0));
-	//glPopMatrix();
-	//glDisable(GL_LIGHT0);
-	//glPushMatrix();
-	glEnable(GL_LIGHT1);
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.2, lightingWhite));
-	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-	//glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, lightingWhite);
-	//glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
-	glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.);
-	//glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.);
-	glLightfv(GL_LIGHT1, GL_POSITION, Array3(-10, 0, 0));
-	//glPopMatrix();
+	if (Light0On == 1) 
+	{ 
+		glEnable(GL_LIGHT0);
+		//glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
+		//glLightfv(GL_LIGHT0, GL_DIFFUSE, lightingWhite);
+		glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
+		glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.);
+		glLightfv(GL_LIGHT0, GL_POSITION, Array3(Light0Pos[0], Light0Pos[1], Light0Pos[2]));
+	}
+	else{ glDisable(GL_LIGHT0); }
+	if (Light1On == 1) 
+	{
+		glEnable(GL_LIGHT1);
+		//glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
+		glLightfv(GL_LIGHT0, GL_DIFFUSE, lightingWhite);
+		glLightfv(GL_LIGHT1, GL_SPECULAR, lightingWhite);
+		glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.);
+		glLightfv(GL_LIGHT1, GL_POSITION, Array3(Light0Pos[0], Light0Pos[1], Light0Pos[2]));
+	}
+	else { glDisable(GL_LIGHT1); }
+	if (Light2On == 1) 
+	{
+		glEnable(GL_LIGHT2);
+		//glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
+		glLightfv(GL_LIGHT0, GL_DIFFUSE, lightingWhite);
+		glLightfv(GL_LIGHT2, GL_SPECULAR, lightingWhite);
+		glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 0.);
+		glLightfv(GL_LIGHT2, GL_POSITION, Array3(Light0Pos[0], Light0Pos[1], Light0Pos[2]));
+	}
+	else { glDisable(GL_LIGHT2); }
 
+	drawSphere0();
+	drawSphere1();
+	drawSphere2();
+	glDisable(GL_LIGHTING);
+
+	//SetPointLight(int ilight, float x, float y, float z, float r, float g, float b);
+	//SetSpotLight(int ilight, float x, float y, float z, float xdir, float ydir, float zdir, float r, float g, float b);
+
+	// finish
+	glutSwapBuffers();
+	glFlush();
+  }
+
+void
+showLight0Sphere()
+{
 	glPushMatrix();
+	glEnable(GL_DEPTH_TEST);
+	glColor3f(Colors[Colors::CYAN][0], Colors[Colors::CYAN][1], Colors[Colors::CYAN][2]);
+	glTranslatef(Light0Pos[0], Light0Pos[1], Light0Pos[2]);
+	glScalef(0.2f, 0.2f, 0.2f);
+	glCallList(SphereList1);
+	glPopMatrix();
+}
+
+void
+showLight1Sphere()
+{
+
+}
+
+void
+showLight2Sphere()
+{
+
+}
+
+void
+showLight0()
+{
+	float	lightingWhite[] = { 1.,1.,1.,1. };
+	glEnable(GL_LIGHT0);
+	//glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
+	//glLightfv(GL_LIGHT0, GL_DIFFUSE, lightingWhite);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
+	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.);
+	glLightfv(GL_LIGHT0, GL_POSITION, Array3(Light0Pos[0], Light0Pos[1], Light0Pos[2]));
+}
+
+void
+showLight1()
+{
+	float	lightingWhite[] = { 1.,1.,1.,1. };
+	glEnable(GL_LIGHT1);
+	//glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
+	//glLightfv(GL_LIGHT1, GL_DIFFUSE, lightingWhite);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
+	glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.);
+	glLightfv(GL_LIGHT1, GL_POSITION, Array3(Light1Pos[0], Light1Pos[1], Light1Pos[2]));
+}
+
+void
+showLight2()
+{
+	float	lightingWhite[] = { 1.,1.,1.,1. };
+	glEnable(GL_LIGHT2);
+	//glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
+	//glLightfv(GL_LIGHT2, GL_DIFFUSE, lightingWhite);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
+	glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 0.);
+	glLightfv(GL_LIGHT2, GL_POSITION, Array3(Light2Pos[0], Light2Pos[1], Light2Pos[2]));
+}
+
+void
+drawSphere0()
+{
+	glPushMatrix();
+	SetMaterial(1.0f, 1.0f, 1.0f, 100.0f);
 	glShadeModel(GL_FLAT);
 	glEnable(GL_DEPTH_TEST);
 	glColor3f(Colors[Colors::CYAN][0], Colors[Colors::CYAN][1], Colors[Colors::CYAN][2]);
-	glTranslatef(0,0,4);
+	glTranslatef(0, 0, 4);
 	glCallList(SphereList1);
 	glPopMatrix();
+}
 
+void
+drawSphere1()
+{
 	glPushMatrix();
+	SetMaterial(1.0f, 1.0f, 1.0f, 20.0f);
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texInt);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -244,29 +342,20 @@ Display()
 	glCallList(SphereList1);
 	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
+}
 
+void
+drawSphere2()
+{
 	glPushMatrix();
+	SetMaterial(Colors[Colors::GREEN][0], Colors[Colors::GREEN][1], Colors[Colors::GREEN][2], 2.f);
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_DEPTH_TEST);
-	glColor3f(Colors[Colors::CYAN][0], Colors[Colors::CYAN][1], Colors[Colors::CYAN][2]);
-	glTranslatef(10*sin(curTime), 10 * cos(curTime), 10 * sin(0.5f* curTime));
+	//glColor3f(Colors[Colors::GREEN][0], Colors[Colors::GREEN][1], Colors[Colors::GREEN][2]);
+	glTranslatef(10 * sin(curTime), 10 * cos(curTime), 10 * sin(0.5f * curTime));
 	glCallList(SphereList1);
 	glPopMatrix();
-
-	//glDisable(GL_LIGHTING);
-	// 
-	// finish
-	glutSwapBuffers();
-	glFlush();
-  }
-
-
-
-
-
-
-
-
+}
 
 
 // Set some glut and opengl parameters every display call. 
@@ -358,7 +447,6 @@ InitGraphics()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, texW, texH, 0, GL_RGB, GL_UNSIGNED_BYTE, textarr1);
 }
-
 
 void
 InitMenus()
