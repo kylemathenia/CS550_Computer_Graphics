@@ -147,18 +147,11 @@ public:
 
 	void drawObliq(Eigen::Vector3f translation)
 	{
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		Eigen::Vector3f delta = S.pos - translation;
 		Eigen::Vector3f scale = { 1, 1, 1 };
 		Eigen::Vector3f rotAxis = { 1, 0, 0 };
 		float ang = 0;
-		if (distortion == true) {
-			drawGlSeqOpaq(distortedSphereList, scale, delta, rotAxis, ang, bcolor);
-		}
-		else {
-			drawGlSeqOpaq(sphereList, scale, delta, rotAxis, ang, bcolor);
-		}
+		drawGlSeqOpaq(sphereList, scale, delta, rotAxis, ang, bcolor);
 	}
 
 	void drawTran(Eigen::Vector3f translation, Tails tailOption)

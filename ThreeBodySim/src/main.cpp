@@ -206,7 +206,10 @@ pt2i	windowSize;				// pixels size of current glut window
 float	aspectRatio;			// aspect ratio of the glut window
 int		activeButton;			// current button that is down
 int		distort;
-GLuint	testSphereList;
+GLuint	SphereList1;
+int		Light0On;
+int		Light1On;
+int		Light2On;
 
 
 ////// ##################### FUNCTION PROTOTYPES ##################### //////
@@ -302,42 +305,6 @@ Display()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-
-	Eigen::Vector3f translation;
-	if (whichView == Views::CENTER) { translation = sim.center; }
-	else if (whichView == Views::AVE) { translation = boundary.S.pos; }
-	else if (whichView == Views::BODY1) { translation = b1.S.pos; }
-	else if (whichView == Views::BODY2) { translation = b2.S.pos; }
-	else { translation = b3.S.pos; }
-
-	//float lightingWhite[] = { 1.,1.,1.,1. };
-	//glEnable(GL_LIGHTING);
-	////glPushMatrix();
-	//glEnable(GL_LIGHT0);
-	//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.2, lightingWhite));
-	//glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-	////glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
-	//glLightfv(GL_LIGHT0, GL_DIFFUSE, lightingWhite);
-	////glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
-	//glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.);
-	////glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.);
-	//glLightfv(GL_LIGHT0, GL_POSITION, Array3(10, 0, 0));
-	////glPopMatrix();
-	////glDisable(GL_LIGHT0);
-	////glPushMatrix();
-	//glEnable(GL_LIGHT1);
-	//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.2, lightingWhite));
-	//glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-	////glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
-	//glLightfv(GL_LIGHT1, GL_DIFFUSE, lightingWhite);
-	////glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
-	//glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.);
-	////glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.);
-	//glLightfv(GL_LIGHT1, GL_POSITION, Array3(-10, 0, 0));
-	////glPopMatrix();
-
-
-
 	// set the eye position, look-at position, and up-vector:
 	gluLookAt(0., 0., 21., 0., 0., 0., 0., 1., 0.);
 	// draw the axis before any global transformations.
@@ -345,6 +312,14 @@ Display()
 		pt3i axisTranslation = { -10, -10, 8 };
 		axis.draw(rot, axisTranslation);
 	}
+
+	// uniformly scale the scene:
+	if (scale < MINSCALE)
+		scale = MINSCALE;
+	glScalef((GLfloat)scale, (GLfloat)scale * aspectRatio, (GLfloat)scale);
+	// rotate the scene:
+	glRotatef((GLfloat)rot.y, 0., 1., 0.);
+	glRotatef((GLfloat)rot.x, 1., 0., 0.);
 
 
 
@@ -373,53 +348,37 @@ Display()
 	//glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.);
 	glLightfv(GL_LIGHT1, GL_POSITION, Array3(-10, 0, 0));
 	//glPopMatrix();
-	glEnable(GL_NORMALIZE);
 
+	glPushMatrix();
+	glShadeModel(GL_FLAT);
+	glEnable(GL_DEPTH_TEST);
+	glColor3f(Colors[Colors::CYAN][0], Colors[Colors::CYAN][1], Colors[Colors::CYAN][2]);
+	glTranslatef(0,0,4);
+	glCallList(SphereList1);
+	glPopMatrix();
 
+	glPushMatrix();
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, sim.b3.texture);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glShadeModel(GL_SMOOTH);
+	glEnable(GL_DEPTH_TEST);
+	glColor3f(Colors[Colors::WHITE][0], Colors[Colors::WHITE][1], Colors[Colors::WHITE][2]);
+	glTranslatef(0, -7, 0);
+	glCallList(SphereList1);
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
 
-
-
-	// uniformly scale the scene:
-	if (scale < MINSCALE)
-		scale = MINSCALE;
-	glScalef((GLfloat)scale, (GLfloat)scale * aspectRatio, (GLfloat)scale);
-	// rotate the scene:
-	glRotatef((GLfloat)rot.y, 0., 1., 0.);
-	glRotatef((GLfloat)rot.x, 1., 0., 0.);
-	// draw the bodies
-	
-
-	//float lightingWhite[] = { 1.,1.,1.,1. };
-	//glEnable(GL_LIGHTING);
-	//glPushMatrix();
-	//glEnable(GL_LIGHT0);
-	//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.2, lightingWhite));
-	//glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-	////glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
-	//glLightfv(GL_LIGHT0, GL_DIFFUSE, lightingWhite);
-	////glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
-	//glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.);
-	////glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.);
-	//glLightfv(GL_LIGHT0, GL_POSITION, Array3(10, 0, 0));
-	//glPopMatrix();
-	////glDisable(GL_LIGHT0);
-	//glPushMatrix();
-	//glEnable(GL_LIGHT1);
-	//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.2, lightingWhite));
-	//glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-	////glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
-	//glLightfv(GL_LIGHT1, GL_DIFFUSE, lightingWhite);
-	////glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
-	//glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.);
-	////glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.);
-	//glLightfv(GL_LIGHT1, GL_POSITION, Array3(-10, 0, 0));
-	//glPopMatrix();
-	//glEnable(GL_NORMALIZE);
-
-	//glCallList(testSphereList);
-	sim.drawBodies((Views)whichView, (Tails)whichTail);
+	glPushMatrix();
+	glShadeModel(GL_SMOOTH);
+	glEnable(GL_DEPTH_TEST);
+	glColor3f(Colors[Colors::CYAN][0], Colors[Colors::CYAN][1], Colors[Colors::CYAN][2]);
+	glTranslatef(10*sin(sim.curTime), 10 * cos(sim.curTime), 10 * sin(0.5f*sim.curTime));
+	glCallList(SphereList1);
+	glPopMatrix();
 
 	//glDisable(GL_LIGHTING);
+	// 
 	// finish
 	glutSwapBuffers();
 	glFlush();
@@ -512,38 +471,14 @@ InitGraphics()
 	glutFullScreen();
 
 
-	unsigned char* textarr1 = BmpToTexture((char*)"C:\\dev\\CS550_Computer_Graphics\\ThreeBodySim\\textures\\worldtex.bmp", &sim.b1.texW, &sim.b1.texH);
+	unsigned char* textarr1 = BmpToTexture((char*)"C:\\dev\\CS550_Computer_Graphics\\ThreeBodySim\\textures\\worldtex.bmp", &sim.b3.texW, &sim.b3.texH);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glGenTextures(1, &sim.b1.texture); // assign binding “handles”
-	glBindTexture(GL_TEXTURE_2D, sim.b1.texture); // make the Tex0 texture current and set its parametersglTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+	glGenTextures(1, &sim.b3.texture); // assign binding “handles”
+	glBindTexture(GL_TEXTURE_2D, sim.b3.texture); // make the Tex0 texture current and set its parametersglTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, sim.b1.texW, sim.b1.texH, 0, GL_RGB, GL_UNSIGNED_BYTE, textarr1);
-
-	//float lightingWhite[] = { 1.,1.,1.,1. };
-	//glPushMatrix();
-	//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.2, lightingWhite));
-	//glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-	////glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
-	//glLightfv(GL_LIGHT0, GL_DIFFUSE, lightingWhite);
-	////glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
-	//glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.);
-	////glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.);
-	//glLightfv(GL_LIGHT0, GL_POSITION, Array3(10, 0, 0));
-	//glPopMatrix();
-	////glDisable(GL_LIGHT0);
-
-	//glPushMatrix();
-	//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.2, lightingWhite));
-	//glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-	////glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
-	//glLightfv(GL_LIGHT1, GL_DIFFUSE, lightingWhite);
-	////glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
-	//glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.);
-	////glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.);
-	//glLightfv(GL_LIGHT1, GL_POSITION, Array3(-10, 0, 0));
-	//glPopMatrix();
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, sim.b3.texW, sim.b3.texH, 0, GL_RGB, GL_UNSIGNED_BYTE, textarr1);
 }
 
 
@@ -596,7 +531,7 @@ InitLists()
 	glutSetWindow(mainWindow);
 	sim.initLists();
 	axis.initList();
-	testSphereList = getSphereList(3., 30, 30);
+	SphereList1 = getSphereList(3., 30, 30);
 }
 
 
