@@ -1,9 +1,4 @@
 
-ERROR: 0:22: 'xdif' : redefinition 
-ERROR: 0:23: 'xdif_sq' : redefinition 
-ERROR: 0:24: 'ydif' : redefinition 
-ERROR: 0:25: 'ydif_sq' : redefinition 
-ERROR: 0:26: 'sum' : redefinition 
-ERROR: 0:27: 'dist' : redefinition 
+ERROR: 0:6: '=' : assigning non-constant to 'const highp float'
 
 

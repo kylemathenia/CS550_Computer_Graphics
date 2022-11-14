@@ -230,12 +230,23 @@ Display()
 	char uT0s[] = "uT0";
 	float uD = 0.5;
 	char uDs[] = "uD";
-	Pattern->Use(); // no more fixed-function – shaders now handle everythingPattern->SetUniformVariable( "uS0", s0);
+	float uA = 0.0;
+	char uAs[] = "uA";
+	float uB = 0.0;
+	char uBs[] = "uB";
+
+
+	Pattern->Use();
+	//if (ImUsingTheVertexShader){uA = curTime;}
+	//if (ImUsingTheFragmentShader){uB = curTime;}
+	if (1) { uA = curTime; }
+	if (1) { uB = curTime; }
+	Pattern->SetUniformVariable(uAs, uA);
+	Pattern->SetUniformVariable(uBs, uB);
 	Pattern->SetUniformVariable(uT0s, uT0);
 	Pattern->SetUniformVariable(uS0s, uS0);
 	Pattern->SetUniformVariable(uDs, uD);
 	glCallList(SphereList1);
-	//OsuSphere();
 	Pattern->UnUse(); // go back to fixed-function OpenGL
 
 
@@ -272,7 +283,8 @@ DisplaySetup()
 	else
 		gluPerspective(90, 1., 0.1, 10000.);
 
-	if (Frozen == 0) { curTime = ((float)glutGet(GLUT_ELAPSED_TIME)) / 1000.f;}
+	//if (Frozen == 0) { curTime = ((float)glutGet(GLUT_ELAPSED_TIME)) / 1000.f;}
+	curTime = ((float)glutGet(GLUT_ELAPSED_TIME)) / 1000.f;
 }
 
 
