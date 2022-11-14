@@ -8,15 +8,13 @@ main()
 {
 	vec3 myColor = vec3( 1., 0.5, 0. );
 	float xdif = vST.s-0.25;
+	float xdif_sq = pow(xdif,2.0);
 	float ydif = vST.t-0.5;
-	float dist = ((xdif**2) + (ydif**2))**0.5
+	float ydif_sq = pow(ydif,2.0);
+	float sum = xdif_sq + ydif_sq;
+	float dist = pow(sum,0.5);
 
-	if( uS0 - uD/2. <= vST.s && vST.s <= uS0 + uD/2. && uT0 - uD/2. <= vST.t && vST.t <= uT0 + uD/2. )
-	{
-		myColor = vec3( 1., 1., 1. );		
-	}
-
-	if( 2. <= 5. )
+	if( dist <= 0.1 )
 	{
 		myColor = vec3( 1., 0., 0. );
 	}
