@@ -208,13 +208,13 @@ Display()
 	glRotatef((GLfloat)rot.y, 0., 1., 0.);
 	glRotatef((GLfloat)rot.x, 1., 0., 0.);
 
-	glPushMatrix();
-	glShadeModel(GL_SMOOTH);
-	glEnable(GL_DEPTH_TEST);
-	glColor3f(Colors[Colors::GREEN][0], Colors[Colors::GREEN][1], Colors[Colors::GREEN][2]);
-	glTranslatef(10 * sin(curTime), 10 * cos(curTime), 10 * sin(0.5f * curTime));
-	glCallList(SphereList1);
-	glPopMatrix();
+	//glPushMatrix();
+	//glShadeModel(GL_SMOOTH);
+	//glEnable(GL_DEPTH_TEST);
+	//glColor3f(Colors[Colors::GREEN][0], Colors[Colors::GREEN][1], Colors[Colors::GREEN][2]);
+	//glTranslatef(10 * sin(curTime), 10 * cos(curTime), 10 * sin(0.5f * curTime));
+	//glCallList(SphereList1);
+	//glPopMatrix();
 
 	////char uTime[] = "uTime";
 	//Pattern->Use();
@@ -224,14 +224,19 @@ Display()
 
 
 
-	//float s0 = some function of Time
-	//float t0 = some function of Time
-	//float d = some function of Time
-	//	. ..Pattern->Use(); // no more fixed-function – shaders now handle everythingPattern->SetUniformVariable( "uS0", s0);
-	//Pattern->SetUniformVariable("uT0", t0);
-	//Pattern->SetUniformVariable("uD", d);
+	float uS0 = 0.5;
+	char uS0s[] = "uS0";
+	float uT0 = 0.5;
+	char uT0s[] = "uT0";
+	float uD = 0.5;
+	char uDs[] = "uD";
+	Pattern->Use(); // no more fixed-function – shaders now handle everythingPattern->SetUniformVariable( "uS0", s0);
+	Pattern->SetUniformVariable(uT0s, uT0);
+	Pattern->SetUniformVariable(uS0s, uS0);
+	Pattern->SetUniformVariable(uDs, uD);
+	glCallList(SphereList1);
 	//OsuSphere();
-	//Pattern->UnUse(); // go back to fixed-function OpenGL
+	Pattern->UnUse(); // go back to fixed-function OpenGL
 
 
 
@@ -322,8 +327,8 @@ InitGraphics()
 	glutFullScreen();
 
 
-	char vert_sh[] = "C:\dev\CS550_Computer_Graphics\ThreeBodySim\pattern.vert";
-	char frag_sh[] = "C:\dev\CS550_Computer_Graphics\ThreeBodySim\pattern.frag";
+	char vert_sh[] = "C:\\dev\\CS550_Computer_Graphics\\ThreeBodySim\\src\\pattern.vert";
+	char frag_sh[] = "C:\\dev\\CS550_Computer_Graphics\\ThreeBodySim\\src\\pattern.frag";
 	Pattern = new GLSLProgram();
 	bool valid = Pattern->Create(vert_sh, frag_sh);
 	if (!valid)
