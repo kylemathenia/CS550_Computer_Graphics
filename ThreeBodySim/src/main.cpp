@@ -205,228 +205,18 @@ Display()
 	glRotatef((GLfloat)rot.y, 0., 1., 0.);
 	glRotatef((GLfloat)rot.x, 1., 0., 0.);
 
-
-	if (Light0On == 1) { showLight0Sphere(); }
-	if (Light1On == 1) { showLight1Sphere(); }
-	if (Light2On == 1) { showLight2Sphere(); }
-
-	glEnable(GL_LIGHTING);
-	float	lightingWhite[] = { 1.,1.,1.,1. };
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, MulArray3(.2, lightingWhite));
-	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-
-	//////////////////
-
-	if (Light0On == 1) 
-	{ 
-		glEnable(GL_LIGHT0);
-		glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, Array3(-Light0Pos[0], -Light0Pos[1], -Light0Pos[2]));
-		glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 1.);
-		glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 45.);
-		glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
-		glLightfv(GL_LIGHT0, GL_DIFFUSE, Light0Col);
-		glLightfv(GL_LIGHT0, GL_SPECULAR, Light0Col);
-		glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.);
-		glLightfv(GL_LIGHT0, GL_POSITION, Array3(Light0Pos[0] * sin(curTime), Light0Pos[1], Light0Pos[2]));
-	}
-	else{ glDisable(GL_LIGHT0); }
-	//////////////////	//////////////////	//////////////////
-	if (Light1On == 1) 
-	{
-		glEnable(GL_LIGHT1);
-		glLightfv(GL_LIGHT1, GL_AMBIENT, Array3(0., 0., 0.));
-		glLightfv(GL_LIGHT1, GL_DIFFUSE, Light1Col);
-		glLightfv(GL_LIGHT1, GL_SPECULAR, Light1Col);
-		glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.);
-		glLightfv(GL_LIGHT1, GL_POSITION, Array3(Light1Pos[0], Light1Pos[1], Light1Pos[2]));
-	}
-	else { glDisable(GL_LIGHT1); }
-	//////////////////	//////////////////	//////////////////
-	if (Light2On == 1) 
-	{
-		glEnable(GL_LIGHT2);
-		glLightfv(GL_LIGHT2, GL_AMBIENT, Array3(0., 0., 0.));
-		glLightfv(GL_LIGHT2, GL_DIFFUSE, Light2Col);
-		glLightfv(GL_LIGHT2, GL_SPECULAR, Light1Col);
-		glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 0.);
-		glLightfv(GL_LIGHT2, GL_POSITION, Array3(Light2Pos[0], Light2Pos[1], Light2Pos[2]));
-	}
-	else { glDisable(GL_LIGHT2); }
-
-	//////////////////	//////////////////	//////////////////
-	//SetMaterial(0.5f, 0.5f, 0.5f, 0.02f);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, Array3(0., 0., 0.));
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Array3(Colors[Colors::WHITE][0], Colors[Colors::WHITE][1], Colors[Colors::WHITE][2]));
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Array3(Colors[Colors::WHITE][0], Colors[Colors::WHITE][1], Colors[Colors::WHITE][2]));
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, MulArray3(0.4f, lightingWhite));
-	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 2.0f);
-	glPushMatrix();
-	glShadeModel(GL_FLAT);
-	glEnable(GL_DEPTH_TEST);
-	//glColor3f(Colors[Colors::CYAN][0], Colors[Colors::CYAN][1], Colors[Colors::CYAN][2]);
-	glTranslatef(0, 0, 4);
-	glCallList(SphereList1);
-	glPopMatrix();
-
-	//////////////////	//////////////////	//////////////////
-	//SetMaterial(0.5f, 0.5f, 0.5f, 20.0f);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, Array3(0., 0., 0.));
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Array3(Colors[Colors::WHITE][0], Colors[Colors::WHITE][1], Colors[Colors::WHITE][2]));
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Array3(Colors[Colors::WHITE][0], Colors[Colors::WHITE][1], Colors[Colors::WHITE][2]));
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, MulArray3(0.4f, lightingWhite));
-	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 20.0f);
-	glPushMatrix();
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, texInt);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glShadeModel(GL_SMOOTH);
-	glEnable(GL_DEPTH_TEST);
-	//glColor3f(Colors[Colors::WHITE][0], Colors[Colors::WHITE][1], Colors[Colors::WHITE][2]);
-	glTranslatef(0, -7, 0);
-	glCallList(SphereList1);
-	glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
-
-	//////////////////	//////////////////	//////////////////
-	//SetMaterial(Colors[Colors::GREEN][0], Colors[Colors::GREEN][1], Colors[Colors::GREEN][2], 2.f);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, Array3(0., 0., 0.));
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Array3(Colors[Colors::BLUE][0], Colors[Colors::BLUE][1], Colors[Colors::BLUE][2]));
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Array3(Colors[Colors::BLUE][0], Colors[Colors::BLUE][1], Colors[Colors::BLUE][2]));
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, MulArray3(0.4f, lightingWhite));
-	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 200.0f);
 	glPushMatrix();
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_DEPTH_TEST);
-	//glColor3f(Colors[Colors::GREEN][0], Colors[Colors::GREEN][1], Colors[Colors::GREEN][2]);
+	glColor3f(Colors[Colors::GREEN][0], Colors[Colors::GREEN][1], Colors[Colors::GREEN][2]);
 	glTranslatef(10 * sin(curTime), 10 * cos(curTime), 10 * sin(0.5f * curTime));
 	glCallList(SphereList1);
 	glPopMatrix();
-
-
-	glDisable(GL_LIGHTING);
-
-	//SetPointLight(int ilight, float x, float y, float z, float r, float g, float b);
-	//SetSpotLight(int ilight, float x, float y, float z, float xdir, float ydir, float zdir, float r, float g, float b);
 
 	// finish
 	glutSwapBuffers();
 	glFlush();
   }
-
-void
-showLight0Sphere()
-{
-	glPushMatrix();
-	glEnable(GL_DEPTH_TEST);
-	glColor3f(Light0Col[0], Light0Col[1], Light0Col[2]);
-	glTranslatef(Light0Pos[0] * sin(curTime), Light0Pos[1], Light0Pos[2]);
-	glScalef(0.2f, 0.2f, 0.2f);
-	glCallList(SphereList1);
-	glPopMatrix();
-}
-
-void
-showLight1Sphere()
-{
-	glPushMatrix();
-	glEnable(GL_DEPTH_TEST);
-	glColor3f(Light1Col[0], Light1Col[1], Light1Col[2]);
-	glTranslatef(Light1Pos[0], Light1Pos[1], Light1Pos[2]);
-	glScalef(0.2f, 0.2f, 0.2f);
-	glCallList(SphereList1);
-	glPopMatrix();
-}
-
-void
-showLight2Sphere()
-{
-	glPushMatrix();
-	glEnable(GL_DEPTH_TEST);
-	glColor3f(Light2Col[0], Light2Col[1], Light2Col[2]);
-	glTranslatef(Light2Pos[0], Light2Pos[1], Light2Pos[2]);
-	glScalef(0.2f, 0.2f, 0.2f);
-	glCallList(SphereList1);
-	glPopMatrix();
-}
-
-//void
-//showLight0()
-//{
-//	float	lightingWhite[] = { 1.,1.,1.,1. };
-//	glEnable(GL_LIGHT0);
-//	//glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
-//	//glLightfv(GL_LIGHT0, GL_DIFFUSE, lightingWhite);
-//	glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
-//	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.);
-//	glLightfv(GL_LIGHT0, GL_POSITION, Array3(Light0Pos[0], Light0Pos[1], Light0Pos[2]));
-//}
-//
-//void
-//showLight1()
-//{
-//	float	lightingWhite[] = { 1.,1.,1.,1. };
-//	glEnable(GL_LIGHT1);
-//	//glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
-//	//glLightfv(GL_LIGHT1, GL_DIFFUSE, lightingWhite);
-//	glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
-//	glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.);
-//	glLightfv(GL_LIGHT1, GL_POSITION, Array3(Light1Pos[0], Light1Pos[1], Light1Pos[2]));
-//}
-//
-//void
-//showLight2()
-//{
-//	float	lightingWhite[] = { 1.,1.,1.,1. };
-//	glEnable(GL_LIGHT2);
-//	//glLightfv(GL_LIGHT0, GL_AMBIENT, Array3(0., 0., 0.));
-//	//glLightfv(GL_LIGHT2, GL_DIFFUSE, lightingWhite);
-//	glLightfv(GL_LIGHT0, GL_SPECULAR, lightingWhite);
-//	glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 0.);
-//	glLightfv(GL_LIGHT2, GL_POSITION, Array3(Light2Pos[0], Light2Pos[1], Light2Pos[2]));
-//}
-//
-//void
-//drawSphere0()
-//{
-//	SetMaterial(1.0f, 1.0f, 1.0f, 0.02f);
-//	glPushMatrix();
-//	glShadeModel(GL_FLAT);
-//	glEnable(GL_DEPTH_TEST);
-//	glColor3f(Colors[Colors::CYAN][0], Colors[Colors::CYAN][1], Colors[Colors::CYAN][2]);
-//	glTranslatef(0, 0, 4);
-//	glCallList(SphereList1);
-//	glPopMatrix();
-//}
-//
-//void
-//drawSphere1()
-//{
-//	SetMaterial(1.0f, 1.0f, 1.0f, 20.0f);
-//	glPushMatrix();
-//	glEnable(GL_TEXTURE_2D);
-//	glBindTexture(GL_TEXTURE_2D, texInt);
-//	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-//	glShadeModel(GL_SMOOTH);
-//	glEnable(GL_DEPTH_TEST);
-//	glColor3f(Colors[Colors::WHITE][0], Colors[Colors::WHITE][1], Colors[Colors::WHITE][2]);
-//	glTranslatef(0, -7, 0);
-//	glCallList(SphereList1);
-//	glDisable(GL_TEXTURE_2D);
-//	glPopMatrix();
-//}
-//
-//void
-//drawSphere2()
-//{
-//	SetMaterial(Colors[Colors::GREEN][0], Colors[Colors::GREEN][1], Colors[Colors::GREEN][2], 2.f);
-//	glPushMatrix();
-//	glShadeModel(GL_SMOOTH);
-//	glEnable(GL_DEPTH_TEST);
-//	//glColor3f(Colors[Colors::GREEN][0], Colors[Colors::GREEN][1], Colors[Colors::GREEN][2]);
-//	glTranslatef(10 * sin(curTime), 10 * cos(curTime), 10 * sin(0.5f * curTime));
-//	glCallList(SphereList1);
-//	glPopMatrix();
-//}
 
 
 // Set some glut and opengl parameters every display call. 
@@ -508,15 +298,6 @@ InitGraphics()
 #endif
 	glutFullScreen();
 
-
-	unsigned char* textarr1 = BmpToTexture((char*)"C:\\dev\\CS550_Computer_Graphics\\ThreeBodySim\\textures\\worldtex.bmp", &texW, &texH);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glGenTextures(1, &texInt); // assign binding “handles”
-	glBindTexture(GL_TEXTURE_2D, texInt); // make the Tex0 texture current and set its parametersglTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, texW, texH, 0, GL_RGB, GL_UNSIGNED_BYTE, textarr1);
 }
 
 void
