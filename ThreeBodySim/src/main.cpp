@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_DEPRECATE
 // standard
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,6 +28,8 @@
 #include "color.h"
 #include "options.h"
 #include "Shapes/shapes.h"
+#include "glslprogramP5.h"
+
 
 
 /* Reduce tail length or frames per second (FPS) if poor performance. */
@@ -78,8 +81,7 @@ int		Light1On;
 int		Light2On;
 int		Frozen;
 float	curTime;
-GLuint	texInt;
-int		texW, texH;
+GLSLProgram* Pattern;
 
 float Light0Pos[] = { 20., 0., 0. };
 float Light1Pos[] = { 0., 20., 0. };

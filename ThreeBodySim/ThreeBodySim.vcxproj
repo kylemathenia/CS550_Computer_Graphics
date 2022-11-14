@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\glslprogramP5.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\math_utils.cpp" />
     <ClCompile Include="src\Shapes\axes.cpp" />
@@ -28,6 +29,7 @@
     <ClCompile Include="src\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\glslprogramP5.h" />
     <ClInclude Include="src\axis.h" />
     <ClInclude Include="src\body.h" />
     <ClInclude Include="src\color.h" />
