@@ -76,9 +76,8 @@ float	aspectRatio;			// aspect ratio of the glut window
 int		activeButton;			// current button that is down
 int		distort;
 GLuint	SphereList1;
-int		Light0On;
-int		Light1On;
-int		Light2On;
+int		UsingTheVertexShader;
+int		UsingTheFragmentShader;
 int		Frozen;
 float	curTime;
 GLSLProgram* Pattern;
@@ -129,19 +128,10 @@ void	DoProjectionKey();
 void	DoOrbitKey();
 void	DoScrollWheel(int upOrDown);
 void	DoDistortMenu(int id);
-void	DoLight0Key();
-void	DoLight1Key();
-void	DoLight2Key();
+void	DoVertexKey();
+void	DoFragmentKey();
 void	DoFreezeKey();
-void	showLight0();
-void	showLight1();
-void	showLight2();
-void	drawSphere0();
-void	drawSphere1();
-void	drawSphere2();
-void	showLight0Sphere();
-void	showLight1Sphere();
-void	showLight2Sphere();
+
 
 
 ////// ##################### MAIN PROGRAM ##################### //////
@@ -237,10 +227,8 @@ Display()
 
 
 	Pattern->Use();
-	//if (ImUsingTheVertexShader){uA = curTime;}
-	//if (ImUsingTheFragmentShader){uB = curTime;}
-	if (1) { uA = curTime; }
-	if (1) { uB = curTime; }
+	if (UsingTheVertexShader){uA = curTime;}
+	if (UsingTheFragmentShader){uB = curTime;}
 	Pattern->SetUniformVariable(uAs, uA);
 	Pattern->SetUniformVariable(uBs, uB);
 	Pattern->SetUniformVariable(uT0s, uT0);
@@ -421,9 +409,8 @@ KeyCallback(unsigned char c, int x, int y)
 	else if (c == 'n') { glutReshapeWindow(SCREEN.x, SCREEN.y); }
 	else if (c == 'r'){ DoSoftResetMenu(); }
 	else if (c == 'R') { DoResetMenu(); }
-	else if (c == '0') { DoLight0Key(); }
-	else if (c == '1') { DoLight1Key(); }
-	else if (c == '2') { DoLight2Key(); }
+	else if (c == '0') { DoVertexKey(); }
+	else if (c == '1') { DoFragmentKey(); }
 	else if (c == 'f') { DoFreezeKey(); }
 	else if (c == 'q' || c == EventEnums::ESCAPE) { DoMainMenu(QUIT); }
 	else { fprintf(stderr, "Don't know what to do with keyboard hit: '%c' (0x%0x)\n", c, c); }
@@ -532,9 +519,8 @@ DoResetMenu()
 	axesOn = 0;
 	debugOn = 0;
 	orbitOn = 0;
-	Light0On = 1;
-	Light1On = 1;
-	Light2On = 1;
+	UsingTheVertexShader = 1;
+	UsingTheFragmentShader = 1;
 	Frozen = 0;
 	scale = 0.5f;
 	whichProjection = PERSP;
@@ -677,22 +663,15 @@ DoFreezeKey()
 }
 
 void
-DoLight0Key()
+DoVertexKey()
 {
-	if (Light0On == 0) { Light0On = 1; }
-	else { Light0On = 0; }
+	if (UsingTheVertexShader == 0) { UsingTheVertexShader = 1; }
+	else { UsingTheVertexShader = 0; }
 }
 
 void
-DoLight1Key()
+DoFragmentKey()
 {
-	if (Light1On == 0) { Light1On = 1; }
-	else { Light1On = 0; }
-}
-
-void
-DoLight2Key()
-{
-	if (Light2On == 0) { Light2On = 1; }
-	else { Light2On = 0; }
+	if (UsingTheFragmentShader == 0) { UsingTheFragmentShader = 1; }
+	else { UsingTheFragmentShader = 0; }
 }
