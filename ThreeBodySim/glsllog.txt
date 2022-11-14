@@ -1,5 +1,4 @@
 
-ERROR: 0:10: 'assign' :  cannot convert from '3-component vector of highp float' to 'FragColor 4-component vector of mediump float'
-ERROR: 0:11: '}' : syntax error syntax error
+ERROR: 0:14: 'if' : syntax error syntax error
 
 
