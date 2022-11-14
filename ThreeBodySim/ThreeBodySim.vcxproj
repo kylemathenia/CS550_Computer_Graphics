@@ -40,6 +40,12 @@
     <ClInclude Include="src\threebodysim.h" />
     <ClInclude Include="src\utils.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="src\pattern.frag" />
+    <None Include="src\pattern.vert" />
+    <None Include="src\pattern2.frag" />
+    <None Include="src\pattern2.vert" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

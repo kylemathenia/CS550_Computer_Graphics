@@ -1,6 +1,5 @@
 #pragma once
 #define _CRT_SECURE_NO_DEPRECATE
-#include "glslprogramP5.h"
 #include "glew.h"
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -15,6 +14,7 @@
 
 #include <chrono>
 #include <thread>
+#include "glslprogramP5.h"
 
 
 struct GLshadertype

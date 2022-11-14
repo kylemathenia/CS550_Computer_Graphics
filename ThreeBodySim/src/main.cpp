@@ -82,6 +82,7 @@ int		Light2On;
 int		Frozen;
 float	curTime;
 GLSLProgram* Pattern;
+float	Time;
 
 float Light0Pos[] = { 20., 0., 0. };
 float Light1Pos[] = { 0., 20., 0. };
@@ -215,6 +216,26 @@ Display()
 	glCallList(SphereList1);
 	glPopMatrix();
 
+	////char uTime[] = "uTime";
+	//Pattern->Use();
+	////Pattern->SetUniformVariable(uTime, Time);
+	//glCallList(SphereList1);
+	//Pattern->UnUse();	// Pattern->Use(0);  also works
+
+
+
+	//float s0 = some function of Time
+	//float t0 = some function of Time
+	//float d = some function of Time
+	//	. ..Pattern->Use(); // no more fixed-function – shaders now handle everythingPattern->SetUniformVariable( "uS0", s0);
+	//Pattern->SetUniformVariable("uT0", t0);
+	//Pattern->SetUniformVariable("uD", d);
+	//OsuSphere();
+	//Pattern->UnUse(); // go back to fixed-function OpenGL
+
+
+
+
 	// finish
 	glutSwapBuffers();
 	glFlush();
@@ -299,6 +320,22 @@ InitGraphics()
 	fprintf(stderr, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 #endif
 	glutFullScreen();
+
+
+	char vert_sh[] = "C:\dev\CS550_Computer_Graphics\ThreeBodySim\pattern.vert";
+	char frag_sh[] = "C:\dev\CS550_Computer_Graphics\ThreeBodySim\pattern.frag";
+	Pattern = new GLSLProgram();
+	bool valid = Pattern->Create(vert_sh, frag_sh);
+	if (!valid)
+	{
+		fprintf(stderr, "Shader cannot be created!\n");
+		DoMainMenu(QUIT);
+	}
+	else
+	{
+		fprintf(stderr, "Shader created.\n");
+	}
+	Pattern->SetVerbose(false);
 
 }
 
