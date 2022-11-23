@@ -78,6 +78,12 @@ public:
 	bool fixed_tail;
 	Vector3f GRAVITY;
 
+	double prevTime, dt;
+	Body b1, b2, b3, boundary;
+	Body* bList[3] = { &b1,&b2,&b3 };
+	Vector3f center;
+	float curTime;
+
 	void reset()
 	{
 		for (int i = 0; i < num_pts; i++) { pts.push_back(PtMass(first_pt.pos, mass_per_pt)); }
@@ -87,6 +93,7 @@ public:
 
 	void initialize()
 	{
+		// Initialize the points linearly between first and last points.
 		pts[0] = first_pt;
 		pts.back() = last_pt;
 		Vector3f diff = last_pt.pos - first_pt.pos;
@@ -95,6 +102,105 @@ public:
 			Vector3f pos = first_pt.pos + (diff * dec_percent);
 			pts[i] = PtMass(pos, mass_per_pt);
 		}
+	}
+
+	void step()
+	{
+		updateTime();
+		PtMass cur_pt, next_pt, prev_pt;
+		for (int i = 1; i < num_pts-1; i++)
+		{
+			cur_pt = pts[i];
+			//if (&cur_pt == &first_pt || &cur_pt == &last_pt) { continue; }
+			prev_pt = pts[i - 1];
+			next_pt = pts[i + 1];
+			step_verlet(cur_pt, prev_pt, next_pt, true);
+		}
+
+		if (fixed_tail == false) { step_verlet(next_pt, cur_pt, cur_pt, false); }
+		apply_steps();
+	}
+
+	void step_verlet(PtMass& cur_pt, PtMass& prev_pt, PtMass& next_pt,bool next_pt_exists)
+	{
+		Vector3f acc = find_acc(cur_pt, prev_pt, next_pt,next_pt_exists);
+		cur_pt.new_pos = (2 * cur_pt.pos) - cur_pt.prev_pos + ((pow(dt, 2) * acc));
+		cur_pt.new_vel = (cur_pt.new_pos - cur_pt.pos) * dt;
+	}
+
+	void apply_steps()
+	{
+		for (int i = 1; i < num_pts - 1; i++)
+		{
+			pts[i].step_pos();
+			pts[i].step_vel();
+		}
+		if (fixed_tail == false)
+		{
+			last_pt.step_pos();
+			last_pt.step_vel();
+		}
+	}
+
+	Vector3f find_acc(PtMass& cur_pt, PtMass& prev_pt, PtMass& next_pt, bool next_pt_exists)
+	{
+		Vector3f gravitational_force, force_next_pt, force_prev_pt, drag;
+		gravitational_force = cur_pt.mass * GRAVITY;
+		if (next_pt_exists == true) { force_next_pt = find_force_bet_pts(cur_pt.pos, cur_pt.vel, next_pt.pos, next_pt.vel); }
+		else { force_next_pt = Vector3f(0, 0, 0); }
+		force_prev_pt = find_force_bet_pts(cur_pt.pos, cur_pt.vel, prev_pt.pos, prev_pt.vel);
+		drag = find_drag(cur_pt.vel);
+		return (force_next_pt + force_prev_pt + drag) / cur_pt.mass;
+	}
+
+	Vector3f find_force_bet_pts(Vector3f curPtPos, Vector3f curPtVel, Vector3f otherPtPos, Vector3f otherPtVel)
+	{
+		Vector3f unit_vec_to_pt, spring_force, visc_force;
+		unit_vec_to_pt = unit_vec(otherPtPos - curPtPos);
+		spring_force = find_spring_force(curPtPos, otherPtPos, unit_vec_to_pt);
+		visc_force = find_visc_force(curPtVel, otherPtVel, curPtPos, otherPtPos, unit_vec_to_pt);
+		return spring_force + visc_force;
+	}
+
+	Vector3f find_spring_force(Vector3f curPtPos, Vector3f otherPtPos, Vector3f unit_vec_to_pt)
+	{
+		double dist, deflection;
+		dist = find_dist(curPtPos, otherPtPos);
+		deflection = dist - lo_per_seg;
+		if (deflection < 0) { return Vector3f(0, 0, 0); }
+		else { return k * deflection * unit_vec_to_pt; }
+	}
+
+	Vector3f find_visc_force(Vector3f curPtVel, Vector3f otherPtVel, Vector3f curPtPos, Vector3f otherPtPos, Vector3f unit_vec_to_pt)
+	{
+		Vector3f relative_vel = curPtVel - otherPtVel;
+		double relative_speed = relative_vel.dot(unit_vec_to_pt);
+		Vector3f component_vel = relative_speed*unit_vec_to_pt;
+		double dist = find_dist(otherPtPos, curPtPos);
+		double deflection = dist - lo_per_seg;
+		if (deflection < 0){return Vector3f(0, 0, 0);}
+		else { return -component_vel * c; }
+	}
+
+	Vector3f find_drag(Vector3f vel)
+	{
+		return 0.5 * pow(vel.norm(), 2) * DRAG_COEF * unit_vec(vel);
+	}
+
+	Vector3f unit_vec(Vector3f vec)
+	{
+		if (vec.isZero(0) == true) { return Vector3f(0, 0, 0); }
+		double mag = double(vec.norm());
+		return vec/mag;
+	}
+
+	double find_dist(Vector3f pt1, Vector3f pt2)
+	{
+		double difx = pt2[0] - pt1[0];
+		double dify = pt2[1] - pt1[1];
+		double difz = pt2[2] - pt1[2];
+		double tot = pow(difx, 2) + pow(dify, 2) + pow(difz, 2);
+		return pow(tot, 0.5);
 	}
 
 	//void reset_sim_data()
@@ -115,15 +221,4 @@ public:
 
 	float getCurTime() { return ((float)glutGet(GLUT_ELAPSED_TIME)) / 1000.f; }
 
-	Vector3f numerator(Body a, Body b)
-	{
-		return -9.81 * b.m * (a.S.pos - b.S.pos);
-	}
-
-
-	double prevTime, dt;
-	Body b1, b2, b3, boundary;
-	Body* bList[3] = { &b1,&b2,&b3 };
-	Vector3f center;
-	float curTime;
 };

@@ -158,6 +158,7 @@ main( int argc, char *argv[ ] )
 void
 Animate()
 {
+	rope.step();
 	glutSetWindow(mainWindow);
 	glutPostRedisplay();
 }
