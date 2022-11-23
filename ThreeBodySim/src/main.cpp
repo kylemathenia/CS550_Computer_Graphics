@@ -95,6 +95,7 @@ void	DisplaySetup();
 void	Display();
 void	Animate();
 void	AnimateAtFPS(int);
+void	draw_rope(Rope r);
 // init functions
 void	InitGraphics();
 void	InitLists();
@@ -192,14 +193,35 @@ Display()
 	glRotatef((GLfloat)rot.y, 0., 1., 0.);
 	glRotatef((GLfloat)rot.x, 1., 0., 0.);
 
-	//glCallList(SphereList1);
+	glCallList(SphereList1);
 
-	rope.draw();
+	draw_rope(rope);
+
+	//rope.draw();
 
 	// finish
 	glutSwapBuffers();
 	glFlush();
   }
+
+void draw_rope(Rope r)
+{
+	glPushMatrix();
+	glEnable(GL_DEPTH_TEST);
+	//glColor3f(Colors[c][0], Colors[c][1], Colors[c][2]);
+	//glTranslatef(d(0), d(1), d(2));
+	//glRotatef(ang, rotAxis(0), rotAxis(1), rotAxis(2));
+	//glScalef(scale(0), scale(1), scale(2));
+	//init_list(true);
+	glLineWidth((GLfloat)5);
+	glBegin(GL_LINE_STRIP);
+	for (int i = 0; i < r.num_pts; i++)
+	{
+		glVertex3f(r.pts[i].pos[0], r.pts[i].pos[1], r.pts[i].pos[2]);
+	}
+	glEnd();
+	glPopMatrix();
+}
 
 
 // Set some glut and opengl parameters every display call. 

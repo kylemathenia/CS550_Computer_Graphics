@@ -114,10 +114,6 @@ public:
 		PtMass cur_pt, next_pt, prev_pt;
 		for (int i = 1; i < num_pts-1; i++)
 		{
-			//cur_pt = pts[i];
-			////if (&cur_pt == &first_pt || &cur_pt == &last_pt) { continue; }
-			//prev_pt = pts[i - 1];
-			//next_pt = pts[i + 1];
 			step_verlet(pts[i], pts[i - 1], pts[i + 1], true);
 		}
 
@@ -145,8 +141,8 @@ public:
 		}
 		if (fixed_tail == false)
 		{
-			last_pt.step_pos();
-			last_pt.step_vel();
+			pts.back().step_pos();
+			pts.back().step_vel();
 		}
 	}
 
@@ -198,9 +194,10 @@ public:
 	void init_list(bool updating)
 	{
 		if (updating == true) { glDeleteLists(obj_list, 1); }
+		obj_list = glGenLists(1);
 		glNewList(obj_list, GL_COMPILE);
 		glLineWidth((GLfloat)2);
-		glBegin(GL_LINES);
+		glBegin(GL_LINE_STRIP);
 		for (int i = 0; i < num_pts; i++)
 		{
 			glVertex3f(pts[i].pos[0], pts[i].pos[1], pts[i].pos[2]);
@@ -217,18 +214,15 @@ public:
 		//glTranslatef(d(0), d(1), d(2));
 		//glRotatef(ang, rotAxis(0), rotAxis(1), rotAxis(2));
 		//glScalef(scale(0), scale(1), scale(2));
-		GLuint list = glGenLists(1);
-		glNewList(list, GL_COMPILE);
+		//init_list(true);
 		glLineWidth((GLfloat)2);
-		glBegin(GL_LINES);
+		glBegin(GL_LINE_STRIP);
 		for (int i = 0; i < num_pts; i++)
 		{
 			glVertex3f(pts[i].pos[0], pts[i].pos[1], pts[i].pos[2]);
 		}
 		glEnd();
-		glEndList();
-
-		glCallList(list);
+		glCallList(obj_list);
 		glPopMatrix();
 	}
 
