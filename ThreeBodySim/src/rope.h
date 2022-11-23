@@ -106,24 +106,28 @@ public:
 
 	void step()
 	{
-		updateTime();
+		//updateTime();
+		dt = 0.05;
 		PtMass cur_pt, next_pt, prev_pt;
 		for (int i = 1; i < num_pts-1; i++)
 		{
-			cur_pt = pts[i];
-			//if (&cur_pt == &first_pt || &cur_pt == &last_pt) { continue; }
-			prev_pt = pts[i - 1];
-			next_pt = pts[i + 1];
-			step_verlet(cur_pt, prev_pt, next_pt, true);
+			//cur_pt = pts[i];
+			////if (&cur_pt == &first_pt || &cur_pt == &last_pt) { continue; }
+			//prev_pt = pts[i - 1];
+			//next_pt = pts[i + 1];
+			step_verlet(pts[i], pts[i - 1], pts[i + 1], true);
 		}
 
-		if (fixed_tail == false) { step_verlet(next_pt, cur_pt, cur_pt, false); }
+		if (fixed_tail == false) { step_verlet(pts.back(), pts[num_pts-2], pts[num_pts - 2], false); }
 		apply_steps();
 	}
 
 	void step_verlet(PtMass& cur_pt, PtMass& prev_pt, PtMass& next_pt,bool next_pt_exists)
 	{
 		Vector3f acc = find_acc(cur_pt, prev_pt, next_pt,next_pt_exists);
+		Vector3f p1 = (2 * cur_pt.pos);
+		Vector3f p2 = (pow(dt, 2) * acc);
+		Vector3f new_pos = p1 - cur_pt.prev_pos + p2;
 		cur_pt.new_pos = (2 * cur_pt.pos) - cur_pt.prev_pos + ((pow(dt, 2) * acc));
 		cur_pt.new_vel = (cur_pt.new_pos - cur_pt.pos) * dt;
 	}
@@ -150,7 +154,7 @@ public:
 		else { force_next_pt = Vector3f(0, 0, 0); }
 		force_prev_pt = find_force_bet_pts(cur_pt.pos, cur_pt.vel, prev_pt.pos, prev_pt.vel);
 		drag = find_drag(cur_pt.vel);
-		return (force_next_pt + force_prev_pt + drag) / cur_pt.mass;
+		return (force_next_pt + force_prev_pt + drag + gravitational_force) / cur_pt.mass;
 	}
 
 	Vector3f find_force_bet_pts(Vector3f curPtPos, Vector3f curPtVel, Vector3f otherPtPos, Vector3f otherPtVel)
