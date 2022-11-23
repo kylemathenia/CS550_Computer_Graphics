@@ -84,11 +84,14 @@ public:
 	Vector3f center;
 	float curTime;
 
+	GLuint obj_list = glGenLists(1);
+
 	void reset()
 	{
 		for (int i = 0; i < num_pts; i++) { pts.push_back(PtMass(first_pt.pos, mass_per_pt)); }
 		//if (save_data == true) { reset_sim_data(); }
 		initialize();
+		init_list(false);
 	}
 
 	void initialize()
@@ -120,6 +123,7 @@ public:
 
 		if (fixed_tail == false) { step_verlet(pts.back(), pts[num_pts-2], pts[num_pts - 2], false); }
 		apply_steps();
+		init_list(true);
 	}
 
 	void step_verlet(PtMass& cur_pt, PtMass& prev_pt, PtMass& next_pt,bool next_pt_exists)
@@ -191,20 +195,41 @@ public:
 		return 0.5 * pow(vel.norm(), 2) * DRAG_COEF * unit_vec(vel);
 	}
 
-	Vector3f unit_vec(Vector3f vec)
+	void init_list(bool updating)
 	{
-		if (vec.isZero(0) == true) { return Vector3f(0, 0, 0); }
-		double mag = double(vec.norm());
-		return vec/mag;
+		if (updating == true) { glDeleteLists(obj_list, 1); }
+		glNewList(obj_list, GL_COMPILE);
+		glLineWidth((GLfloat)2);
+		glBegin(GL_LINES);
+		for (int i = 0; i < num_pts; i++)
+		{
+			glVertex3f(pts[i].pos[0], pts[i].pos[1], pts[i].pos[2]);
+		}
+		glEnd();
+		glEndList();
 	}
 
-	double find_dist(Vector3f pt1, Vector3f pt2)
+	void draw()
 	{
-		double difx = pt2[0] - pt1[0];
-		double dify = pt2[1] - pt1[1];
-		double difz = pt2[2] - pt1[2];
-		double tot = pow(difx, 2) + pow(dify, 2) + pow(difz, 2);
-		return pow(tot, 0.5);
+		glPushMatrix();
+		glEnable(GL_DEPTH_TEST);
+		//glColor3f(Colors[c][0], Colors[c][1], Colors[c][2]);
+		//glTranslatef(d(0), d(1), d(2));
+		//glRotatef(ang, rotAxis(0), rotAxis(1), rotAxis(2));
+		//glScalef(scale(0), scale(1), scale(2));
+		GLuint list = glGenLists(1);
+		glNewList(list, GL_COMPILE);
+		glLineWidth((GLfloat)2);
+		glBegin(GL_LINES);
+		for (int i = 0; i < num_pts; i++)
+		{
+			glVertex3f(pts[i].pos[0], pts[i].pos[1], pts[i].pos[2]);
+		}
+		glEnd();
+		glEndList();
+
+		glCallList(list);
+		glPopMatrix();
 	}
 
 	//void reset_sim_data()
@@ -215,6 +240,23 @@ public:
 
 
 	// ##################### UTILS ##################### //
+
+
+	Vector3f unit_vec(Vector3f vec)
+	{
+		if (vec.isZero(0) == true) { return Vector3f(0, 0, 0); }
+		double mag = double(vec.norm());
+		return vec / mag;
+	}
+
+	double find_dist(Vector3f pt1, Vector3f pt2)
+	{
+		double difx = pt2[0] - pt1[0];
+		double dify = pt2[1] - pt1[1];
+		double difz = pt2[2] - pt1[2];
+		double tot = pow(difx, 2) + pow(dify, 2) + pow(difz, 2);
+		return pow(tot, 0.5);
+	}
 
 	void updateTime()
 	{

@@ -192,7 +192,9 @@ Display()
 	glRotatef((GLfloat)rot.y, 0., 1., 0.);
 	glRotatef((GLfloat)rot.x, 1., 0., 0.);
 
-	glCallList(SphereList1);
+	//glCallList(SphereList1);
+
+	rope.draw();
 
 	// finish
 	glutSwapBuffers();
