@@ -27,10 +27,27 @@
 #include "color.h"
 #include "options.h"
 #include "Shapes/shapes.h"
+#include "rope.h"
 
 
 const int FPS = 60;
 bool useIdle = false;
+
+float _k = 5.0f;
+float _c = 100.0f;
+Eigen::Vector3f start_pos = Eigen::Vector3f(0.0f, 10.0f, 0.0f);
+Eigen::Vector3f end_pos = Eigen::Vector3f(20.0f, 10.0f, 0.0f);
+int _num_pts = 16;
+float _rope_density = 0.06; // Rock climbing rope desity. kg/m
+float _unstretched_len = 15.0f;
+bool _fixed_tail = false;
+float gravity = -9.81f;
+float _drag_coef = 1000.0f;
+
+Rope rope = Rope(_k, _c, start_pos, end_pos, _num_pts, _rope_density, _unstretched_len, _fixed_tail, gravity, _drag_coef);
+
+
+
 
 ////// ##################### CONSTANT GLOBALS ##################### //////
 // title of these windows:
