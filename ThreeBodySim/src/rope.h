@@ -15,6 +15,7 @@ using namespace Eigen;
 class PtMass
 {
 public:
+	PtMass() {}
 	PtMass(Vector3f pos, float mass)
 	{
 		m_pos, m_new_pos, m_prev_pos = pos;
@@ -52,20 +53,27 @@ public:
 		float _rope_density, float _unstretched_len, bool _fixed_tail, float gravity, 
 		float _drag_coef)
 	{
-		float mass_per_pt = (_rope_density * _unstretched_len) / _num_pts;
-		PtMass first_pt = PtMass(start_pos, mass_per_pt);
-		PtMass last_pt = PtMass(end_pos, mass_per_pt);
-		float k = _k;
-		float c = _c;
+		mass_per_pt = (_rope_density * _unstretched_len) / _num_pts;
+		first_pt = PtMass(start_pos, mass_per_pt);
+		last_pt = PtMass(end_pos, mass_per_pt);
+		k = _k;
+		c = _c;
 		std::vector<PtMass> pts(_num_pts, PtMass(start_pos, mass_per_pt));
-		int num_pts = _num_pts;
-		float unstretched_len = _unstretched_len;
-		float lo_per_seg = find_lo_per_seg(); // unstretched length per segment
-		bool fixed_tail = _fixed_tail;
-		float DRAG_COEF = _drag_coef;
-		Vector3f GRAVITY = Vector3f(0.0f, gravity, 0.0f);
+		num_pts = _num_pts;
+		unstretched_len = _unstretched_len;
+		lo_per_seg = find_lo_per_seg(); // unstretched length per segment
+		fixed_tail = _fixed_tail;
+		DRAG_COEF = _drag_coef;
+		GRAVITY = Vector3f(0.0f, gravity, 0.0f);
 		//reset();
 	};
+
+	float mass_per_pt,k,c, unstretched_len, lo_per_seg, DRAG_COEF;
+	PtMass first_pt, last_pt;
+	std::vector<PtMass> pts;
+	int num_pts;
+	bool fixed_tail;
+	Vector3f GRAVITY;
 
 	float find_lo_per_seg()
 	{
@@ -81,7 +89,7 @@ public:
 
 	void initialize()
 	{
-		//pts[0] = first_pt;
+		pts[0] = first_pt;
 	}
 
 	//void reset_sim_data()
