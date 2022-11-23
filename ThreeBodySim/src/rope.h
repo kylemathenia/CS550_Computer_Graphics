@@ -16,34 +16,38 @@ class PtMass
 {
 public:
 	PtMass() {}
-	PtMass(Vector3f pos, float mass)
+	PtMass(Vector3f position, float m)
 	{
-		m_pos, m_new_pos, m_prev_pos = pos;
-		m_vel, m_new_vel, m_prev_vel = Vector3f(0.0f, 0.0f, 0.0f);
-		m_mass = mass;
+		pos = position;
+		new_pos = position;
+		prev_pos = position;
+		vel = Vector3f(0.0f, 0.0f, 0.0f);
+		new_vel= Vector3f(0.0f, 0.0f, 0.0f);
+		prev_vel = Vector3f(0.0f, 0.0f, 0.0f);
+		mass = m;
 	}
 
 	void step_pos()
 	{
-		m_prev_pos = m_pos;
-		m_pos = m_new_pos;
+		prev_pos = pos;
+		pos = new_pos;
 	}
 
 	void step_vel()
 	{
-		m_prev_vel = m_vel;
-		m_vel = m_new_vel;
+		prev_vel = vel;
+		vel = new_vel;
 	}
 
 	// Update position and derive the velocity from that. Useful for updating the ends of the rope manually.
 	void step_vel(Vector3f pos, float dt)
 	{
-		m_prev_pos, m_pos = pos;
-		m_new_vel = (pos - m_prev_pos) * dt;
+		prev_pos, pos = pos;
+		new_vel = (pos - prev_pos) * dt;
 	}
 
-	Vector3f m_pos, m_new_pos, m_prev_pos, m_vel, m_new_vel, m_prev_vel;
-	float m_mass;
+	Vector3f pos, new_pos, prev_pos, vel, new_vel, prev_vel;
+	float mass;
 };
 
 class Rope
@@ -58,14 +62,13 @@ public:
 		last_pt = PtMass(end_pos, mass_per_pt);
 		k = _k;
 		c = _c;
-		std::vector<PtMass> pts(_num_pts, PtMass(start_pos, mass_per_pt));
 		num_pts = _num_pts;
 		unstretched_len = _unstretched_len;
-		lo_per_seg = find_lo_per_seg(); // unstretched length per segment
+		lo_per_seg = _unstretched_len / float(_num_pts - 1); // unstretched length per segment
 		fixed_tail = _fixed_tail;
 		DRAG_COEF = _drag_coef;
 		GRAVITY = Vector3f(0.0f, gravity, 0.0f);
-		//reset();
+		reset();
 	};
 
 	float mass_per_pt,k,c, unstretched_len, lo_per_seg, DRAG_COEF;
@@ -75,14 +78,9 @@ public:
 	bool fixed_tail;
 	Vector3f GRAVITY;
 
-	float find_lo_per_seg()
-	{
-		//TODO
-		return 10;
-	}
-
 	void reset()
 	{
+		for (int i = 0; i < num_pts; i++) { pts.push_back(PtMass(first_pt.pos, mass_per_pt)); }
 		//if (save_data == true) { reset_sim_data(); }
 		initialize();
 	}
@@ -90,6 +88,13 @@ public:
 	void initialize()
 	{
 		pts[0] = first_pt;
+		pts.back() = last_pt;
+		Vector3f diff = last_pt.pos - first_pt.pos;
+		for (int i = 1; i < num_pts; i++){
+			float dec_percent = float(i) / float((num_pts - 1));
+			Vector3f pos = first_pt.pos + (diff * dec_percent);
+			pts[i] = PtMass(pos, mass_per_pt);
+		}
 	}
 
 	//void reset_sim_data()
