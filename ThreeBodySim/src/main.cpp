@@ -29,24 +29,10 @@
 #include "Shapes/shapes.h"
 #include "rope.h"
 
+using namespace Eigen;
 
 const int FPS = 60;
 bool useIdle = false;
-
-float _k = 5.0f;
-float _c = 0.0f;
-Eigen::Vector3f start_pos = Eigen::Vector3f(0.0f, 10.0f, 0.0f);
-Eigen::Vector3f end_pos = Eigen::Vector3f(20.0f, 10.0f, 0.0f);
-int _num_pts = 16;
-float _rope_density = 0.06; // Rock climbing rope desity. kg/m
-float _unstretched_len = 15.0f;
-bool _fixed_tail = false;
-float gravity = -9.81f;
-float _drag_coef = 0.0f;
-
-Rope rope = Rope(_k, _c, start_pos, end_pos, _num_pts, _rope_density, _unstretched_len, _fixed_tail, gravity, _drag_coef);
-
-
 
 
 ////// ##################### CONSTANT GLOBALS ##################### //////
@@ -95,7 +81,9 @@ void	DisplaySetup();
 void	Display();
 void	Animate();
 void	AnimateAtFPS(int);
-void	draw_rope(Rope r);
+void	draw_rope(Rope r, enum Colors);
+void	draw_rope_segment(Vector3f pt1, Vector3f pt2, Vector3f pt3, Vector3f pt4);
+std::vector<Vector3f> get_Catmull_Rom_pts(Vector3f p0, Vector3f p1, Vector3f p2, Vector3f p3, int num_pts);
 // init functions
 void	InitGraphics();
 void	InitLists();
@@ -125,6 +113,48 @@ void	DoTailKey();
 void	DoProjectionKey();
 void	DoOrbitKey();
 void	DoScrollWheel(int upOrDown);
+
+
+float _k = 5.0f;
+int _num_pts = 8;
+float _rope_density = 0.06; // Rock climbing rope desity. kg/m
+float _unstretched_len = 10.0f;
+bool _fixed_tail = false;
+float gravity = -9.81f;
+
+
+Vector3f start_pos1 = Vector3f(-10.0f, 5.0f, 0.0f);
+Vector3f end_pos1 = Vector3f(0.0f, 5.0f, 6.0f);
+float _c1 = 0.0f;
+float _drag_coef1 = 0.0f;
+Rope rope1 = Rope(_k, _c1, start_pos1, end_pos1, _num_pts, _rope_density, _unstretched_len, _fixed_tail, gravity, _drag_coef1);
+
+Vector3f start_pos2 = Vector3f(-6.0f, 5.0f, 0.0f);
+Vector3f end_pos2 = Vector3f(4.0f, 5.0f, 6.0f);
+float _c2 = 500.0f;
+float _drag_coef2 = 500.0f;
+Rope rope2 = Rope(_k, _c2, start_pos2, end_pos2, _num_pts, _rope_density, _unstretched_len, _fixed_tail, gravity, _drag_coef2);
+
+Vector3f start_pos3 = Vector3f(-2.0f, 5.0f, 0.0f);
+Vector3f end_pos3 = Vector3f(8.0f, 5.0f, 6.0f);
+float _c3 = 2000.0f;
+float _drag_coef3 = 2000.0f;
+Rope rope3 = Rope(_k, _c3, start_pos3, end_pos3, _num_pts, _rope_density, _unstretched_len, _fixed_tail, gravity, _drag_coef3);
+
+Vector3f start_pos4 = Vector3f(2.0f, 5.0f, 0.0f);
+Vector3f end_pos4 = Vector3f(12.0f, 5.0f, 6.0f);
+float _c4 = 10000.0f;
+float _drag_coef4 = 10000.0f;
+Rope rope4 = Rope(_k, _c4, start_pos4, end_pos4, _num_pts, _rope_density, _unstretched_len, _fixed_tail, gravity, _drag_coef4);
+
+Vector3f start_pos5 = Vector3f(6.0f, 10.0f, -10.0f);
+Vector3f end_pos5 = Vector3f(16.0f, 6.0f, -13.0f);
+float _c5 = 10.0f;
+float _drag_coef5 = 10.0f;
+Rope rope5 = Rope(_k, _c5, start_pos5, end_pos5, _num_pts, _rope_density, _unstretched_len, true, gravity, _drag_coef5);
+
+Rope stationary_rope = Rope(_k, _c1, start_pos1, end_pos1, _num_pts, _rope_density, _unstretched_len, _fixed_tail, gravity, _drag_coef1);
+
 
 
 
@@ -159,7 +189,11 @@ main( int argc, char *argv[ ] )
 void
 Animate()
 {
-	rope.step();
+	rope1.step();
+	rope2.step();
+	rope3.step();
+	rope4.step();
+	rope5.step();
 	glutSetWindow(mainWindow);
 	glutPostRedisplay();
 }
@@ -193,34 +227,64 @@ Display()
 	glRotatef((GLfloat)rot.y, 0., 1., 0.);
 	glRotatef((GLfloat)rot.x, 1., 0., 0.);
 
-	glCallList(SphereList1);
+	//glCallList(SphereList1);
 
-	draw_rope(rope);
-
-	//rope.draw();
+	draw_rope(rope1, Colors::RED);
+	draw_rope(rope2, Colors::GREEN);
+	draw_rope(rope3, Colors::MAGENTA);
+	draw_rope(rope4, Colors::YELLOW);
+	draw_rope(rope5, Colors::BLUE);
+	draw_rope(stationary_rope, Colors::WHITE);
 
 	// finish
 	glutSwapBuffers();
 	glFlush();
   }
 
-void draw_rope(Rope r)
+void draw_rope(Rope r, enum Colors c)
 {
 	glPushMatrix();
 	glEnable(GL_DEPTH_TEST);
-	//glColor3f(Colors[c][0], Colors[c][1], Colors[c][2]);
-	//glTranslatef(d(0), d(1), d(2));
-	//glRotatef(ang, rotAxis(0), rotAxis(1), rotAxis(2));
-	//glScalef(scale(0), scale(1), scale(2));
-	//init_list(true);
-	glLineWidth((GLfloat)5);
-	glBegin(GL_LINE_STRIP);
-	for (int i = 0; i < r.num_pts; i++)
+	glColor3f(Colors[c][0], Colors[c][1], Colors[c][2]);
+	glLineWidth((GLfloat)1);
+	// Need to find points that are beyond the start and end points, and draw those segments. 
+	Vector3f pre_first_pt = r.pts[0].pos - (r.unit_vec(r.pts[1].pos - r.pts[0].pos));
+	Vector3f post_last_pt = r.pts[r.num_pts - 1].pos - (r.unit_vec(r.pts[r.num_pts - 1].pos - r.pts[r.num_pts - 2].pos));
+	draw_rope_segment(pre_first_pt, r.pts[0].pos, r.pts[1].pos, r.pts[2].pos);
+	draw_rope_segment(r.pts[r.num_pts - 3].pos, r.pts[r.num_pts - 2].pos, r.pts[r.num_pts - 1].pos, post_last_pt);
+	for (int i = 1; i < r.num_pts-2; i++)
 	{
-		glVertex3f(r.pts[i].pos[0], r.pts[i].pos[1], r.pts[i].pos[2]);
+		draw_rope_segment(r.pts[i - 1].pos, r.pts[i].pos, r.pts[i + 1].pos, r.pts[i + 2].pos);
+	}
+	glPopMatrix();
+}
+
+void draw_rope_segment(Vector3f pt1, Vector3f pt2, Vector3f pt3, Vector3f pt4)
+{
+	glBegin(GL_LINE_STRIP);
+
+	std::vector<Vector3f> pts = get_Catmull_Rom_pts(pt1, pt2, pt3, pt4, 20);
+	for (int i = 0; i < pts.size(); i++)
+	{
+		glVertex3f(pts[i][0], pts[i][1], pts[i][2]);
 	}
 	glEnd();
-	glPopMatrix();
+}
+
+std::vector<Vector3f> get_Catmull_Rom_pts(Vector3f p0, Vector3f p1, Vector3f p2, Vector3f p3, int num_pts)
+{
+	std::vector<Vector3f> pts;
+	float t;
+	for (int i = 0; i < num_pts; i++)
+	{
+		t = (float)i / (float)(num_pts - 1);
+		Vector3f part1 = 2 * p1;
+		Vector3f part2 = t * (-p0 + p2);
+		Vector3f part3 = pow(t, 2) * ((2 * p0) - (5 * p1) + (4 * p2) - (p3));
+		Vector3f part4 = pow(t, 3) * ((-p0) + (3 * p1) - (3 * p2) + (p3));
+		pts.push_back(0.5 * (part1 + part2 + part3 + part4));
+	}
+	return pts;
 }
 
 
@@ -347,6 +411,11 @@ InitLists()
 	glEnable(GL_NORMALIZE);
 	glutSetWindow(mainWindow);
 	SphereList1 = getSphereList(3., 30, 30);
+
+	for (int i = 0; i < 500; i++)
+	{
+		stationary_rope.step();
+	}
 }
 
 
@@ -542,7 +611,12 @@ DoProjectMenu( int id )
 void
 DoSoftResetMenu()
 {
-	//sim.reset();
+	rope1.reset();
+	rope2.reset();
+	rope3.reset();
+	rope4.reset();
+	rope5.reset();
+	
 }
 
 void
