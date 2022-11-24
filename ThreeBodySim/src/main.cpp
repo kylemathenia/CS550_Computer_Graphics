@@ -64,6 +64,8 @@ int		whichTail;
 int		axesOn;
 int		debugOn;
 int		orbitOn;
+int		ctrPtsOn;
+int		ctrLinesOn;
 int		mainWindow;				// window id for main graphics window
 float	scale;					// scaling factor
 pt2i	mouse;					// mouse location in pixels
@@ -84,6 +86,8 @@ void	AnimateAtFPS(int);
 void	draw_rope(Rope r, enum Colors);
 void	draw_rope_segment(Vector3f pt1, Vector3f pt2, Vector3f pt3, Vector3f pt4);
 std::vector<Vector3f> get_Catmull_Rom_pts(Vector3f p0, Vector3f p1, Vector3f p2, Vector3f p3, int num_pts);
+void	draw_rope_pts(Vector3f pre_first_pt, Vector3f post_last_pt, Rope r);
+void	draw_rope_lines(Vector3f pre_first_pt, Vector3f post_last_pt, Rope r);
 // init functions
 void	InitGraphics();
 void	InitLists();
@@ -107,6 +111,8 @@ void	DoSoftResetMenu();
 void	DoQuitMenu();
 void	DoRasterString(float, float, float, char*);
 void	DoStrokeString(float, float, float, float, char*);
+void	DoCtrPtKey();
+void	DoCtrLineKey();
 // ui callbacks
 void	DoViewKey();
 void	DoTailKey();
@@ -246,17 +252,38 @@ void draw_rope(Rope r, enum Colors c)
 	glPushMatrix();
 	glEnable(GL_DEPTH_TEST);
 	glColor3f(Colors[c][0], Colors[c][1], Colors[c][2]);
-	glLineWidth((GLfloat)1);
+	glLineWidth((GLfloat)2);
+	glPointSize(5);
 	// Need to find points that are beyond the start and end points, and draw those segments. 
 	Vector3f pre_first_pt = r.pts[0].pos - (r.unit_vec(r.pts[1].pos - r.pts[0].pos));
-	Vector3f post_last_pt = r.pts[r.num_pts - 1].pos - (r.unit_vec(r.pts[r.num_pts - 1].pos - r.pts[r.num_pts - 2].pos));
+	Vector3f post_last_pt = r.pts[r.num_pts - 1].pos + (r.unit_vec(r.pts[r.num_pts - 1].pos - r.pts[r.num_pts - 2].pos));
+	if (ctrLinesOn != 0) {draw_rope_lines(pre_first_pt, post_last_pt, r);}
+	if (ctrPtsOn != 0) { draw_rope_pts(pre_first_pt, post_last_pt, r); }
+	glPopMatrix();
+}
+
+void draw_rope_lines(Vector3f pre_first_pt, Vector3f post_last_pt, Rope r)
+{
 	draw_rope_segment(pre_first_pt, r.pts[0].pos, r.pts[1].pos, r.pts[2].pos);
 	draw_rope_segment(r.pts[r.num_pts - 3].pos, r.pts[r.num_pts - 2].pos, r.pts[r.num_pts - 1].pos, post_last_pt);
-	for (int i = 1; i < r.num_pts-2; i++)
+	for (int i = 1; i < r.num_pts - 2; i++)
 	{
 		draw_rope_segment(r.pts[i - 1].pos, r.pts[i].pos, r.pts[i + 1].pos, r.pts[i + 2].pos);
 	}
-	glPopMatrix();
+}
+
+void draw_rope_pts(Vector3f pre_first_pt, Vector3f post_last_pt, Rope r)
+{
+	glBegin(GL_POINTS);
+	Vector3f pos;
+	for (int i = 0; i < r.pts.size(); i++)
+	{	
+		pos = r.pts[i].pos;
+		glVertex3f(pos[0], pos[1], pos[2]);
+	}
+	glVertex3f(pre_first_pt[0], pre_first_pt[1], pre_first_pt[2]);
+	glVertex3f(post_last_pt[0], post_last_pt[1], post_last_pt[2]);
+	glEnd();
 }
 
 void draw_rope_segment(Vector3f pt1, Vector3f pt2, Vector3f pt3, Vector3f pt4)
@@ -431,6 +458,8 @@ KeyCallback(unsigned char c, int x, int y)
 	else if (c == 'o') { DoOrbitKey(); }
 	else if (c == ' '){ DoViewKey(); }
 	else if (c == 't') { DoTailKey(); }
+	else if (c == 'a') { DoCtrPtKey(); }
+	else if (c == 's') { DoCtrLineKey(); }
 	else if (c == 'n') { glutReshapeWindow(SCREEN.x, SCREEN.y); }
 	else if (c == 'r'){ DoSoftResetMenu(); }
 	else if (c == 'R') { DoResetMenu(); }
@@ -541,6 +570,8 @@ DoResetMenu()
 	axesOn = 0;
 	debugOn = 0;
 	orbitOn = 0;
+	ctrPtsOn = 1;
+	ctrLinesOn = 1;
 	scale = 0.5f;
 	whichProjection = PERSP;
 	whichView = (int)Views::CENTER;
@@ -616,7 +647,6 @@ DoSoftResetMenu()
 	rope3.reset();
 	rope4.reset();
 	rope5.reset();
-	
 }
 
 void
@@ -668,4 +698,18 @@ DoScrollWheel(int upOrDown)
 	// keep object from turning inside-out or disappearing:
 	if (scale < MINSCALE)
 		scale = MINSCALE;
+}
+
+void
+DoCtrPtKey()
+{
+	if (ctrPtsOn == 0) { ctrPtsOn = 1; }
+	else { ctrPtsOn = 0; }
+}
+
+void
+DoCtrLineKey()
+{
+	if (ctrLinesOn == 0) { ctrLinesOn = 1; }
+	else { ctrLinesOn = 0; }
 }

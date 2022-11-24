@@ -95,7 +95,7 @@ public:
 	{
 		// Initialize the points linearly between first and last points.
 		pts[0] = first_pt;
-		pts[pts.size()-1] = PtMass(last_pt.pos, mass_per_pt);
+		pts.back() = last_pt;
 		Vector3f diff = last_pt.pos - first_pt.pos;
 		for (int i = 1; i < num_pts; i++){
 			float dec_percent = float(i) / float((num_pts - 1));
@@ -114,7 +114,7 @@ public:
 			step_verlet(pts[i], pts[i - 1], pts[i + 1], true);
 		}
 
-		if (fixed_tail == false) { step_verlet(pts[num_pts - 1], pts[num_pts-2], pts[num_pts - 2], false); }
+		if (fixed_tail == false) { step_verlet(pts.back(), pts[num_pts-2], pts[num_pts - 2], false); }
 		apply_steps();
 	}
 
