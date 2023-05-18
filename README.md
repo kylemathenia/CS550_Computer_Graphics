@@ -4,7 +4,7 @@
 
 ![CS550_Computer_Graphics](https://media.giphy.com/media/zT788Y0RVJPRdJJKiK/giphy.gif)
 
-[In progress] Interactive 3D three body simulation with contact dynamics.
+Interactive 3D three body simulation with contact dynamics.
 
 - Select different bodies and change their size/mass, which changes the gravitational dynamics. 
 - Contained within a little sphere world that illuminates with contact. Three body simulations typically fly really far apart from each other after some time. The boundardy bounces the bodies back towards each other to keep the simulation interesting.
