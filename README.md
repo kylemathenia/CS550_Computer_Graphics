@@ -14,3 +14,5 @@ Interactive 3D three body simulation with contact dynamics.
 - Lighting and textures will be implemented in the future.  
 
 My starting point was the sample code on the sample branch. 
+
+I think one branch has a shader for shadowing to make the balls look 3d, but that didn't make the gifs I guess.
